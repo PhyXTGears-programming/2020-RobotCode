@@ -15,6 +15,7 @@
 
 class Robot : public frc::TimedRobot {
  public:
+  Robot() {};
   void RobotInit() override;
   void RobotPeriodic() override;
   void DisabledInit() override;
@@ -32,5 +33,5 @@ class Robot : public frc::TimedRobot {
 
   RobotContainer m_container;
 
-  frc::XboxController m_driverJoystick;
+  frc::XboxController m_driverJoystick{1};
 };

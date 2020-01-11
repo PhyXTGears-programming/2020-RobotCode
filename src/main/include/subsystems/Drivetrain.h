@@ -12,6 +12,7 @@
 #include <rev/CANSparkMax.h>
 #include <frc2/command/SubsystemBase.h>
 #include <frc/drive/DifferentialDrive.h>
+#include <frc/SpeedControllerGroup.h>
 
 class Drivetrain : public frc2::SubsystemBase {
  public:

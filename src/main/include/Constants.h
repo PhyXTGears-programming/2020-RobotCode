@@ -81,7 +81,6 @@
 #define AIR_6 6
 #define AIR_7 7
 
-
 // CAN IDs for CAN Bus Spark Maxes.
 #define kRightMotor1 CAN_13
 #define kRightMotor2 CAN_14
