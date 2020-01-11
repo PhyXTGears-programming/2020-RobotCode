@@ -22,3 +22,8 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
   // An example command will be run in autonomous
   return &m_autonomousCommand;
 }
+
+// Quick drivetrain testing code :D
+void RobotContainer::DrivetrainTest() {
+  m_drivetrain.Drive(m_driverJoystick);
+}

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <frc2/command/Command.h>
+#include <frc/XboxController.h>
 
 #include "commands/AutonomousCommand.h"
 #include "subsystems/Drivetrain.h"
@@ -25,7 +26,12 @@ class RobotContainer {
 
   frc2::Command* GetAutonomousCommand();
 
+  void DrivetrainTest();
+
  private:
+  // Operators' input devices.
+  frc::XboxController m_driverJoystick{1};
+
   // The robot's subsystems and commands are defined here...
   Drivetrain m_drivetrain;
   AutonomousCommand m_autonomousCommand;
