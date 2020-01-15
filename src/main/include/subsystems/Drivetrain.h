@@ -32,4 +32,6 @@ class Drivetrain : public frc2::SubsystemBase {
   frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
 
   frc::DifferentialDrive m_Drivetrain {m_LeftMotors, m_RightMotors};
+
+  double lastDriveSpeed = 0.0;
 };
