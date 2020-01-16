@@ -1,4 +1,5 @@
 #include "subsystems/Drivetrain.h"
+#include "Robot.h"
 
 #include <iostream>
 
@@ -26,7 +27,7 @@ void Drivetrain::Periodic() {
 }
 
 // Given a controller object, use it to drive
-void Drivetrain::Drive(frc::XboxController& driver) {
+void Drivetrain::Drive(double dt, frc::XboxController& driver) {
     // Get input from joysticks
     double xInput = driver.GetX(frc::XboxController::kRightHand);
     double yInput = -driver.GetY(frc::XboxController::kLeftHand);
@@ -54,22 +55,22 @@ void Drivetrain::Drive(frc::XboxController& driver) {
         switch (velocity | acceleration) {
             case 0b00: // moving backwards, accelerating
                 if (a > maxBackwardAcceleration) {
-                    driveSpeed = lastDriveSpeed - maxBackwardAcceleration;
+                    driveSpeed = lastDriveSpeed - maxBackwardAcceleration * dt * 50;
                 }
                 break;
             case 0b01: // moving backwards, decelerating
                 if (a > maxBackwardDeceleration) {
-                    driveSpeed = lastDriveSpeed + maxBackwardDeceleration;
+                    driveSpeed = lastDriveSpeed + maxBackwardDeceleration * dt * 50;
                 }
                 break;
             case 0b10: // moving forwards, decelerating
                 if (a > maxForwardDeceleration) {
-                    driveSpeed = lastDriveSpeed - maxForwardDeceleration;
+                    driveSpeed = lastDriveSpeed - maxForwardDeceleration * dt * 50;
                 }
                 break;
             case 0b11: // moving forwards, accelerating
                 if (a > maxForwardAcceleration) {
-                    driveSpeed = lastDriveSpeed + maxForwardAcceleration;
+                    driveSpeed = lastDriveSpeed + maxForwardAcceleration * dt * 50;
                 }
                 break;
         }

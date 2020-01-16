@@ -16,7 +16,7 @@ class Drivetrain : public frc2::SubsystemBase {
    * Will be called periodically whenever the CommandScheduler runs.
    */
   void Periodic() override;
-  void Drive(frc::XboxController& driver);
+  void Drive(double dt, frc::XboxController& driver);
 
  private:
   // Components (e.g. motor controllers and sensors) should generally be

@@ -17,6 +17,6 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
 }
 
 // Quick drivetrain testing code :D
-void RobotContainer::DrivetrainTest() {
-  m_drivetrain.Drive(m_driverJoystick);
+void RobotContainer::DrivetrainTest(double dt) {
+  m_drivetrain.Drive(dt, m_driverJoystick);
 }

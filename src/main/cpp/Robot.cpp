@@ -1,5 +1,6 @@
 #include "Robot.h"
 
+#include <cmath>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
@@ -15,6 +16,18 @@ void Robot::RobotInit() {}
  */
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
+
+  hal::fpga_clock::time_point now = hal::fpga_clock::now();
+  m_DeltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - m_timePrev).count() / 1000000.0;
+  m_timePrev = now;
+
+  // Update rate (for logging)
+  static int c = 0;
+  if (c >= 50) {
+    std::cout << "Update Rate: " << roundf(1/m_DeltaTime) << " Hz" << std::endl;
+    c = 0;
+  }
+  c++;
 }
 
 
@@ -42,7 +55,7 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  m_container.DrivetrainTest();
+  m_container.DrivetrainTest(m_DeltaTime);
 }
 
 // Currently unused but we're keeping them defined.

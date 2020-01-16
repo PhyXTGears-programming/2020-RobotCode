@@ -19,7 +19,7 @@ class RobotContainer {
 
   frc2::Command* GetAutonomousCommand();
 
-  void DrivetrainTest();
+  void DrivetrainTest(double dt);
 
  private:
   // Operators' input devices.
