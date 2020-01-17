@@ -18,16 +18,16 @@
 #define backwardsStaticSpeed    0.1
 #define forwardsStaticSpeed     -0.1
 
-Drivetrain::Drivetrain() {
+Drivetrain::Drivetrain () {
     // Implementation of subsystem constructor goes here.
 }
 
-void Drivetrain::Periodic() {
+void Drivetrain::Periodic () {
     // Implementation of subsystem periodic method goes here.
 }
 
 // Given a controller object, use it to drive
-void Drivetrain::Drive(double dt, frc::XboxController& driver) {
+void Drivetrain::Drive (double dt, frc::XboxController& driver) {
     // Get input from joysticks
     double xInput = driver.GetX(frc::XboxController::kRightHand);
     double yInput = -driver.GetY(frc::XboxController::kLeftHand);
