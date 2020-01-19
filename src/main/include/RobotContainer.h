@@ -5,6 +5,7 @@
 
 #include "commands/AutonomousCommand.h"
 #include "subsystems/Drivetrain.h"
+#include "subsystems/Shooter.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -20,6 +21,7 @@ class RobotContainer {
   frc2::Command* GetAutonomousCommand();
 
   void DrivetrainTest(double dt);
+  void ShooterTest();
 
  private:
   // Operators' input devices.
@@ -27,7 +29,8 @@ class RobotContainer {
   frc::XboxController m_driverJoystick{0};
 
   // The robot's subsystems and commands are defined here...
-  Drivetrain m_drivetrain;
+  Drivetrain m_drivetrain{};
+  Shooter m_Shooter{};
   AutonomousCommand m_autonomousCommand;
 
   void ConfigureButtonBindings();

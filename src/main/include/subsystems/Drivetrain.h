@@ -18,17 +18,17 @@ class Drivetrain : public frc2::SubsystemBase {
  private:
   // Components (e.g. motor controllers and sensors) should generally be
   // declared private and exposed only through public methods.
-  rev::CANSparkMax m_LeftMotor1 {kLeftDriveMotor1, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_LeftMotor2 {kLeftDriveMotor2, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_LeftMotor3 {kLeftDriveMotor3, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_RightMotor1 {kRightDriveMotor1, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_RightMotor2 {kRightDriveMotor2, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_RightMotor3 {kRightDriveMotor3, rev::CANSparkMax::MotorType::kBrushless};
+  // rev::CANSparkMax m_LeftMotor1 {kLeftDriveMotor1, rev::CANSparkMax::MotorType::kBrushless};
+  // rev::CANSparkMax m_LeftMotor2 {kLeftDriveMotor2, rev::CANSparkMax::MotorType::kBrushless};
+  // rev::CANSparkMax m_LeftMotor3 {kLeftDriveMotor3, rev::CANSparkMax::MotorType::kBrushless};
+  // rev::CANSparkMax m_RightMotor1 {kRightDriveMotor1, rev::CANSparkMax::MotorType::kBrushless};
+  // rev::CANSparkMax m_RightMotor2 {kRightDriveMotor2, rev::CANSparkMax::MotorType::kBrushless};
+  // rev::CANSparkMax m_RightMotor3 {kRightDriveMotor3, rev::CANSparkMax::MotorType::kBrushless};
 
-  frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
-  frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
+  // frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
+  // frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
 
-  frc::DifferentialDrive m_Drivetrain {m_LeftMotors, m_RightMotors};
+  // frc::DifferentialDrive m_Drivetrain {m_LeftMotors, m_RightMotors};
 
   double lastDriveSpeed = 0.0;
 };

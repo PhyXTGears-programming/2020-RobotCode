@@ -15,6 +15,7 @@
   },
   "C_Cpp.default.configurationProvider": "vscode-wpilib",
   "files.associations": {
-    "chrono": "cpp"
+    "chrono": "cpp",
+    "*.inc": "cpp"
   }
 }
