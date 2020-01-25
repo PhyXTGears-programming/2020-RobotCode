@@ -19,7 +19,7 @@
 // #define backwardsStaticSpeed    0.1
 // #define forwardsStaticSpeed     -0.1
 
-#define kTurnInputConstant  0.5
+#define kTurnInputConstant  0.2
 
 Drivetrain::Drivetrain() {
     // Implementation of subsystem constructor goes here.
@@ -82,12 +82,4 @@ void Drivetrain::RadiusDrive(double speed, double radius, double dt) {
 
     m_LeftMotors.Set(leftWheelSpeed);
     m_RightMotors.Set(rightWheelSpeed);
-}
-
-double Drivetrain::ComputeWheelSpeed (double radius, double wheelDistance) {
-    if (radius > 1000) {
-        return 1;
-    }
-    // double radiusAbs = fabs(radius);
-    // return ((radius - wheelDistance) / (radiusAbs + 1)) * (radius < 0 ? -1 : 1);
 }
