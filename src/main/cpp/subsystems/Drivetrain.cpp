@@ -12,32 +12,30 @@
 
 #define kJoystickDeadzone 0.15
 
-// #define maxForwardAcceleration  0.035
-// #define maxForwardDeceleration  0.035
-// #define maxBackwardAcceleration 0.035
-// #define maxBackwardDeceleration 0.025
-// #define backwardsStaticSpeed    0.1
-// #define forwardsStaticSpeed     -0.1
-
 #define kTurnInputConstant  0.2
 
-Drivetrain::Drivetrain() {
+Drivetrain::Drivetrain () {
     // Implementation of subsystem constructor goes here.
 }
 
-void Drivetrain::Periodic() {
+void Drivetrain::Periodic () {
     // Implementation of subsystem periodic method goes here.
 }
 
-void Drivetrain::XboxDrive(frc::XboxController & xboxController, double dt) {
-    double speedFactor = defaultSpeed;
+// Given an Xbox controller object, use it to drive
+void Drivetrain::XboxDrive (frc::XboxController & xboxController, double dt) {
+    double speedFactor = defaultSpeed; // When no triggers are pulled, drive at the default speed
+
+    // Scale between default speed and max speed as the right trigger is pulled (analog)
     speedFactor += xboxController.GetTriggerAxis(frc::XboxController::kRightHand) * (maxSpeed - defaultSpeed);
+    // Same as previous line, but between default and min speed, with the left trigger
     speedFactor -= xboxController.GetTriggerAxis(frc::XboxController::kLeftHand) * (defaultSpeed - minSpeed);
 
+    // Get inputs from the controller
     double xInput = xboxController.GetX(frc::XboxController::kRightHand);
     double yInput = -xboxController.GetY(frc::XboxController::kLeftHand);
 
-    // See desmos
+    // See desmos (https://www.desmos.com/calculator/htvtwcp39g)
     double scalingConstant = 1/(1 - kJoystickDeadzone);
     xInput = (fabs(xInput) < kJoystickDeadzone) ? 0.0 : scalingConstant * (xInput + (xInput < 0 ? kJoystickDeadzone : -kJoystickDeadzone));
     yInput = (fabs(yInput) < kJoystickDeadzone) ? 0.0 : scalingConstant * (yInput + (yInput < 0 ? kJoystickDeadzone : -kJoystickDeadzone));
@@ -45,41 +43,46 @@ void Drivetrain::XboxDrive(frc::XboxController & xboxController, double dt) {
     Drive(speedFactor * yInput, xInput, dt);
 }
 
+// Calculate radius from x stick, and drive
 void Drivetrain::Drive (double yInput, double xInput, double dt) {
+    // Calculate the radius (see desmos, same link)
     double r = 1/(kTurnInputConstant * xInput) - xInput/kTurnInputConstant;
+
+    // If the input is all the way left, tell RadiusDrive that it should turn counterclockwise, instead of clockwise (as it does when the radius is +0.0)
     if (xInput == -1) {
         r = -0.0;
     }
-    std::cout << r << std::endl;
     RadiusDrive(yInput, r, dt);
 }
 
-// Given a controller object, use it to drive
+// Given a radius and speed, drive around the circle
 void Drivetrain::RadiusDrive(double speed, double radius, double dt) {
+    // Calculate the radius for each wheel
     double leftWheelRadius = radius + kHalfWheelBase;
     double rightWheelRadius = radius - kHalfWheelBase;
 
-    std::cout << leftWheelRadius << " " << rightWheelRadius << std::endl;
-
+    // Default speed is 1
     double leftWheelSpeed = 1;
     double rightWheelSpeed = 1;
 
+    // Scale the slower wheel (the inside wheel) to a proportion of the faster wheel speed (left at 1)
     if (isinf(radius)) {
-        // do nothing
+        // Do nothing, when driving straight, both wheels drive at 1
     } else if (radius > 0) {
         rightWheelSpeed = fabs(rightWheelRadius) / fabs(leftWheelRadius);
     } else if (radius < 0) {
         leftWheelSpeed = fabs(leftWheelRadius) / fabs(rightWheelRadius);
     }
 
-    leftWheelSpeed *= (signbit(leftWheelRadius) ? -1 : 1) * (signbit(radius) ? -1 : 1);
-    rightWheelSpeed *= (signbit(rightWheelRadius) ? -1 : 1) * (signbit(radius) ? -1 : 1);
+    // Correct speed signs (needs more explanation)
+    leftWheelSpeed *= std::copysign(1.0, leftWheelRadius) * std::copysign(1.0, radius);
+    rightWheelSpeed *= std::copysign(1.0, rightWheelRadius) * std::copysign(1.0, radius);
 
+    // Scale speed based on speed input
     leftWheelSpeed *= speed;
     rightWheelSpeed *= -speed;
 
-    std::cout << leftWheelSpeed << " " << rightWheelSpeed << std::endl;
-
+    // Write to motors
     m_LeftMotors.Set(leftWheelSpeed);
     m_RightMotors.Set(rightWheelSpeed);
 }
