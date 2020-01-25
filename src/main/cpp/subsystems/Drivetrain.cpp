@@ -18,8 +18,19 @@
 #define backwardsStaticSpeed    0.1
 #define forwardsStaticSpeed     -0.1
 
+#define kMotorRevolutionsPerWheelRevolution 1.0
+#define kFeetPerWheelRevolution             (5.6 * 3.141593 / 12.0)
+#define kConversionFactor                   (kFeetPerWheelRevolution / kMotorRevolutionsPerWheelRevolution)
+
 Drivetrain::Drivetrain() {
-    // Implementation of subsystem constructor goes here.
+    m_LeftEncoder.SetPositionConversionFactor(kConversionFactor);
+    m_RightEncoder.SetPositionConversionFactor(kConversionFactor);
+
+    m_LeftEncoder.SetVelocityConversionFactor(kConversionFactor);
+    m_RightEncoder.SetVelocityConversionFactor(kConversionFactor);
+
+    m_LeftEncoder.SetPosition(0.0);
+    m_RightEncoder.SetPosition(0.0);
 }
 
 void Drivetrain::Periodic() {
@@ -80,4 +91,12 @@ void Drivetrain::Drive(double dt, frc::XboxController& driver) {
     m_Drivetrain.ArcadeDrive(driveSpeed, xInput * turnFactor, true);
 
     lastDriveSpeed = driveSpeed;
+}
+
+double Drivetrain::GetLeftDistance () {
+    return m_LeftEncoder.GetPosition();
+}
+
+double Drivetrain::GetRightDistance () {
+    return m_RightEncoder.GetPosition();
 }
