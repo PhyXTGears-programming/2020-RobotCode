@@ -11,11 +11,9 @@
 class Drivetrain : public frc2::SubsystemBase {
  public:
   Drivetrain();
-
-  /**
-   * Will be called periodically whenever the CommandScheduler runs.
-   */
+  
   void Periodic() override;
+
   void XboxDrive(frc::XboxController & xboxController, double dt);
   void Drive(double yInput, double xInput, double dt);
   void RadiusDrive(double speed, double radius, double dt);
