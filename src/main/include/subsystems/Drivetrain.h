@@ -21,10 +21,6 @@ class Drivetrain : public frc2::SubsystemBase {
   void RadiusDrive(double speed, double radius, double dt);
 
  private:
-  double ComputeWheelSpeed(double radius, double wheelDistance);
-
-  // Components (e.g. motor controllers and sensors) should generally be
-  // declared private and exposed only through public methods.
   rev::CANSparkMax m_LeftMotor1 {kLeftMotor1, rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax m_LeftMotor2 {kLeftMotor2, rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax m_LeftMotor3 {kLeftMotor3, rev::CANSparkMax::MotorType::kBrushless};

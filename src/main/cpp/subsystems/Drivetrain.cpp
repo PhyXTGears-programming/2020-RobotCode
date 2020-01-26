@@ -1,8 +1,9 @@
 #include "subsystems/Drivetrain.h"
-#include "Robot.h"
 
 #include <iostream>
 #include <math.h>
+
+#include "Robot.h"
 
 #define defaultSpeed 0.6 // Default driving speed
 #define maxSpeed     1.0 // Maximum sprint speed
@@ -14,13 +15,9 @@
 
 #define kTurnInputConstant  0.2
 
-Drivetrain::Drivetrain () {
-    // Implementation of subsystem constructor goes here.
-}
+Drivetrain::Drivetrain () {}
 
-void Drivetrain::Periodic () {
-    // Implementation of subsystem periodic method goes here.
-}
+void Drivetrain::Periodic () {}
 
 // Given an Xbox controller object, use it to drive
 void Drivetrain::XboxDrive (frc::XboxController & xboxController, double dt) {
@@ -56,7 +53,7 @@ void Drivetrain::Drive (double yInput, double xInput, double dt) {
 }
 
 // Given a radius and speed, drive around the circle
-void Drivetrain::RadiusDrive(double speed, double radius, double dt) {
+void Drivetrain::RadiusDrive (double speed, double radius, double dt) {
     // Calculate the radius for each wheel
     double leftWheelRadius = radius + kHalfWheelBase;
     double rightWheelRadius = radius - kHalfWheelBase;
