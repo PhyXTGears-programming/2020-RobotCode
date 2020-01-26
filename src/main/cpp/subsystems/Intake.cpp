@@ -1,29 +1,23 @@
 #include "subsystems/Intake.h"
 
+#include <ctre/phoenix/motorcontrol/ControlMode.h>
 
-Intake::Intake() {
-    // Implementation of subsystem constructor goes here.
+Intake::Intake () {}
+
+void Intake::Periodic () {}
+
+void Intake::SetSpeed (double intakeSpeed) {
+    m_IntakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, intakeSpeed);
 }
 
-void Intake::Periodic() {
-    // Implementation of subsystem periodic method goes here.
+void Intake::IntakeStart () {
+    SetSpeed(1.0);
 }
 
-void Intake::SetSpeed(double intakeSpeed) {
-    m_IntakeMotor.Set(ControlMode::PercentOutput, intakeSpeed);
-}
-void IntakeStart(){
-    //activate intake motor
-    setSpeed(1.0);
+void Intake::IntakeStop () {
+    SetSpeed(0.0);
 }
 
-void IntakeStop(){
-    //stop intake motor
-    setSpeed(0.0);
+void Intake::IntakeReverse () {
+    SetSpeed(-0.5);
 }
-
-void IntakeReverse(){
-    //reverse intake motor and run
-    setSpeed(-0.5);
-}
-
