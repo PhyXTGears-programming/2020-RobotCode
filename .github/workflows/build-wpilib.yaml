@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: install toolchain
+    - name: Install RoboRIO Toolchain
       run: sh ./gradlew installRoboRioToolchain
-    - name: build
+    - name: Build Project
       run: sh ./gradlew build
