@@ -5,13 +5,18 @@
 
 #include "Robot.h"
 
+// See desmos for deadzone and radius math (https://www.desmos.com/calculator/htvtwcp39g)
+
 #define defaultSpeed 0.6 // Default driving speed
 #define maxSpeed     1.0 // Maximum sprint speed
 #define minSpeed     0.3 // Minimum slow speed
 
 #define kHalfWheelBase 0.953125
 
+// Deadzone math in Desmos (link at top of file)
 #define kJoystickDeadzone 0.15
+#define makeValueFullRange(deadzonedInput) 1/(1 - kJoystickDeadzone) * (xInput + (xInput < 0 ? kJoystickDeadzone : -kJoystickDeadzone))
+#define deadzone(input) ((fabs(input) < kJoystickDeadzone) ? 0.0 : makeValueFullRange(input))
 
 #define kTurnInputConstant  0.2
 
@@ -29,26 +34,24 @@ void Drivetrain::XboxDrive (frc::XboxController & xboxController, double dt) {
     speedFactor -= xboxController.GetTriggerAxis(frc::XboxController::kLeftHand) * (defaultSpeed - minSpeed);
 
     // Get inputs from the controller
-    double xInput = xboxController.GetX(frc::XboxController::kRightHand);
-    double yInput = -xboxController.GetY(frc::XboxController::kLeftHand);
-
-    // See desmos (https://www.desmos.com/calculator/htvtwcp39g)
-    double scalingConstant = 1/(1 - kJoystickDeadzone);
-    xInput = (fabs(xInput) < kJoystickDeadzone) ? 0.0 : scalingConstant * (xInput + (xInput < 0 ? kJoystickDeadzone : -kJoystickDeadzone));
-    yInput = (fabs(yInput) < kJoystickDeadzone) ? 0.0 : scalingConstant * (yInput + (yInput < 0 ? kJoystickDeadzone : -kJoystickDeadzone));
+    double xInput = deadzone(xboxController.GetX(frc::XboxController::kRightHand));
+    double yInput = -deadzone(xboxController.GetY(frc::XboxController::kLeftHand));
     
     Drive(speedFactor * yInput, xInput, dt);
 }
 
 // Calculate radius from x stick, and drive
 void Drivetrain::Drive (double yInput, double xInput, double dt) {
-    // Calculate the radius (see desmos, same link)
+    // Radius math in Desmos (link at top of file)
     double r = 1/(kTurnInputConstant * xInput) - xInput/kTurnInputConstant;
 
-    // If the input is all the way left, tell RadiusDrive that it should turn counterclockwise, instead of clockwise (as it does when the radius is +0.0)
+    // When the radius is 0, RadiusDrive turns the robot clockwise by default
+    // When the x stick is all the way left, the radius is 0, but the robot should turn counterclockwise
+    // By setting the radius to -0, it will turn counterclockwise
     if (xInput == -1) {
         r = -0.0;
     }
+
     RadiusDrive(yInput, r, dt);
 }
 
@@ -62,12 +65,18 @@ void Drivetrain::RadiusDrive (double speed, double radius, double dt) {
     double leftWheelSpeed = 1;
     double rightWheelSpeed = 1;
 
-    // Scale the slower wheel (the inside wheel) to a proportion of the faster wheel speed (left at 1)
+    /* 
+     * Scale the slower wheel (the inside wheel) to a proportion of the faster wheel speed (left at 1)
+     * Because both circles need to be traveled by their corresponding wheel in the same amount of time, speed is calculated as:
+     * (smaller circumference / larger circumference) * faster wheel speed
+     * where faster wheel speed is always 1
+     * Since circumference is proportional to radius, radius is used instead
+     */
     if (isinf(radius)) {
         // Do nothing, when driving straight, both wheels drive at 1
-    } else if (radius > 0) {
+    } else if (radius > 0) { // Right wheel has smaller radius and goes slower
         rightWheelSpeed = fabs(rightWheelRadius) / fabs(leftWheelRadius);
-    } else if (radius < 0) {
+    } else if (radius < 0) { // Left wheel has smaller radius and goes slower
         leftWheelSpeed = fabs(leftWheelRadius) / fabs(rightWheelRadius);
     }
 
@@ -77,7 +86,7 @@ void Drivetrain::RadiusDrive (double speed, double radius, double dt) {
 
     // Scale speed based on speed input
     leftWheelSpeed *= speed;
-    rightWheelSpeed *= -speed;
+    rightWheelSpeed *= -speed; // Negative because right wheels are mounted backwards (one side is always backwards)
 
     // Write to motors
     m_LeftMotors.Set(leftWheelSpeed);
