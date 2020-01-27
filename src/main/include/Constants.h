@@ -74,10 +74,13 @@
 #define AIR_6 6
 #define AIR_7 7
 
-// CAN IDs for CAN Bus Spark Maxes.
+// CAN IDs for drivetrain Spark MAXes
 #define kRightMotor1 CAN_4
 #define kRightMotor2 CAN_5
 #define kRightMotor3 CAN_6
 #define kLeftMotor3  CAN_1
 #define kLeftMotor1  CAN_2
 #define kLeftMotor2  CAN_3
+
+// CAN ID for intake Talon SRX
+#define kIntakeMotor CAN_0 // Needs to be set to the right CAN id
