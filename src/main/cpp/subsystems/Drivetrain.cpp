@@ -15,7 +15,7 @@
 
 // Deadzone math in Desmos (link at top of file)
 #define kJoystickDeadzone 0.15
-#define makeValueFullRange(deadzonedInput) 1/(1 - kJoystickDeadzone) * (xInput + (xInput < 0 ? kJoystickDeadzone : -kJoystickDeadzone))
+#define makeValueFullRange(deadzonedInput) (1/(1 - kJoystickDeadzone) * (deadzonedInput - std::copysign(kJoystickDeadzone, deadzonedInput)))
 #define deadzone(input) ((fabs(input) < kJoystickDeadzone) ? 0.0 : makeValueFullRange(input))
 
 #define kTurnInputConstant  0.2
