@@ -25,7 +25,7 @@ Drivetrain::Drivetrain () {}
 void Drivetrain::Periodic () {}
 
 // Given an Xbox controller object, use it to drive
-void Drivetrain::XboxDrive (frc::XboxController & xboxController, double dt) {
+void Drivetrain::XboxDrive (frc::XboxController & xboxController) {
     double speedFactor = defaultSpeed; // When no triggers are pulled, drive at the default speed
 
     // Scale between default speed and max speed as the right trigger is pulled (analog)
@@ -37,11 +37,11 @@ void Drivetrain::XboxDrive (frc::XboxController & xboxController, double dt) {
     double xInput = deadzone(xboxController.GetX(frc::XboxController::kRightHand));
     double yInput = -deadzone(xboxController.GetY(frc::XboxController::kLeftHand));
     
-    Drive(speedFactor * yInput, xInput, dt);
+    Drive(speedFactor * yInput, xInput);
 }
 
 // Calculate radius from x stick, and drive
-void Drivetrain::Drive (double yInput, double xInput, double dt) {
+void Drivetrain::Drive (double yInput, double xInput) {
     // Radius math in Desmos (link at top of file)
     double r = 1/(kTurnInputConstant * xInput) - xInput/kTurnInputConstant;
 
@@ -52,11 +52,11 @@ void Drivetrain::Drive (double yInput, double xInput, double dt) {
         r = -0.0;
     }
 
-    RadiusDrive(yInput, r, dt);
+    RadiusDrive(yInput, r);
 }
 
 // Given a radius and speed, drive around the circle
-void Drivetrain::RadiusDrive (double speed, double radius, double dt) {
+void Drivetrain::RadiusDrive (double speed, double radius) {
     // Calculate the radius for each wheel
     double leftWheelRadius = radius + kHalfWheelBase;
     double rightWheelRadius = radius - kHalfWheelBase;

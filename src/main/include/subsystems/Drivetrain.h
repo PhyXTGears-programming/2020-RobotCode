@@ -14,9 +14,9 @@ class Drivetrain : public frc2::SubsystemBase {
         
         void Periodic() override;
 
-        void XboxDrive(frc::XboxController & xboxController, double dt);
-        void Drive(double yInput, double xInput, double dt);
-        void RadiusDrive(double speed, double radius, double dt);
+        void XboxDrive(frc::XboxController & xboxController);
+        void Drive(double yInput, double xInput);
+        void RadiusDrive(double speed, double radius);
 
     private:
         rev::CANSparkMax m_LeftMotor1 {kLeftMotor1, rev::CANSparkMax::MotorType::kBrushless};
