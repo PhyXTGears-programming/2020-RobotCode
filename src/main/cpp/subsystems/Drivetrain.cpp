@@ -80,7 +80,7 @@ void Drivetrain::RadiusDrive (double speed, double radius) {
         leftWheelSpeed = fabs(leftWheelRadius) / fabs(rightWheelRadius);
     }
 
-    // Correct speed signs (needs more explanation)
+    // Make one wheel reverse when radius is inside the wheelbase
     leftWheelSpeed *= std::copysign(1.0, leftWheelRadius) * std::copysign(1.0, radius);
     rightWheelSpeed *= std::copysign(1.0, rightWheelRadius) * std::copysign(1.0, radius);
 
