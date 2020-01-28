@@ -24,7 +24,7 @@ void Robot::RobotPeriodic() {
   // Update rate (for logging)
   static int c = 0;
   if (c >= 50) {
-    std::cout << "Update Rate: " << roundf(1/m_DeltaTime) << " Hz" << std::endl;
+    //std::cout << "Update Rate: " << roundf(1/m_DeltaTime) << " Hz" << std::endl;
     c = 0;
   }
   c++;

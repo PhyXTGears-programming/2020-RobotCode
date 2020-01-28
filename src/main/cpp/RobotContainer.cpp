@@ -21,8 +21,9 @@ void RobotContainer::DrivetrainTest (double dt) {
   m_drivetrain.Drive(dt, m_driverJoystick);
 }
 
-double c = 3400;
+double c = 4500;
 void RobotContainer::ShooterTest () {
+
   if (m_driverJoystick.GetXButtonPressed()) {
     c -= 10;
     std::cout << c << std::endl;
@@ -32,8 +33,9 @@ void RobotContainer::ShooterTest () {
     std::cout << c << std::endl;
   }
   if (m_driverJoystick.GetAButton()) {
-    m_Shooter.SetShooterMotorSpeeds(c * 0.6, -c);
+    m_Shooter.SetShooterMotorSpeeds(-c, c);
   } else {
     m_Shooter.SetShooterMotorSpeeds(0, 0);
   }
 }
+

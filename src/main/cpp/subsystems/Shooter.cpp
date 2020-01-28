@@ -9,8 +9,8 @@
 
 Shooter::Shooter () {
     // Implementation of subsystem constructor goes here.
-    SetPID(m_ShooterMotor1PID, 0.00115, 0.0, 0.05);
-    SetPID(m_ShooterMotor2PID, 0.00120, 0.0, 0.05);
+    SetPID(m_ShooterMotor1PID, 0.00030, 0.0, 0.05);
+    SetPID(m_ShooterMotor2PID, 0.00030, 0.0, 0.05);
 }
      
 void Shooter::Periodic () {
@@ -19,6 +19,13 @@ void Shooter::Periodic () {
 
 void Shooter::SetShooterMotorSpeeds (double speed1, double speed2) {
     // std::cout << "Shooter speeds: " << speed1 << " " << speed2 << std::endl;
+    static double deltaTime = 0;
+    static hal::fpga_clock::time_point now, timePrev, startTime = hal::fpga_clock::now();
+
+    now = hal::fpga_clock::now();
+    deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - startTime).count() / 1000000.0;
+    timePrev = now;
+    std::cout << deltaTime << ", " << -m_ShooterMotor1Encoder.GetVelocity() << ", " << -m_ShooterMotor1Encoder.GetVelocity() << std::endl;
 
     if (speed1 == 0) {
         if (m_ShooterMotor1Encoder.GetVelocity() > 100) {
