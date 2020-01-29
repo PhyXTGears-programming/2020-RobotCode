@@ -15,7 +15,6 @@ class Drivetrain : public frc2::SubsystemBase {
         
         void Periodic() override;
 
-        void XboxDrive(frc::XboxController & xboxController);
         void Drive(double yInput, double xInput);
         void RadiusDrive(double speed, double radius);
 
