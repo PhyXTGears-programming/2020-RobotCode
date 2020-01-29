@@ -1,22 +1,10 @@
 #include "subsystems/Drivetrain.h"
 
-#include <iostream>
 #include <math.h>
 
 #include "Robot.h"
 
-// See desmos for deadzone and radius math (https://www.desmos.com/calculator/htvtwcp39g)
-
-#define defaultSpeed 0.6 // Default driving speed
-#define maxSpeed     1.0 // Maximum sprint speed
-#define minSpeed     0.3 // Minimum slow speed
-
 #define kHalfWheelBase 0.953125
-
-// Deadzone math in Desmos (link at top of file)
-#define kJoystickDeadzone 0.15
-#define makeValueFullRange(deadzonedInput) (1/(1 - kJoystickDeadzone) * (deadzonedInput - std::copysign(kJoystickDeadzone, deadzonedInput)))
-#define deadzone(input) ((fabs(input) < kJoystickDeadzone) ? 0.0 : makeValueFullRange(input))
 
 #define kTurnInputConstant  0.2
 
@@ -24,25 +12,9 @@ Drivetrain::Drivetrain () {}
 
 void Drivetrain::Periodic () {}
 
-// Given an Xbox controller object, use it to drive
-void Drivetrain::XboxDrive (frc::XboxController & xboxController) {
-    double speedFactor = defaultSpeed; // When no triggers are pulled, drive at the default speed
-
-    // Scale between default speed and max speed as the right trigger is pulled (analog)
-    speedFactor += xboxController.GetTriggerAxis(frc::XboxController::kRightHand) * (maxSpeed - defaultSpeed);
-    // Same as previous line, but between default and min speed, with the left trigger
-    speedFactor -= xboxController.GetTriggerAxis(frc::XboxController::kLeftHand) * (defaultSpeed - minSpeed);
-
-    // Get inputs from the controller
-    double xInput = deadzone(xboxController.GetX(frc::XboxController::kRightHand));
-    double yInput = -deadzone(xboxController.GetY(frc::XboxController::kLeftHand));
-    
-    Drive(speedFactor * yInput, xInput);
-}
-
 // Calculate radius from x stick, and drive
 void Drivetrain::Drive (double yInput, double xInput) {
-    // Radius math in Desmos (link at top of file)
+    // Radius math in Desmos (https://www.desmos.com/calculator/htvtwcp39g)
     double r = 1/(kTurnInputConstant * xInput) - xInput/kTurnInputConstant;
 
     // When the radius is 0, RadiusDrive turns the robot clockwise by default
