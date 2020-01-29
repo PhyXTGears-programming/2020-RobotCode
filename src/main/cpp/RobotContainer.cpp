@@ -1,7 +1,10 @@
 #include "RobotContainer.h"
 
-RobotContainer::RobotContainer() : m_autonomousCommand(&m_drivetrain) {
-  // Initialize all of your commands and subsystems here
+#include <frc2/command/CommandScheduler.h>
+
+RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
+  // Initialize all of your commands and subsystems here]
+  frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
 
   // Configure the button bindings
   ConfigureButtonBindings();
@@ -13,10 +16,5 @@ void RobotContainer::ConfigureButtonBindings() {
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
   // An example command will be run in autonomous
-  return &m_autonomousCommand;
-}
-
-// Quick drivetrain testing code :D
-void RobotContainer::DrivetrainTest(double dt) {
-  m_drivetrain.Drive(dt, m_driverJoystick);
+  return &m_AutonomousCommand;
 }

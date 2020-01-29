@@ -54,9 +54,7 @@ void Robot::TeleopInit() {
   }
 }
 
-void Robot::TeleopPeriodic() {
-  m_container.DrivetrainTest(m_DeltaTime);
-}
+void Robot::TeleopPeriodic() {}
 
 // Currently unused but we're keeping them defined.
 void Robot::TestPeriodic() {}
