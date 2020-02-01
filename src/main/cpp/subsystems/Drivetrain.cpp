@@ -69,6 +69,8 @@ void Drivetrain::Drive (double yInput, double xInput) {
 
 // Given a radius and speed, drive around the circle
 void Drivetrain::RadiusDrive (double speed, double radius) {
+    radius *= -1;
+    
     // Calculate the radius for each wheel
     double leftWheelRadius = radius + kHalfWheelBase;
     double rightWheelRadius = radius - kHalfWheelBase;
@@ -97,8 +99,8 @@ void Drivetrain::RadiusDrive (double speed, double radius) {
     rightWheelSpeed *= std::copysign(1.0, rightWheelRadius) * std::copysign(1.0, radius);
 
     // Scale speed based on speed input
-    leftWheelSpeed *= speed;
-    rightWheelSpeed *= -speed; // Negative because right wheels are mounted backwards (one side is always backwards)
+    leftWheelSpeed *= -speed; // Negative because right wheels are mounted backwards (one side is always backwards)
+    rightWheelSpeed *= speed;
 
     // Write to motors
     m_LeftMotors.Set(leftWheelSpeed);
