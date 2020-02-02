@@ -9,16 +9,12 @@
 
 #include "Constants.h"
 #include "OdometryHelper.h"
-
-enum class WheelSide {
-    leftWheels,
-    rightWheels
-};
+#include "WheelSide.h"
 
 class Drivetrain : public frc2::SubsystemBase {
     public:
         Drivetrain();
-        
+
         void Periodic() override;
 
         void Drive(double yInput, double xInput);
