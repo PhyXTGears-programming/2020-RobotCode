@@ -9,47 +9,13 @@
 
 #define kTurnInputConstant  0.2
 
-#define kHalfWheelBase 0.953125
-
-#define kTurnInputConstant  0.2
-
-constexpr auto kWheelDiameter = 5.875_in;
+constexpr units::length::inch_t kHalfWheelBase{(23.0 + 7.0/8.0) / 2.0};
 constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
-constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
 
-#define leftSideAngularPosition()  units::angle::radian_t(m_LeftEncoder.GetPosition())
-#define rightSideAngularPosition() units::angle::radian_t(m_RightEncoder.GetPosition())
-
-#define leftSidePosition()  leftSideAngularPosition() * kDistancePerWheelRadian
-#define rightSidePosition() rightSideAngularPosition() * kDistancePerWheelRadian
-
-#define leftSideAngularVelocity()  units::angular_velocity::radians_per_second_t(m_LeftEncoder.GetVelocity())
-#define rightSideAngularVelocity() units::angular_velocity::radians_per_second_t(m_RightEncoder.GetVelocity())
-
-#define leftSideVelocity()  leftSideAngularVelocity() * kDistancePerWheelRadian
-#define rightSideVelocity() rightSideAngularVelocity() * kDistancePerWheelRadian
-
-Drivetrain::Drivetrain () {
-    // Position in wheel angular displacement (rad)
-    m_LeftEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
-    m_RightEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
-
-    // Velocity in wheel angular velocity (rad/s)
-    m_LeftEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
-    m_RightEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
-
-    // Initial Position is 0
-    m_LeftEncoder.SetPosition(0.0);
-    m_RightEncoder.SetPosition(0.0);
-
-    frc::Rotation2d gyroAngle {units::angle::degree_t(-1.0)}; // replace with gyro angle
-    frc::Pose2d robotInitialPostion {1_ft, 1_ft, 1_rad}; // replace with robot inital coordinates and angle
-    m_Odometry = new frc::DifferentialDriveOdometry(gyroAngle, robotInitialPostion);
-}
+Drivetrain::Drivetrain () {}
 
 void Drivetrain::Periodic () {
-    frc::Rotation2d gyroAngle {units::angle::degree_t(-1.0)}; // replace with gyro angle
-    m_Odometry->Update(gyroAngle, leftSidePosition(), rightSidePosition());
+    // m_OdometryHelper.Update();
 }
 
 // Calculate radius from x stick, and drive
@@ -64,16 +30,19 @@ void Drivetrain::Drive (double yInput, double xInput) {
         r = -0.0;
     }
 
-    RadiusDrive(yInput, r);
+    RadiusDrive(yInput, units::length::foot_t(r));
 }
 
 // Given a radius and speed, drive around the circle
-void Drivetrain::RadiusDrive (double speed, double radius) {
+template<typename LengthUnit>
+void Drivetrain::RadiusDrive (double speed, LengthUnit radius) {
+    static_assert(units::traits::is_length_unit<LengthUnit>::value, "Input value radius must represent a length quantity.");
+
     radius *= -1;
-    
+
     // Calculate the radius for each wheel
-    double leftWheelRadius = radius + kHalfWheelBase;
-    double rightWheelRadius = radius - kHalfWheelBase;
+    LengthUnit leftWheelRadius = radius + kHalfWheelBase;
+    LengthUnit rightWheelRadius = radius - kHalfWheelBase;
 
     // Default speed is 1
     double leftWheelSpeed = 1;
@@ -86,17 +55,17 @@ void Drivetrain::RadiusDrive (double speed, double radius) {
      * where faster wheel speed is always 1
      * Since circumference is proportional to radius, radius is used instead
      */
-    if (isinf(radius)) {
+    if (isinf(units::unit_cast<double>(radius))) {
         // Do nothing, when driving straight, both wheels drive at 1
-    } else if (radius > 0) { // Right wheel has smaller radius and goes slower
-        rightWheelSpeed = fabs(rightWheelRadius) / fabs(leftWheelRadius);
-    } else if (radius < 0) { // Left wheel has smaller radius and goes slower
-        leftWheelSpeed = fabs(leftWheelRadius) / fabs(rightWheelRadius);
+    } else if (radius > units::length::foot_t(0)) { // Right wheel has smaller radius and goes slower
+        rightWheelSpeed = units::math::fabs(rightWheelRadius) / units::math::fabs(leftWheelRadius);
+    } else if (radius < units::length::foot_t(0)) { // Left wheel has smaller radius and goes slower
+        leftWheelSpeed = units::math::fabs(leftWheelRadius) / units::math::fabs(rightWheelRadius);
     }
 
     // Make one wheel reverse when radius is inside the wheelbase
-    leftWheelSpeed *= std::copysign(1.0, leftWheelRadius) * std::copysign(1.0, radius);
-    rightWheelSpeed *= std::copysign(1.0, rightWheelRadius) * std::copysign(1.0, radius);
+    leftWheelSpeed *= std::copysign(1.0, units::unit_cast<double>(leftWheelRadius) * std::copysign(1.0, units::unit_cast<double>(radius)));
+    rightWheelSpeed *= std::copysign(1.0, units::unit_cast<double>(rightWheelRadius) * std::copysign(1.0, units::unit_cast<double>(radius)));
 
     // Scale speed based on speed input
     leftWheelSpeed *= -speed; // Negative because right wheels are mounted backwards (one side is always backwards)
