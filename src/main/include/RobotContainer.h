@@ -3,9 +3,10 @@
 #include <frc2/command/Command.h>
 #include <frc/XboxController.h>
 
-#include "commands/AutonomousCommand.h"
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Shooter.h"
+#include "commands/AutonomousCommand.h"
+#include "commands/TeleopDriveCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -20,18 +21,18 @@ class RobotContainer {
 
   frc2::Command* GetAutonomousCommand();
 
-  void DrivetrainTest(double dt);
   void ShooterTest();
 
  private:
   // Operators' input devices.
   // These are 0 indexed!
-  frc::XboxController m_driverJoystick{0};
+  frc::XboxController m_DriverJoystick{0};
 
   // The robot's subsystems and commands are defined here...
-  Drivetrain m_drivetrain{};
+  Drivetrain m_Drivetrain;
   Shooter m_Shooter{};
-  AutonomousCommand m_autonomousCommand;
+  AutonomousCommand m_AutonomousCommand;
+  TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
 
   void ConfigureButtonBindings();
 };

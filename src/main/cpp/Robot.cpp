@@ -55,7 +55,6 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  m_container.DrivetrainTest(m_DeltaTime);
   m_container.ShooterTest();
 }
 

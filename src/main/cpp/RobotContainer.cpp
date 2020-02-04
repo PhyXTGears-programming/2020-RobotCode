@@ -1,7 +1,10 @@
 #include "RobotContainer.h"
 
-RobotContainer::RobotContainer () : m_autonomousCommand(&m_drivetrain) {
-  // Initialize all of your commands and subsystems here
+#include <frc2/command/CommandScheduler.h>
+
+RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
+  // Initialize all of your commands and subsystems here]
+  frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
 
   // Configure the button bindings
   ConfigureButtonBindings();
@@ -11,28 +14,22 @@ void RobotContainer::ConfigureButtonBindings () {
   // Configure your button bindings here
 }
 
-frc2::Command* RobotContainer::GetAutonomousCommand () {
-  // An example command will be run in autonomous 
-  return &m_autonomousCommand;
-}
-
-// Quick drivetrain testing code :D
-void RobotContainer::DrivetrainTest (double dt) {
-  m_drivetrain.Drive(dt, m_driverJoystick);
+frc2::Command* RobotContainer::GetAutonomousCommand() {
+  // An example command will be run in autonomous
+  return &m_AutonomousCommand;
 }
 
 double c = 4500;
 void RobotContainer::ShooterTest () {
-
-  if (m_driverJoystick.GetXButtonPressed()) {
+  if (m_DriverJoystick.GetXButtonPressed()) {
     c -= 10;
     std::cout << c << std::endl;
   }
-  if (m_driverJoystick.GetBButtonPressed()) {
+  if (m_DriverJoystick.GetBButtonPressed()) {
     c += 10;
     std::cout << c << std::endl;
   }
-  if (m_driverJoystick.GetAButton()) {
+  if (m_DriverJoystick.GetAButton()) {
     m_Shooter.SetShooterMotorSpeeds(-c, c);
   } else {
     m_Shooter.SetShooterMotorSpeeds(0, 0);

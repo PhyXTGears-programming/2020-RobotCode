@@ -12,8 +12,7 @@
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class AutonomousCommand
-    : public frc2::CommandHelper<frc2::CommandBase, AutonomousCommand> {
+class AutonomousCommand : public frc2::CommandHelper<frc2::CommandBase, AutonomousCommand> {
  public:
   /**
    * Creates a new ExampleCommand.
