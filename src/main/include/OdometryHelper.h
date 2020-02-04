@@ -3,10 +3,13 @@
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <rev/CANSparkMax.h>
 
-#include "WheelSide.h"
-
 constexpr auto kWheelDiameter = 5.875_in;
 constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
+
+enum class WheelSide {
+    leftWheels,
+    rightWheels
+};
 
 class OdometryHelper {
     public:
