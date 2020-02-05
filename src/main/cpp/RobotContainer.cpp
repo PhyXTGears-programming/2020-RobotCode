@@ -1,6 +1,7 @@
 #include "RobotContainer.h"
 
 #include <frc2/command/CommandScheduler.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
   // Initialize all of your commands and subsystems here]
@@ -19,14 +20,14 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
   return &m_AutonomousCommand;
 }
 
-double c = 4500;
+double c = 3200;
 void RobotContainer::ShooterTest () {
   if (m_DriverJoystick.GetXButtonPressed()) {
-    c -= 10;
+    c -= 100;
     std::cout << c << std::endl;
   }
   if (m_DriverJoystick.GetBButtonPressed()) {
-    c += 10;
+    c += 100;
     std::cout << c << std::endl;
   }
   if (m_DriverJoystick.GetAButton()) {
@@ -35,4 +36,3 @@ void RobotContainer::ShooterTest () {
     m_Shooter.SetShooterMotorSpeeds(0, 0);
   }
 }
-

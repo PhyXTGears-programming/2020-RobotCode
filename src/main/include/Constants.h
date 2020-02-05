@@ -85,5 +85,5 @@
 // CAN ID for intake Talon SRX
 #define kIntakeMotor CAN_0 // Needs to be set to the right CAN id
 
-#define kShooterMotor2 CAN_7
-#define kShooterMotor1 CAN_8
+#define kShooterMotor1 CAN_9
+#define kShooterMotor2 CAN_10
