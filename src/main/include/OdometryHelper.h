@@ -17,17 +17,18 @@ class OdometryHelper {
 
         void Update();
 
-        // inline units::angle::radian_t GetAngularPosition (WheelSide side) {
-        //     return units::angle::radian_t(GetEncoder(side)->GetPosition());
-        // }
-        // inline units::angular_velocity::radians_per_second_t GetAngularVelocity (WheelSide side) {
-        //     return units::angular_velocity::radians_per_second_t(GetEncoder(side)->GetVelocity());
-        // }
+        inline units::angle::radian_t GetAngularPosition (WheelSide side) {
+            return units::angle::radian_t(GetEncoder(side)->GetPosition());
+        }
+        inline units::angular_velocity::radians_per_second_t GetAngularVelocity (WheelSide side) {
+            return units::angular_velocity::radians_per_second_t(GetEncoder(side)->GetVelocity());
+        }
 
-        // inline units::length::foot_t GetLinearPosition (WheelSide side) { return kDistancePerWheelRadian * GetAngularPosition(side); }
-        // inline units::velocity::meters_per_second_t GetLinearVelocity (WheelSide side) { return kDistancePerWheelRadian * GetAngularVelocity(side); }
+        inline units::length::foot_t GetLinearPosition (WheelSide side) { return kDistancePerWheelRadian * GetAngularPosition(side); }
+        inline units::velocity::meters_per_second_t GetLinearVelocity (WheelSide side) { return kDistancePerWheelRadian * GetAngularVelocity(side); }
 
-        frc::Rotation2d GetGyroAngle();
+        frc::Pose2d GetRobotPose();
+        frc::Rotation2d GetRobotAngle();
 
     private:
         rev::CANEncoder* GetEncoder(WheelSide side);
