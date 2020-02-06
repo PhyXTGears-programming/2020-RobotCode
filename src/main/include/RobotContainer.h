@@ -7,6 +7,7 @@
 #include "subsystems/Shooter.h"
 #include "commands/AutonomousCommand.h"
 #include "commands/TeleopDriveCommand.h"
+#include "commands/VisionAimingCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -22,6 +23,7 @@ class RobotContainer {
   frc2::Command* GetAutonomousCommand();
 
   void ShooterTest();
+  void PollInput();
 
  private:
   // Operators' input devices.
@@ -30,8 +32,9 @@ class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain;
-  Shooter m_Shooter{};
-  AutonomousCommand m_AutonomousCommand;
+  Shooter m_Shooter {};
+  AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
+  VisionAimingCommand m_VisionAimingCommand {&m_Drivetrain};
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
 
   void ConfigureButtonBindings();

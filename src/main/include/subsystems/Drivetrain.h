@@ -7,6 +7,7 @@
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/SpeedControllerGroup.h>
 #include <frc/XboxController.h>
+#include <frc/kinematics/DifferentialDriveOdometry.h>
 
 class Drivetrain : public frc2::SubsystemBase {
     public:
@@ -27,4 +28,9 @@ class Drivetrain : public frc2::SubsystemBase {
 
         frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
         frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
+
+        rev::CANEncoder m_LeftEncoder {m_LeftMotor1};
+        rev::CANEncoder m_RightEncoder {m_RightMotor1};
+
+        frc::DifferentialDriveOdometry* m_Odometry;
 };
