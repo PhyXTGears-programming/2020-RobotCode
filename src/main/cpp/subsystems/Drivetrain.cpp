@@ -15,7 +15,7 @@ constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Enco
 Drivetrain::Drivetrain () {}
 
 void Drivetrain::Periodic () {
-    // m_OdometryHelper.Update();
+    m_OdometryHelper.Update();
 }
 
 // Calculate radius from x stick, and drive

@@ -3,7 +3,7 @@
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <rev/CANSparkMax.h>
 
-constexpr auto kWheelDiameter = 5.875_in;
+constexpr auto kWheelDiameter = 5.75_in;
 constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
 
 enum class WheelSide {
@@ -17,11 +17,13 @@ class OdometryHelper {
 
         void Update();
 
+        inline int GetEncoderSign (WheelSide side) { return (side == WheelSide::leftWheels) * -2 + 1; }
+
         inline units::angle::radian_t GetAngularPosition (WheelSide side) {
-            return units::angle::radian_t(GetEncoder(side)->GetPosition());
+            return GetEncoderSign(side) * units::angle::radian_t(GetEncoder(side)->GetPosition());
         }
         inline units::angular_velocity::radians_per_second_t GetAngularVelocity (WheelSide side) {
-            return units::angular_velocity::radians_per_second_t(GetEncoder(side)->GetVelocity());
+            return GetEncoderSign(side) * units::angular_velocity::radians_per_second_t(GetEncoder(side)->GetVelocity());
         }
 
         inline units::length::foot_t GetLinearPosition (WheelSide side) { return kDistancePerWheelRadian * GetAngularPosition(side); }

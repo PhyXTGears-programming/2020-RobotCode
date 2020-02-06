@@ -32,13 +32,17 @@ OdometryHelper::OdometryHelper (rev::CANEncoder* leftEncoder, rev::CANEncoder* r
     m_Odometry = new frc::DifferentialDriveOdometry(GetRobotAngle(), robotInitialPostion);
 }
 
+int c = 0;
 void OdometryHelper::Update () {
-    std::cout << "Angular Position: " << GetAngularPosition(WheelSide::leftWheels) << " " << GetAngularPosition(WheelSide::rightWheels) << std::endl;
-    std::cout << "Angular Velocity: " << GetAngularVelocity(WheelSide::leftWheels) << " " << GetAngularVelocity(WheelSide::rightWheels) << std::endl;
-    std::cout << "Linear Position: " << GetLinearPosition(WheelSide::leftWheels) << " " << GetLinearPosition(WheelSide::rightWheels) << std::endl;
-    std::cout << "Linear Velocity: " << GetLinearVelocity(WheelSide::leftWheels) << " " << GetLinearVelocity(WheelSide::rightWheels) << std::endl;
-    std::cout << "Angle: " << GetRobotAngle().Degrees() << std::endl;
+    if (c % 50 == 0) {
+        std::cout << "Angular Position: " << GetAngularPosition(WheelSide::leftWheels) << " " << GetAngularPosition(WheelSide::rightWheels) << std::endl;
+        std::cout << "Angular Velocity: " << GetAngularVelocity(WheelSide::leftWheels) << " " << GetAngularVelocity(WheelSide::rightWheels) << std::endl;
+        std::cout << "Linear Position: " << GetLinearPosition(WheelSide::leftWheels) << " " << GetLinearPosition(WheelSide::rightWheels) << std::endl;
+        std::cout << "Linear Velocity: " << GetLinearVelocity(WheelSide::leftWheels) << " " << GetLinearVelocity(WheelSide::rightWheels) << std::endl;
+        std::cout << "Angle: " << GetRobotAngle().Degrees() << std::endl;
+    }
     m_Odometry->Update(GetRobotAngle(), GetLinearPosition(WheelSide::leftWheels), GetLinearPosition(WheelSide::rightWheels));
+    c++;
 }
 
 // GetRobotPose
