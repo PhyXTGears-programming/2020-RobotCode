@@ -87,3 +87,5 @@
 
 #define kShooterMotor1 CAN_9
 #define kShooterMotor2 CAN_10
+
+#define kTurretMotor CAN_11

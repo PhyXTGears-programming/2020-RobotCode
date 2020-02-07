@@ -6,6 +6,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/PrintCommand.h>
+#include <units/units.h>
 
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
     // Initialize all of your commands and subsystems here]
@@ -37,8 +38,7 @@ void RobotContainer::ShooterTest () {
         std::cout << c << std::endl;
     }
     if (m_DriverJoystick.GetAButton()) {
-        m_Shooter.SetShooterMotorSpeeds(-c, c);
-    } else {
+        m_Shooter.SetShooterMotorSpeeds(-c, c);               
         m_Shooter.SetShooterMotorSpeeds(0, 0);
     }
 }
@@ -50,5 +50,11 @@ void RobotContainer::PollInput () {
         m_VisionAimingCommand.Schedule();
     } else if (m_DriverJoystick.GetRawButtonReleased(1)) {
         m_VisionAimingCommand.Cancel();
+    }
+
+    double operatorXInput = m_OperatorJoystick.GetX(frc::XboxController::kLeftHand);
+    if (fabs(operatorXInput) > 0.07) {
+        units::angular_velocity::revolutions_per_minute_t turretSpeed {operatorXInput * 20};
+        m_Shooter.SetTurretSpeed(turretSpeed);
     }
 }

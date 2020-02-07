@@ -14,6 +14,9 @@ double I = 0;
 double D = 0.1;
 double F = 0.00018;
 
+#define kGearRatio (20.0 / 3.0)
+#define kMotorRPMtoEncoderVelocity (4096 / 60.0 / 10.0) // encoder velocity is measured in ticks per 100 ms
+
 Shooter::Shooter () {
     // Implementation of subsystem constructor goes here.
     SetPIDF(m_ShooterMotor1PID, P, I, D, F);
@@ -25,8 +28,11 @@ Shooter::Shooter () {
     frc::SmartDashboard::PutNumber("Shooter Motor F", F);
     frc::SmartDashboard::PutNumber("Shooter Motor P", P);
     frc::SmartDashboard::PutNumber("Shooter Motor D", D);
+
+    ctre::phoenix::motorcontrol::can::TalonSRXPIDSetConfiguration turretMotorPIDConfig {ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Relative};
+    m_TurretMotor.ConfigurePID(turretMotorPIDConfig);
 }
-     
+
 void Shooter::Periodic () {
     // Implementation of subsystem periodic method goes here.
 
@@ -52,4 +58,11 @@ void Shooter::SetShooterMotorSpeeds (double speed1, double speed2) {
 
     frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1Encoder.GetVelocity());
     frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity());
+}
+
+void Shooter::SetTurretSpeed (units::angular_velocity::radians_per_second_t speed) {
+    units::angular_velocity::revolutions_per_minute_t rpm {speed};
+    double motorSpeed = kGearRatio * kMotorRPMtoEncoderVelocity * units::unit_cast<double>(rpm); // in encoder ticks per 100 ms
+    
+    m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
