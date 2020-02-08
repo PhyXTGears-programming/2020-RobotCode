@@ -46,15 +46,9 @@ void RobotContainer::ShooterTest () {
 void RobotContainer::PollInput () {
     // This works, but JoystickButton does not.
 
-    if (m_DriverJoystick.GetRawButtonPressed(1)) {
-        m_VisionAimingCommand.Schedule();
-    } else if (m_DriverJoystick.GetRawButtonReleased(1)) {
-        m_VisionAimingCommand.Cancel();
-    }
-
-    double operatorXInput = m_OperatorJoystick.GetX(frc::XboxController::kLeftHand);
-    if (fabs(operatorXInput) > 0.07) {
-        units::angular_velocity::revolutions_per_minute_t turretSpeed {operatorXInput * 20};
-        m_Shooter.SetTurretSpeed(turretSpeed);
+    if (m_OperatorJoystick.GetAButtonPressed()) {
+        m_Shooter.SetTracking(true);
+    } else if (m_OperatorJoystick.GetAButtonReleased()) {
+        m_Shooter.SetTracking(false);
     }
 }

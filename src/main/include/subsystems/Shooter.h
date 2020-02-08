@@ -15,16 +15,24 @@ class Shooter : public frc2::SubsystemBase {
 
         void SetShooterMotorSpeeds(double leftSpeed, double rightSpeed);
 
-        void SetTurretSpeed(units::angular_velocity::radians_per_second_t speed);
+        inline void SetTracking (bool enabled) { m_TrackingActive = enabled; }
+        inline bool GetTracking () { return m_TrackingActive; } 
 
     private:
+        void SetTurretSpeed(units::angular_velocity::radians_per_second_t speed);
+
+        bool m_TrackingActive = false;
+
         rev::CANSparkMax m_ShooterMotor1 {kShooterMotor1, rev::CANSparkMax::MotorType::kBrushless};
         rev::CANPIDController m_ShooterMotor1PID {m_ShooterMotor1};
         rev::CANEncoder m_ShooterMotor1Encoder {m_ShooterMotor1};
-        
+
         rev::CANSparkMax m_ShooterMotor2 {kShooterMotor2, rev::CANSparkMax::MotorType::kBrushless};
         rev::CANPIDController m_ShooterMotor2PID {m_ShooterMotor2};
         rev::CANEncoder m_ShooterMotor2Encoder {m_ShooterMotor2};
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
+
+        std::shared_ptr<nt::NetworkTable> m_VisionTable;
+        frc2::PIDController m_TurretPID {0.01, 0, 0};
 };

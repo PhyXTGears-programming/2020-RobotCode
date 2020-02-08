@@ -17,6 +17,8 @@ double F = 0.00018;
 #define kGearRatio (20.0 / 3.0)
 #define kMotorRPMtoEncoderVelocity (4096 / 60.0 / 10.0) // encoder velocity is measured in ticks per 100 ms
 
+#define kMaxTurretVelocity 20_rpm
+
 Shooter::Shooter () {
     // Implementation of subsystem constructor goes here.
     SetPIDF(m_ShooterMotor1PID, P, I, D, F);
@@ -29,8 +31,12 @@ Shooter::Shooter () {
     frc::SmartDashboard::PutNumber("Shooter Motor P", P);
     frc::SmartDashboard::PutNumber("Shooter Motor D", D);
 
+    m_VisionTable = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
+
     ctre::phoenix::motorcontrol::can::TalonSRXPIDSetConfiguration turretMotorPIDConfig {ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Relative};
     m_TurretMotor.ConfigurePID(turretMotorPIDConfig);
+    m_TurretPID.SetSetpoint(0.0);
+    m_TurretPID.SetTolerance(0.05);
 }
 
 void Shooter::Periodic () {
@@ -42,6 +48,26 @@ void Shooter::Periodic () {
     m_ShooterMotor2PID.SetP(frc::SmartDashboard::GetNumber("Shooter Motor P", P));
     m_ShooterMotor1PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D));
     m_ShooterMotor2PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D));
+
+    int count = (int) m_VisionTable->GetNumber("NumShapes", -1);
+    double speed = 0;
+
+    if (m_TrackingActive) {
+        if (count > 0) {
+            // std::cout << "Count: " << count << std::endl;
+
+            double x = -m_VisionTable->GetNumber("Shape1x", 0);
+            // std::cout << "x: " << x << std::endl;
+
+            speed = m_TurretPID.Calculate(x);
+        } else if (count == 0) {
+            // std::cout << "No objects detected" << std::endl;
+        } else {
+            // std::cout << "Variable NumShapes does not exist in table Vision" << std::endl;
+        }
+    }
+
+    SetTurretSpeed(kMaxTurretVelocity * speed);
 }
 
 void Shooter::SetShooterMotorSpeeds (double speed1, double speed2) {
