@@ -27,22 +27,6 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
     return &m_AutonomousCommand;
 }
 
-double c = 3200;
-void RobotContainer::ShooterTest () {
-    if (m_DriverJoystick.GetXButtonPressed()) {
-        c -= 100;
-        std::cout << c << std::endl;
-    }
-    if (m_DriverJoystick.GetBButtonPressed()) {
-        c += 100;
-        std::cout << c << std::endl;
-    }
-    if (m_DriverJoystick.GetAButton()) {
-        m_Shooter.SetShooterMotorSpeeds(-c, c);               
-        m_Shooter.SetShooterMotorSpeeds(0, 0);
-    }
-}
-
 void RobotContainer::PollInput () {
     // This works, but JoystickButton does not.
 

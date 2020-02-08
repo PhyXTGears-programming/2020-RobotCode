@@ -22,7 +22,6 @@ class RobotContainer {
 
   frc2::Command* GetAutonomousCommand();
 
-  void ShooterTest();
   void PollInput();
 
  private:

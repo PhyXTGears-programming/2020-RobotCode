@@ -56,9 +56,7 @@ void Robot::TeleopInit() {
   }
 }
 
-void Robot::TeleopPeriodic() {
-  m_container.ShooterTest();
-}
+void Robot::TeleopPeriodic() {}
 
 // Currently unused but we're keeping them defined.
 void Robot::TestPeriodic() {}

@@ -15,7 +15,7 @@ double D = 0.1;
 double F = 0.00018;
 
 #define kGearRatio (20.0 / 3.0)
-#define kMotorRPMtoEncoderVelocity (4096 / 60.0 / 10.0) // encoder velocity is measured in ticks per 100 ms
+#define kMotorRPMtoEncoderVelocity (4096 / (600_rpm)) // encoder velocity is measured in ticks per 100 ms
 
 #define kMaxTurretVelocity 20_rpm
 
@@ -70,15 +70,13 @@ void Shooter::Periodic () {
     SetTurretSpeed(kMaxTurretVelocity * speed);
 }
 
-void Shooter::SetShooterMotorSpeeds (double speed1, double speed2) {
-    if (fabs(speed1) > 5) {
-        m_ShooterMotor1PID.SetReference(speed1, rev::kVelocity);
+void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
+    if (units::math::fabs(speed) > 50_rpm) {
+        double motorSpeed = units::unit_cast<double>(speed * kMotorRPMtoEncoderVelocity);
+        m_ShooterMotor1PID.SetReference(-motorSpeed, rev::kVelocity);
+        m_ShooterMotor2PID.SetReference(motorSpeed, rev::kVelocity);
     } else {
         m_ShooterMotor1.Set(0);
-    }
-    if (fabs(speed2) > 5) {
-        m_ShooterMotor2PID.SetReference(speed2, rev::kVelocity);
-    } else {
         m_ShooterMotor2.Set(0);
     }
 

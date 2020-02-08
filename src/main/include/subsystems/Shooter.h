@@ -13,7 +13,7 @@ class Shooter : public frc2::SubsystemBase {
         Shooter();
         void Periodic() override;
 
-        void SetShooterMotorSpeeds(double leftSpeed, double rightSpeed);
+        void SetShooterMotorSpeed(units::angular_velocity::revolutions_per_minute_t speed);
 
         inline void SetTracking (bool enabled) { m_TrackingActive = enabled; }
         inline bool GetTracking () { return m_TrackingActive; } 
