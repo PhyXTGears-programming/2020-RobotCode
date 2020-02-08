@@ -35,7 +35,7 @@ class RobotContainer {
   Drivetrain m_Drivetrain;
   Shooter m_Shooter {};
   AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
-  VisionAimingCommand m_VisionAimingCommand {&m_Drivetrain};
+  VisionAimingCommand m_VisionAimingCommand {&m_Shooter};
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
 
   void ConfigureButtonBindings();

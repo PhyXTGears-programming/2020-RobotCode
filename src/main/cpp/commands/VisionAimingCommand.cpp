@@ -2,20 +2,21 @@
 
 #include <iostream>
 #include <math.h>
+#include <units/units.h>
 
-VisionAimingCommand::VisionAimingCommand (Drivetrain* drivetrain) {
-    std::cout << "Start" << std::endl;
+#define kMaxTurretVelocity 20_rpm
 
-    AddRequirements(drivetrain);
+VisionAimingCommand::VisionAimingCommand (Shooter* shooter) {
+    AddRequirements(shooter);
 
-    m_Drivetrain = drivetrain;
+    m_Shooter = shooter;
     
     m_VisionTable = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
 }
 
 void VisionAimingCommand::Initialize () {
-    m_TurnPID.SetSetpoint(0.0);
-    m_TurnPID.SetTolerance(50.0);
+    m_TurretPID.SetSetpoint(0.0);
+    m_TurretPID.SetTolerance(0.05);
 }
 
 void VisionAimingCommand::Execute () {
@@ -28,7 +29,7 @@ void VisionAimingCommand::Execute () {
         double x = -m_VisionTable->GetNumber("Shape1x", 0);
         std::cout << "x: " << x << std::endl;
 
-        speed = m_TurnPID.Calculate(x);
+        speed = m_TurretPID.Calculate(x);
     } else if (count == 0) {
         std::cout << "No objects detected" << std::endl;
     } else {
@@ -36,5 +37,5 @@ void VisionAimingCommand::Execute () {
 
     }
 
-    m_Drivetrain->RadiusDrive(speed, 0);
+    m_Shooter->SetTurretSpeed(kMaxTurretVelocity * speed);
 }

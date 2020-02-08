@@ -5,19 +5,19 @@
 #include <frc/controller/PIDController.h>
 #include <networktables/NetworkTableInstance.h>
 
-#include "subsystems/Drivetrain.h"
+#include "subsystems/Shooter.h"
 
-#define kP 6.0
+#define kP 0.01
 
 class VisionAimingCommand : public frc2::CommandHelper<frc2::CommandBase, VisionAimingCommand> {
     public:
-        VisionAimingCommand(Drivetrain* drivetrain);
+        VisionAimingCommand(Shooter* shooter);
 
         void Initialize();
         void Execute();
 
     private:
-        Drivetrain* m_Drivetrain;
+        Shooter* m_Shooter;
         std::shared_ptr<nt::NetworkTable> m_VisionTable;
-        frc2::PIDController m_TurnPID {0.0001 * kP, 0, 0};
+        frc2::PIDController m_TurretPID {kP, 0, 0};
 };
