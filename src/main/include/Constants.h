@@ -83,4 +83,10 @@
 #define kLeftMotor2  CAN_12
 
 // CAN ID for intake Talon SRX
-#define kIntakeMotor CAN_0 // Needs to be set to the right CAN id
+#define kIntakeMotor            CAN_16
+#define kConveyorCornerMotor    CAN_17
+#define kConveyorAdvanceMotor   CAN_18
+
+// PCM pin for intake solenoid
+#define kIntakeExtendSolenoidPin  AIR_0
+#define kIntakeRetractSolenoidPin AIR_1
