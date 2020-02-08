@@ -7,7 +7,6 @@
 #include "subsystems/Shooter.h"
 #include "commands/AutonomousCommand.h"
 #include "commands/TeleopDriveCommand.h"
-#include "commands/VisionAimingCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since

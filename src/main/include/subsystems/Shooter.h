@@ -4,8 +4,10 @@
 
 #include <frc/SpeedControllerGroup.h>
 #include <frc2/command/SubsystemBase.h>
+#include <frc/controller/PIDController.h>
 #include <rev/CANSparkMax.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
+#include <networktables/NetworkTableInstance.h>
 #include <units/units.h>
 
 class Shooter : public frc2::SubsystemBase {
