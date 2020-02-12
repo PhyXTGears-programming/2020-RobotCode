@@ -4,6 +4,8 @@
 #include <frc/XboxController.h>
 
 #include "subsystems/Drivetrain.h"
+#include "subsystems/PowerCellCounter.h"
+
 #include "commands/AutonomousCommand.h"
 #include "commands/TeleopDriveCommand.h"
 
@@ -27,6 +29,8 @@ class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain;
+  PowerCellCounter m_PowerCellCounter;
+
   AutonomousCommand m_AutonomousCommand;
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
 
