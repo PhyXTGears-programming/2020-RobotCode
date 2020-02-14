@@ -32,8 +32,5 @@ class Drivetrain : public frc2::SubsystemBase {
         frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
         frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
 
-        OdometryHelper m_OdometryHelper{new rev::CANEncoder(m_LeftMotor1), new rev::CANEncoder(m_RightMotor1)};
-
-        rev::CANEncoder m_LeftEncoder {m_LeftMotor1};
-        rev::CANEncoder m_RightEncoder {m_RightMotor1};
+        OdometryHelper m_OdometryHelper {new rev::CANEncoder(m_LeftMotor1), new rev::CANEncoder(m_RightMotor1)};
 };

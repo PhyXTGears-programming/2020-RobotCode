@@ -75,11 +75,3 @@ void Drivetrain::RadiusDrive (double speed, LengthUnit radius) {
     m_LeftMotors.Set(leftWheelSpeed);
     m_RightMotors.Set(rightWheelSpeed);
 }
-
-double Drivetrain::GetLeftDistance () {
-    return m_LeftEncoder.GetPosition();
-}
-
-double Drivetrain::GetRightDistance () {
-    return m_RightEncoder.GetPosition();
-}
