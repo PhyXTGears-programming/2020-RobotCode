@@ -23,4 +23,9 @@ void RobotContainer::DrivetrainTest(double dt) {
 
 void RobotContainer::PollInput() {
     // This works, but JoystickButton does not.
+    if (m_OperatorJoystick.GetYButton() && !m_ExpelIntakeCommand.IsInitialized()) {
+        m_ExpelIntakeCommand.Start();
+    } else if (m_OperatorJoystick.GetYButtonReleased()) {
+      m_ExpelIntakeCommand.Cancel();
+    } 
 }

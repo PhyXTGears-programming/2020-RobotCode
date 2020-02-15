@@ -3,8 +3,10 @@
 #include <frc2/command/Command.h>
 #include <frc/XboxController.h>
 
-#include "commands/AutonomousCommand.h"
 #include "subsystems/Drivetrain.h"
+
+#include "commands/AutonomousCommand.h"
+#include "commands/ExpelIntakeCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -29,7 +31,9 @@ class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain;
+  
   AutonomousCommand m_AutonomousCommand;
+  ExpelIntakeCommand m_ExpelIntakeCommand;
 
   void ConfigureButtonBindings();
 
