@@ -31,4 +31,6 @@ class RobotContainer {
   AutonomousCommand m_AutonomousCommand;
 
   void ConfigureButtonBindings();
+
+  void PollInput();
 };

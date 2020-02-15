@@ -20,3 +20,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
 void RobotContainer::DrivetrainTest(double dt) {
   m_Drivetrain.Drive(dt, m_DriverJoystick);
 }
+
+void RobotContainer::PollInput() {
+    // This works, but JoystickButton does not.
+}
