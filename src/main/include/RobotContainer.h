@@ -24,11 +24,11 @@ class RobotContainer {
  private:
   // Operators' input devices.
   // These are 0 indexed!
-  frc::XboxController m_driverJoystick{0};
+  frc::XboxController m_DriverJoystick{0};
 
   // The robot's subsystems and commands are defined here...
-  Drivetrain m_drivetrain;
-  AutonomousCommand m_autonomousCommand;
+  Drivetrain m_Drivetrain;
+  AutonomousCommand m_AutonomousCommand;
 
   void ConfigureButtonBindings();
 };
