@@ -35,4 +35,8 @@ void RobotContainer::PollInput () {
     } else if (m_OperatorJoystick.GetAButtonReleased()) {
         m_Shooter.SetTracking(false);
     }
+
+    // double speed = m_OperatorJoystick.GetX(frc::XboxController::kLeftHand);
+    // speed = fabs(speed) < 0.2 ? 0 : speed;
+    // m_Shooter.SetTurretSpeed(speed * 10_rpm);
 }

@@ -35,10 +35,16 @@ Shooter::Shooter () {
 
     m_VisionTable = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
 
-    ctre::phoenix::motorcontrol::can::TalonSRXPIDSetConfiguration turretMotorPIDConfig {ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Relative};
-    m_TurretMotor.ConfigurePID(turretMotorPIDConfig);
-    m_TurretPID.SetSetpoint(0.0);
-    m_TurretPID.SetTolerance(0.05);
+    // ctre::phoenix::motorcontrol::can::TalonSRXPIDSetConfiguration turretMotorPIDConfig {ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Relative};
+    // m_TurretMotor.ConfigurePID(turretMotorPIDConfig);
+    m_TurretMotor.SetInverted(true);
+    m_TurretMotor.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
+    m_TurretMotor.ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonSRXFeedbackDevice::CTRE_MagEncoder_Relative);
+    m_TurretMotor.SetSensorPhase(true);
+    m_TurretMotor.Config_kP(0, 2.5);
+    m_TurretMotor.Config_kI(0, 0.0);
+    m_TurretMotor.Config_kD(0, 0.0);
+    m_TurretMotor.Config_kF(0, 2.3);
 }
 
 void Shooter::Periodic () {
@@ -86,9 +92,16 @@ void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_min
     frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity());
 }
 
-void Shooter::SetTurretSpeed (units::angular_velocity::radians_per_second_t speed) {
-    units::angular_velocity::revolutions_per_minute_t rpm {speed};
-    double motorSpeed = kTurretGearRatio * units::unit_cast<double>(rpm * kMotorRPMtoEncoderVelocity); // in encoder ticks per 100 ms
+void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
+    if (units::math::fabs(speed) < 1_deg_per_s) {
+        m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
+        return;
+    }
+
+    double motorSpeed = kTurretGearRatio * units::unit_cast<double>(speed * kMotorRPMtoEncoderVelocity); // in encoder ticks per 100 ms
+
+    frc::SmartDashboard::PutNumber("Turret Speed Setpoint", motorSpeed);
+    frc::SmartDashboard::PutNumber("Turret Speed Read", m_TurretMotor.GetSelectedSensorVelocity());
     
     m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }

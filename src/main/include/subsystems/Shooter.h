@@ -20,9 +20,9 @@ class Shooter : public frc2::SubsystemBase {
         inline void SetTracking (bool enabled) { m_TrackingActive = enabled; }
         inline bool GetTracking () { return m_TrackingActive; } 
 
-    private:
-        void SetTurretSpeed(units::angular_velocity::radians_per_second_t speed);
+        void SetTurretSpeed(units::angular_velocity::revolutions_per_minute_t speed);
 
+    private:
         bool m_TrackingActive = false;
 
         rev::CANSparkMax m_ShooterMotor1 {kShooterMotor1, rev::CANSparkMax::MotorType::kBrushless};
@@ -36,5 +36,5 @@ class Shooter : public frc2::SubsystemBase {
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
 
         std::shared_ptr<nt::NetworkTable> m_VisionTable;
-        frc2::PIDController m_TurretPID {0.01, 0, 0};
+        frc2::PIDController m_TurretPID {0.1, 0, 0};
 };
