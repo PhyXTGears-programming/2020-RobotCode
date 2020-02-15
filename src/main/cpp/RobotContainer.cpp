@@ -9,8 +9,9 @@
 #include <units/units.h>
 
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
-    // Initialize all of your commands and subsystems here]
+    // Initialize all of your commands and subsystems here
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
+    frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
 
     // Configure the button bindings
     ConfigureButtonBindings();
@@ -32,6 +33,7 @@ void RobotContainer::PollInput () {
 
     if (m_OperatorJoystick.GetAButtonPressed()) {
         m_Shooter.SetTracking(true);
+        std::cout << "tracking" << std::endl;
     } else if (m_OperatorJoystick.GetAButtonReleased()) {
         m_Shooter.SetTracking(false);
     }

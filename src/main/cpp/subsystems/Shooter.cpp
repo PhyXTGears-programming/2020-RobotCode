@@ -49,32 +49,33 @@ Shooter::Shooter () {
 
 void Shooter::Periodic () {
     // Implementation of subsystem periodic method goes here.
-
     m_ShooterMotor1PID.SetFF(frc::SmartDashboard::GetNumber("Shooter Motor F", F));
     m_ShooterMotor2PID.SetFF(frc::SmartDashboard::GetNumber("Shooter Motor F", F));
     m_ShooterMotor1PID.SetP(frc::SmartDashboard::GetNumber("Shooter Motor P", P));
     m_ShooterMotor2PID.SetP(frc::SmartDashboard::GetNumber("Shooter Motor P", P));
-    m_ShooterMotor1PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D));
+    m_ShooterMotor1PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D)); 
     m_ShooterMotor2PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D));
 
-    int count = (int) m_VisionTable->GetNumber("NumShapes", -1);
     double speed = 0;
 
     if (m_TrackingActive) {
+        int count = (int) m_VisionTable->GetNumber("NumShapes", -1);
+
         if (count > 0) {
-            // std::cout << "Count: " << count << std::endl;
+            std::cout << "Count: " << count << std::endl;
 
             double x = -m_VisionTable->GetNumber("Shape1x", 0);
-            // std::cout << "x: " << x << std::endl;
+            std::cout << "x: " << x << std::endl;
 
             speed = m_TurretPID.Calculate(x);
         } else if (count == 0) {
-            // std::cout << "No objects detected" << std::endl;
+            std::cout << "No objects detected" << std::endl;
         } else {
-            // std::cout << "Variable NumShapes does not exist in table Vision" << std::endl;
+            std::cout << "Variable NumShapes does not exist in table Vision" << std::endl;
         }
     }
 
+    std::cout << speed << std::endl;
     SetTurretSpeed(kMaxTurretVelocity * speed);
 }
 
@@ -93,15 +94,15 @@ void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_min
 }
 
 void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
+    frc::SmartDashboard::PutNumber("Turret Speed Setpoint (RPM)", units::unit_cast<double>(speed));
+    frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
+    
     if (units::math::fabs(speed) < 1_deg_per_s) {
         m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
         return;
     }
 
     double motorSpeed = kTurretGearRatio * units::unit_cast<double>(speed * kMotorRPMtoEncoderVelocity); // in encoder ticks per 100 ms
-
-    frc::SmartDashboard::PutNumber("Turret Speed Setpoint", motorSpeed);
-    frc::SmartDashboard::PutNumber("Turret Speed Read", m_TurretMotor.GetSelectedSensorVelocity());
     
     m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
