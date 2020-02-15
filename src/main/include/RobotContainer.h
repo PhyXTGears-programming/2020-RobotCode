@@ -25,6 +25,7 @@ class RobotContainer {
   // Operators' input devices.
   // These are 0 indexed!
   frc::XboxController m_DriverJoystick{0};
+  frc::XboxController m_OperatorJoystick{1};
 
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain;
