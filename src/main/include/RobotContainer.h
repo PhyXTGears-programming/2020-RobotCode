@@ -7,6 +7,8 @@
 
 #include "commands/AutonomousCommand.h"
 #include "commands/ExpelIntakeCommand.h"
+#include "commands/ExtendIntakeCommand.h"
+#include "commands/RetractIntakeCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -34,6 +36,8 @@ class RobotContainer {
   
   AutonomousCommand m_AutonomousCommand;
   ExpelIntakeCommand m_ExpelIntakeCommand;
+  RetractIntakeCommand m_RetractIntakeCommand;
+  ExtendIntakeCommand m_ExtendIntakeCommand;
 
   void ConfigureButtonBindings();
 

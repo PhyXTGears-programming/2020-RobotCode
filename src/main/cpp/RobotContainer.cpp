@@ -1,5 +1,12 @@
 #include "RobotContainer.h"
 
+enum class Pov {
+  kRight = 90,
+  kLeft = 270, 
+  kUp = 180, 
+  kDown = 0
+};
+
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
   // Initialize all of your commands and subsystems here
 
@@ -28,4 +35,10 @@ void RobotContainer::PollInput() {
     } else if (m_OperatorJoystick.GetYButtonReleased()) {
       m_ExpelIntakeCommand.Cancel();
     } 
+
+    if (Pov::kRight == m_OperatorJoystick.GetPOV()) {
+        m_ExtendIntakeCommand.Start()
+    } else if (Pov::kLeft == m_OperatorJoystick.GetPOV()) {
+        m_RetractIntakeCommand.Start()
+    }
 }
