@@ -1,4 +1,4 @@
-#include "OdometryHelper.h"
+#include "kinematics/OdometryHelper.h"
 
 #include <iostream>
 
@@ -7,9 +7,6 @@
 
 #define PI 3.14159265358979323846
 
-constexpr units::length::inch_t kHalfWheelBase{(23.0 + 7.0/8.0) / 2.0};
-constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
-
 AHRS navx {frc::SPI::Port::kMXP}; // Declared here because the AHRS.h file contains "using namespace std;"
 
 OdometryHelper::OdometryHelper (rev::CANEncoder* leftEncoder, rev::CANEncoder* rightEncoder) {
@@ -17,12 +14,12 @@ OdometryHelper::OdometryHelper (rev::CANEncoder* leftEncoder, rev::CANEncoder* r
     m_RightEncoder = rightEncoder;
 
     // Position in wheel angular displacement (rad)
-    m_LeftEncoder->SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
-    m_RightEncoder->SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
+    m_LeftEncoder->SetPositionConversionFactor(RobotPhysicalConstants::wheelRadiansPerMotorRotation);
+    m_RightEncoder->SetPositionConversionFactor(RobotPhysicalConstants::wheelRadiansPerMotorRotation);
 
     // Velocity in wheel angular velocity (rad/s)
-    m_LeftEncoder->SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
-    m_RightEncoder->SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
+    m_LeftEncoder->SetVelocityConversionFactor(RobotPhysicalConstants::wheelRadiansPerMotorRotation / 60.0);
+    m_RightEncoder->SetVelocityConversionFactor(RobotPhysicalConstants::wheelRadiansPerMotorRotation / 60.0);
 
     // Initial Position is 0
     m_LeftEncoder->SetPosition(0.0);

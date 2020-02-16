@@ -3,8 +3,7 @@
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <rev/CANSparkMax.h>
 
-constexpr auto kWheelDiameter = 5.75_in;
-constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
+#include "RobotPhysicalConstants.h"
 
 enum class WheelSide {
     leftWheels,
@@ -26,8 +25,8 @@ class OdometryHelper {
             return GetEncoderSign(side) * units::angular_velocity::radians_per_second_t(GetEncoder(side)->GetVelocity());
         }
 
-        inline units::length::foot_t GetLinearPosition (WheelSide side) { return kDistancePerWheelRadian * GetAngularPosition(side); }
-        inline units::velocity::meters_per_second_t GetLinearVelocity (WheelSide side) { return kDistancePerWheelRadian * GetAngularVelocity(side); }
+        inline units::length::foot_t GetLinearPosition (WheelSide side) { return RobotPhysicalConstants::distancePerWheelRadian * GetAngularPosition(side); }
+        inline units::velocity::meters_per_second_t GetLinearVelocity (WheelSide side) { return RobotPhysicalConstants::distancePerWheelRadian * GetAngularVelocity(side); }
 
         frc::Pose2d GetRobotPose();
         frc::Rotation2d GetRobotAngle();

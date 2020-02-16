@@ -4,13 +4,9 @@
 #include <math.h>
 
 #include "Robot.h"
-
-#define PI 3.14159265358979323846
+#include "RobotPhysicalConstants.h"
 
 #define kTurnInputConstant  0.2
-
-constexpr units::length::inch_t kHalfWheelBase{(23.0 + 7.0/8.0) / 2.0};
-constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
 
 Drivetrain::Drivetrain () {}
 
@@ -41,8 +37,8 @@ void Drivetrain::RadiusDrive (double speed, LengthUnit radius) {
     radius *= -1;
 
     // Calculate the radius for each wheel
-    LengthUnit leftWheelRadius = radius + kHalfWheelBase;
-    LengthUnit rightWheelRadius = radius - kHalfWheelBase;
+    LengthUnit leftWheelRadius = radius + RobotPhysicalConstants::halfWheelBase;
+    LengthUnit rightWheelRadius = radius - RobotPhysicalConstants::halfWheelBase;
 
     // Default speed is 1
     double leftWheelSpeed = 1;

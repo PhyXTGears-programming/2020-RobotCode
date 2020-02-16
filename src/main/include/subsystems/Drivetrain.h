@@ -8,7 +8,7 @@
 #include <units/units.h>
 
 #include "Constants.h"
-#include "OdometryHelper.h"
+#include "kinematics/OdometryHelper.h"
 
 class Drivetrain : public frc2::SubsystemBase {
     public:
