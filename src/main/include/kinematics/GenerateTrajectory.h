@@ -4,6 +4,7 @@
 #include <frc/trajectory/TrajectoryConfig.h>
 #include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc/trajectory/Trajectory.h>
 
 #include "RobotPhysicalConstants.h"
 
@@ -12,9 +13,5 @@ class GenerateTrajectory {
         GenerateTrajectory();
 
     private:
-        frc::DifferentialDriveKinematics m_Kinematics {RobotPhysicalConstants::wheelBase};
-        frc::TrajectoryConfig m_TrajectoryConfig {RobotPhysicalConstants::maxRobotVelocity, RobotPhysicalConstants::maxRobotAcceleration};
-        frc::DifferentialDriveVoltageConstraint m_VoltageConstraint {frc::SimpleMotorFeedforward<units::meters>(
-            RobotPhysicalConstants::kS, RobotPhysicalConstants::kV, RobotPhysicalConstants::kA),
-            m_Kinematics, 10_V};
+        frc::Trajectory GetTrajectory ();
 };
