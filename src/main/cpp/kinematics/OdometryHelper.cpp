@@ -42,6 +42,10 @@ void OdometryHelper::Update () {
     c++;
 }
 
+frc::DifferentialDriveWheelSpeeds OdometryHelper::GetWheelSpeeds () {
+    return {GetLinearVelocity(WheelSide::leftWheels), GetLinearVelocity(WheelSide::rightWheels)};
+}
+
 // GetRobotPose
 
 frc::Rotation2d OdometryHelper::GetRobotAngle () {

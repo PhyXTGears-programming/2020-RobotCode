@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc/kinematics/DifferentialDriveOdometry.h>
+#include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
 #include <rev/CANSparkMax.h>
 
 #include "RobotPhysicalConstants.h"
@@ -27,6 +28,8 @@ class OdometryHelper {
 
         inline units::length::foot_t GetLinearPosition (WheelSide side) { return RobotPhysicalConstants::distancePerWheelRadian * GetAngularPosition(side); }
         inline units::velocity::meters_per_second_t GetLinearVelocity (WheelSide side) { return RobotPhysicalConstants::distancePerWheelRadian * GetAngularVelocity(side); }
+
+        frc::DifferentialDriveWheelSpeeds GetWheelSpeeds();
 
         frc::Pose2d GetRobotPose();
         frc::Rotation2d GetRobotAngle();
