@@ -36,5 +36,5 @@ class Shooter : public frc2::SubsystemBase {
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
 
         std::shared_ptr<nt::NetworkTable> m_VisionTable;
-        frc2::PIDController m_TurretPID {0.1, 0, 0};
+        frc2::PIDController m_TurretPID {0.05, 0, 0};
 };

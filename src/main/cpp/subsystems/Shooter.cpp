@@ -9,7 +9,7 @@
 #define SetPIDSlot(motor, P, I, D, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot)
 #define SetPIDFSlot(motor, P, I, D, F, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot); motor.SetFF(F, slot)
 
-double P = 0.00085;
+double P = 0.000189;
 double I = 0;
 double D = 0.1;
 double F = 0.00018;
@@ -29,11 +29,14 @@ Shooter::Shooter () {
     m_ShooterMotor1.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
     m_ShooterMotor2.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
+    m_ShooterMotor1.SetInverted(false);
+    m_ShooterMotor2.SetInverted(true);
+
     frc::SmartDashboard::PutNumber("Shooter Motor F", F);
     frc::SmartDashboard::PutNumber("Shooter Motor P", P);
     frc::SmartDashboard::PutNumber("Shooter Motor D", D);
 
-    m_VisionTable = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
+    m_VisionTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight-gears");
 
     // ctre::phoenix::motorcontrol::can::TalonSRXPIDSetConfiguration turretMotorPIDConfig {ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Relative};
     // m_TurretMotor.ConfigurePID(turretMotorPIDConfig);
@@ -59,19 +62,19 @@ void Shooter::Periodic () {
     double speed = 0;
 
     if (m_TrackingActive) {
-        int count = (int) m_VisionTable->GetNumber("NumShapes", -1);
+        int count = (int) m_VisionTable->GetNumber("tv", -1);
 
         if (count > 0) {
             std::cout << "Count: " << count << std::endl;
 
-            double x = -m_VisionTable->GetNumber("Shape1x", 0);
+            double x = -m_VisionTable->GetNumber("tx", 0);
             std::cout << "x: " << x << std::endl;
 
             speed = m_TurretPID.Calculate(x);
         } else if (count == 0) {
             std::cout << "No objects detected" << std::endl;
         } else {
-            std::cout << "Variable NumShapes does not exist in table Vision" << std::endl;
+            std::cout << "Variable tv does not exist in table limelight-gears" << std::endl;
         }
     }
 
@@ -82,15 +85,16 @@ void Shooter::Periodic () {
 void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
     if (units::math::fabs(speed) > 50_rpm) {
         double motorSpeed = kShooterGearRatio * units::unit_cast<double>(speed);
-        m_ShooterMotor1PID.SetReference(-motorSpeed, rev::kVelocity);
+        m_ShooterMotor1PID.SetReference(motorSpeed, rev::kVelocity);
         m_ShooterMotor2PID.SetReference(motorSpeed, rev::kVelocity);
     } else {
         m_ShooterMotor1.Set(0);
         m_ShooterMotor2.Set(0);
     }
 
-    frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1Encoder.GetVelocity());
-    frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity());
+    double factor = 1 / kShooterGearRatio;
+    frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1Encoder.GetVelocity() * factor);
+    frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity() * factor);
 }
 
 void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
