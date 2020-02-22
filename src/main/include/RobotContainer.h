@@ -4,6 +4,7 @@
 #include <frc/XboxController.h>
 
 #include "subsystems/Drivetrain.h"
+#include "subsystems/Shooter.h"
 #include "commands/AutonomousCommand.h"
 #include "commands/TeleopDriveCommand.h"
 
@@ -20,14 +21,18 @@ class RobotContainer {
 
   frc2::Command* GetAutonomousCommand();
 
+  void PollInput();
+
  private:
   // Operators' input devices.
   // These are 0 indexed!
   frc::XboxController m_DriverJoystick{0};
+  frc::XboxController m_OperatorJoystick{1};
 
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain;
-  AutonomousCommand m_AutonomousCommand;
+  Shooter m_Shooter {};
+  AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
 
   void ConfigureButtonBindings();
