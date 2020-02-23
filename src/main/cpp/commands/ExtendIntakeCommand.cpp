@@ -1,24 +1,24 @@
-#include "commands/ExpelIntakeCommand.h"
+#include "commands/ExtendIntakeCommand.h"
 
-ExpelIntakeCommand::ExpelIntakeCommand (Intake* intake) {
+ExtendIntakeCommand::ExtendIntakeCommand (Intake* intake) {
     //sets required subsystem
     AddRequirements(intake);
     m_Intake = intake;
 }
 
-void ExpelIntakeCommand::Initialize () {
+void ExtendIntakeCommand::Initialize () {
 }
 
-void ExpelIntakeCommand::Execute () {
+void ExtendIntakeCommand::Execute () {
     m_Intake->IntakeReverse();
 }
 
-void ExpelIntakeCommand::End () {
+void ExtendIntakeCommand::End () {
     // Stops intake
     m_Intake->IntakeStop();
 }
 
-bool ExpelIntakeCommand::IsFinished() {
+bool ExtendIntakeCommand::IsFinished() {
     return false;
 }
 

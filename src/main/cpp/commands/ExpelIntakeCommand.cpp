@@ -6,8 +6,7 @@ ExpelIntakeCommand::ExpelIntakeCommand (Intake* intake) {
     m_Intake = intake;
 }
 
-void ExpelIntakeCommand::Initialize () {
-}
+void ExpelIntakeCommand::Initialize () {}
 
 void ExpelIntakeCommand::Execute () {
     m_Intake->IntakeReverse();
@@ -21,5 +20,3 @@ void ExpelIntakeCommand::End () {
 bool ExpelIntakeCommand::IsFinished() {
     return false;
 }
-
-

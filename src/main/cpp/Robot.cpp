@@ -39,9 +39,7 @@ void Robot::AutonomousInit () {
     }
 }
 
-void Robot::AutonomousPeriodic() {
-  
-}
+void Robot::AutonomousPeriodic () {}
 
 void Robot::TeleopInit () {
     // This makes sure that the autonomous stops running when
@@ -55,7 +53,7 @@ void Robot::TeleopInit () {
 }
 
 void Robot::TeleopPeriodic() {
-  m_container.DrivetrainTest(m_DeltaTime);
+    m_container.PollInput();
 }
 
 // Currently unused but we're keeping them defined.

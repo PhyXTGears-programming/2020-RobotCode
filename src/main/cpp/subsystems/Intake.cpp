@@ -4,7 +4,9 @@
 
 #define kCornerMotorAdjust 1
 
-Intake::Intake () {}
+Intake::Intake () {
+    m_ConveyorMotor.SetInverted(true);
+}
 
 void Intake::Periodic () {}
 
@@ -13,8 +15,7 @@ void Intake::SetSpeed (double intakeSpeed) {
 }
 
 void Intake::SetConveyorSpeed (double conveyorSpeed) {
-    m_ConveyorCornerMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, conveyorSpeed*kCornerMotorAdjust);
-    m_ConveyorAdvanceMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, conveyorSpeed);
+    m_ConveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, conveyorSpeed);
 }
 
 void Intake::IntakeStart () {

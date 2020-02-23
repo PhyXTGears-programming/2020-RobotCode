@@ -23,22 +23,25 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
     return &m_AutonomousCommand;
 }
 
-// Quick drivetrain testing code :D
-void RobotContainer::DrivetrainTest(double dt) {
-  m_Drivetrain.Drive(dt, m_DriverJoystick);
-}
-
 void RobotContainer::PollInput() {
     // This works, but JoystickButton does not.
-    if (m_OperatorJoystick.GetYButton() && !m_ExpelIntakeCommand.IsInitialized()) {
-        m_ExpelIntakeCommand.Start();
+    if (m_OperatorJoystick.GetYButtonPressed()) {
+        m_ExpelIntakeCommand.Schedule();
     } else if (m_OperatorJoystick.GetYButtonReleased()) {
-      m_ExpelIntakeCommand.Cancel();
-    } 
+        m_ExpelIntakeCommand.Cancel();
+        m_Intake.IntakeStop();
+    }
+    
+    if (m_OperatorJoystick.GetBButtonPressed()) {
+        m_IntakeBallsCommand.Schedule();
+    } else if (m_OperatorJoystick.GetBButtonReleased()) {
+        m_IntakeBallsCommand.Cancel();
+        m_Intake.IntakeStop();
+    }
 
-    if (Pov::kRight == m_OperatorJoystick.GetPOV()) {
-        m_ExtendIntakeCommand.Start()
-    } else if (Pov::kLeft == m_OperatorJoystick.GetPOV()) {
-        m_RetractIntakeCommand.Start()
+    if (static_cast<int>(Pov::kRight) == m_OperatorJoystick.GetPOV()) {
+        m_ExtendIntakeCommand.Schedule();
+    } else if (static_cast<int>(Pov::kLeft) == m_OperatorJoystick.GetPOV()) {
+        m_RetractIntakeCommand.Schedule();
     }
 }

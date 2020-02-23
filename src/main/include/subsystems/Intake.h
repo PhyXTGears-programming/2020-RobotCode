@@ -38,8 +38,7 @@ class Intake : public frc2::SubsystemBase {
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_IntakeMotor {kIntakeMotor};
 
-        ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorCornerMotor {kConveyorCornerMotor};
-        ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorAdvanceMotor {kConveyorAdvanceMotor};
+        ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorMotor {kConveyorMotor};
 
         frc::Solenoid m_IntakeExtendSolenoid {kIntakeExtendSolenoidPin};
         frc::Solenoid m_IntakeRetractSolenoid {kIntakeRetractSolenoidPin};

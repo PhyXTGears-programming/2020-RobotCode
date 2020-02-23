@@ -6,6 +6,7 @@
 #include "subsystems/Drivetrain.h"
 
 #include "commands/AutonomousCommand.h"
+#include "commands/IntakeBallsCommand.h"
 #include "commands/ExpelIntakeCommand.h"
 #include "commands/ExtendIntakeCommand.h"
 #include "commands/RetractIntakeCommand.h"
@@ -23,7 +24,7 @@ class RobotContainer {
 
   frc2::Command* GetAutonomousCommand();
 
-  void DrivetrainTest(double dt);
+  void PollInput();
 
  private:
   // Operators' input devices.
@@ -33,13 +34,13 @@ class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain;
+  Intake m_Intake;
   
   AutonomousCommand m_AutonomousCommand;
-  ExpelIntakeCommand m_ExpelIntakeCommand;
-  RetractIntakeCommand m_RetractIntakeCommand;
-  ExtendIntakeCommand m_ExtendIntakeCommand;
+  IntakeBallsCommand m_IntakeBallsCommand {&m_Intake};
+  ExpelIntakeCommand m_ExpelIntakeCommand {&m_Intake};
+  RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
+  ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
 
   void ConfigureButtonBindings();
-
-  void PollInput();
 };
