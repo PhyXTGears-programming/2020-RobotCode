@@ -22,10 +22,18 @@ class Shooter : public frc2::SubsystemBase {
 
         void SetTurretSpeed(units::angular_velocity::revolutions_per_minute_t speed);
 
-        void SetFeeder(bool on);
+        inline void FeederStart () {
+            SetFeeder(true);
+        }
+
+        inline void FeederStop () {
+            SetFeeder(false);
+        }
 
     private:
         void TrackingPeriodic();
+
+        void SetFeeder(bool on);
 
         bool m_TrackingActive = false;
 

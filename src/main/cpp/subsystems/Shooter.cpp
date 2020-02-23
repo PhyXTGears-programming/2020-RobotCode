@@ -92,10 +92,6 @@ void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t 
     m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
 
-void Shooter::SetFeeder (bool on) {
-    m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.4 : 0);
-}
-
 void Shooter::TrackingPeriodic () {
     double speed = 0;
 
@@ -117,4 +113,8 @@ void Shooter::TrackingPeriodic () {
     }
 
     SetTurretSpeed(kMaxTurretVelocity * speed);
+}
+
+void Shooter::SetFeeder (bool on) {
+    m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.4 : 0);
 }

@@ -38,7 +38,7 @@ void RobotContainer::PollInput () {
         m_Shooter.SetTracking(false);
     }
 
-    if (m_OperatorJoystick.GetBButton()) {
+    if (m_DriverJoystick.GetAButton()) {
         m_ShootCommand.Schedule();
     } else {
         m_ShootCommand.Cancel();

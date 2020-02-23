@@ -10,12 +10,12 @@ ShootCommand::ShootCommand (Shooter* shooter) {
 
 void ShootCommand::Initialize () {
     m_Shooter->SetShooterMotorSpeed(kShooterRPM);
-    m_Shooter->SetFeeder(true);
+    m_Shooter->FeederStart();
 }
 
 void ShootCommand::Execute () {}
 
 void ShootCommand::End (bool interrupted) {
     m_Shooter->SetShooterMotorSpeed(0_rpm);
-    m_Shooter->SetFeeder(false);
+    m_Shooter->FeederStop();
 }
