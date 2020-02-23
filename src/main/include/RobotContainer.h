@@ -4,6 +4,9 @@
 #include <frc/XboxController.h>
 
 #include "subsystems/Drivetrain.h"
+#include "subsystems/Shooter.h"
+#include "commands/AutonomousCommand.h"
+#include "commands/TeleopDriveCommand.h"
 
 #include "commands/AutonomousCommand.h"
 #include "commands/IntakeBallsCommand.h"
@@ -35,12 +38,14 @@ class RobotContainer {
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain;
   Intake m_Intake;
-  
-  AutonomousCommand m_AutonomousCommand;
+  Shooter m_Shooter {};
+
+  AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
   IntakeBallsCommand m_IntakeBallsCommand {&m_Intake};
   ExpelIntakeCommand m_ExpelIntakeCommand {&m_Intake};
   RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
   ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
+  TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
 
   void ConfigureButtonBindings();
 };

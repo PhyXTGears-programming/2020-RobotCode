@@ -1,7 +1,6 @@
 #include "commands/ExpelIntakeCommand.h"
 
 ExpelIntakeCommand::ExpelIntakeCommand (Intake* intake) {
-    //sets required subsystem
     AddRequirements(intake);
     m_Intake = intake;
 }
@@ -12,8 +11,7 @@ void ExpelIntakeCommand::Execute () {
     m_Intake->IntakeReverse();
 }
 
-void ExpelIntakeCommand::End () {
-    // Stops intake
+void ExpelIntakeCommand::End (bool interrupted) {
     m_Intake->IntakeStop();
 }
 

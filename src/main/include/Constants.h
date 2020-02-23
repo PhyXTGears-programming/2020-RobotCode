@@ -75,12 +75,12 @@
 #define AIR_7 7
 
 // CAN IDs for drivetrain Spark MAXes
-#define kRightMotor1 CAN_13
-#define kRightMotor2 CAN_14
-#define kRightMotor3 CAN_15
-#define kLeftMotor3  CAN_10
-#define kLeftMotor1  CAN_11
-#define kLeftMotor2  CAN_12
+#define kLeftMotor3  CAN_1
+#define kLeftMotor1  CAN_2
+#define kLeftMotor2  CAN_3
+#define kRightMotor1 CAN_4
+#define kRightMotor2 CAN_5
+#define kRightMotor3 CAN_6
 
 // CAN ID for intake Talon SRX
 #define kIntakeMotor    CAN_7
@@ -89,3 +89,9 @@
 // PCM pin for intake solenoid
 #define kIntakeExtendSolenoidPin  AIR_0
 #define kIntakeRetractSolenoidPin AIR_1
+
+#define kShooterMotor1 CAN_9
+#define kShooterMotor2 CAN_10
+
+#define kTurretFeederMotor CAN_11
+#define kTurretMotor       CAN_12

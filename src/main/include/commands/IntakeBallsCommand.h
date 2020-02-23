@@ -11,7 +11,7 @@ class IntakeBallsCommand : public frc2::CommandHelper<frc2::CommandBase, IntakeB
 
         void Initialize();
         void Execute();
-        void End();
+        void End(bool interrupted);
         bool IsFinished();
 
     private:

@@ -21,8 +21,7 @@ void IntakeBallsCommand::Execute () {
     }
 }
 
-void IntakeBallsCommand::End () {
-    // Stops intake
+void IntakeBallsCommand::End (bool interrupted) {
     m_Intake->IntakeStop();
 }
 

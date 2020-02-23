@@ -17,6 +17,8 @@ void Robot::RobotInit() {}
 void Robot::RobotPeriodic () {
     frc2::CommandScheduler::GetInstance().Run();
 
+    m_container.PollInput();
+
     hal::fpga_clock::time_point now = hal::fpga_clock::now();
     m_DeltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - m_timePrev).count() / 1000000.0;
     m_timePrev = now;
@@ -24,7 +26,7 @@ void Robot::RobotPeriodic () {
     // Update rate (for logging)
     static int c = 0;
     if (c >= 50) {
-        std::cout << "Update Rate: " << roundf(1/m_DeltaTime) << " Hz" << std::endl;
+        //std::cout << "Update Rate: " << roundf(1/m_DeltaTime) << " Hz" << std::endl;
         c = 0;
     }
     c++;
@@ -52,9 +54,7 @@ void Robot::TeleopInit () {
     }
 }
 
-void Robot::TeleopPeriodic() {
-    m_container.PollInput();
-}
+void Robot::TeleopPeriodic() {}
 
 // Currently unused but we're keeping them defined.
 void Robot::TestPeriodic() {}
