@@ -7,6 +7,7 @@
 #include "subsystems/Shooter.h"
 #include "commands/AutonomousCommand.h"
 #include "commands/TeleopDriveCommand.h"
+#include "commands/ShootCommand.h"
 
 #include "commands/AutonomousCommand.h"
 #include "commands/IntakeBallsCommand.h"
@@ -46,6 +47,7 @@ class RobotContainer {
   RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
   ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
+  ShootCommand m_ShootCommand {&m_Shooter};
 
   void ConfigureButtonBindings();
 };
