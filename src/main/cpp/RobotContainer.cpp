@@ -38,10 +38,10 @@ void RobotContainer::PollInput () {
         m_Shooter.SetTracking(false);
     }
 
-    if (m_OperatorJoystick.GetBButton()) {
-        m_Shooter.SetShooterMotorSpeed(3500_rpm);
+    if (m_DriverJoystick.GetAButton()) {
+        m_ShootCommand.Schedule();
     } else {
-        m_Shooter.SetShooterMotorSpeed(0_rpm);
+        m_ShootCommand.Cancel();
     }
 
     // double speed = m_OperatorJoystick.GetX(frc::XboxController::kLeftHand);

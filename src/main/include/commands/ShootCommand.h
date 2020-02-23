@@ -10,6 +10,7 @@ class ShootCommand : public frc2::CommandHelper<frc2::CommandBase, ShootCommand>
         explicit ShootCommand(Shooter* shooter);
         void Initialize();
         void Execute();
+        void End(bool interrupted);
 
     private:
         Shooter* m_Shooter;

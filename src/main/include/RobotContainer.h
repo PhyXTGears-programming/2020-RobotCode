@@ -7,6 +7,7 @@
 #include "subsystems/Shooter.h"
 #include "commands/AutonomousCommand.h"
 #include "commands/TeleopDriveCommand.h"
+#include "commands/ShootCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -34,6 +35,7 @@ class RobotContainer {
   Shooter m_Shooter {};
   AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
+  ShootCommand m_ShootCommand {&m_Shooter};
 
   void ConfigureButtonBindings();
 };
