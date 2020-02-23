@@ -81,7 +81,7 @@ void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_min
 
 void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
     frc::SmartDashboard::PutNumber("Turret Speed Setpoint (RPM)", units::unit_cast<double>(speed));
-
+    
     if (units::math::fabs(speed) < 1_deg_per_s) {
         m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
         return;
