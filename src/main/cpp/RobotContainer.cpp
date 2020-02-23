@@ -1,26 +1,26 @@
 #include "RobotContainer.h"
 
-enum class Pov {
-  kRight = 90,
-  kLeft = 270, 
-  kUp = 180, 
-  kDown = 0
+enum class Pov : int {
+    kRight = 90,
+    kLeft = 270,
+    kUp = 180,
+    kDown = 0
 };
 
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
-  // Initialize all of your commands and subsystems here
+    // Initialize all of your commands and subsystems here
 
-  // Configure the button bindings
-  ConfigureButtonBindings();
+    // Configure the button bindings
+    ConfigureButtonBindings();
 }
 
 void RobotContainer::ConfigureButtonBindings() {
-  // Configure your button bindings here
+    // Configure your button bindings here
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
-  // An example command will be run in autonomous
-  return &m_AutonomousCommand;
+    // An example command will be run in autonomous
+    return &m_AutonomousCommand;
 }
 
 // Quick drivetrain testing code :D
