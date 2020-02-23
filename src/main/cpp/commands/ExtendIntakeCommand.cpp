@@ -13,13 +13,10 @@ void ExtendIntakeCommand::Execute () {
     m_Intake->IntakeReverse();
 }
 
-void ExtendIntakeCommand::End () {
-    // Stops intake
+void ExtendIntakeCommand::End (bool interrupted) {
     m_Intake->IntakeStop();
 }
 
 bool ExtendIntakeCommand::IsFinished() {
     return false;
 }
-
-

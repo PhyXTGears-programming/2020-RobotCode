@@ -13,12 +13,8 @@ void RetractIntakeCommand::Execute () {
     m_Intake->RetractIntake();
 }
 
-void RetractIntakeCommand::End () {
-    
-}
+void RetractIntakeCommand::End (bool interrupted) {}
 
 bool RetractIntakeCommand::IsFinished() {
     return true;
 }
-
-

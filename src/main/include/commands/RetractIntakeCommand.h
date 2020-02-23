@@ -11,7 +11,7 @@ class RetractIntakeCommand : public frc2::CommandHelper<frc2::CommandBase, Retra
 
         void Initialize();
         void Execute();
-        void End();
+        void End(bool interrupted);
         bool IsFinished();
 
     private:
