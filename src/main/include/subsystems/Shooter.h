@@ -16,24 +16,15 @@ class Shooter : public frc2::SubsystemBase {
         void Periodic() override;
 
         void SetShooterMotorSpeed(units::angular_velocity::revolutions_per_minute_t speed);
+        units::angular_velocity::revolutions_per_minute_t GetShooterMotorSpeed();
 
         inline void SetTracking (bool enabled) { m_TrackingActive = enabled; }
         inline bool GetTracking () { return m_TrackingActive; } 
 
         void SetTurretSpeed(units::angular_velocity::revolutions_per_minute_t speed);
 
-        inline void FeederStart () {
-            SetFeeder(true);
-        }
-
-        inline void FeederStop () {
-            SetFeeder(false);
-        }
-
     private:
         void TrackingPeriodic();
-
-        void SetFeeder(bool on);
 
         bool m_TrackingActive = false;
 
@@ -46,8 +37,6 @@ class Shooter : public frc2::SubsystemBase {
         rev::CANEncoder m_ShooterMotor2Encoder {m_ShooterMotor2};
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
-
-        ctre::phoenix::motorcontrol::can::TalonSRX m_FeederMotor {kTurretFeederMotor};
 
         std::shared_ptr<nt::NetworkTable> m_VisionTable;
         frc2::PIDController m_TurretPID {0.05, 0, 0};

@@ -9,9 +9,9 @@
 #define SetPIDSlot(motor, P, I, D, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot)
 #define SetPIDFSlot(motor, P, I, D, F, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot); motor.SetFF(F, slot)
 
-double P = 0.000189;
+double P = 0.001000;
 double I = 0;
-double D = 0.1;
+double D = 0.01;
 double F = 0.00018;
 
 #define kShooterGearRatio (18.0 / 24.0)
@@ -79,6 +79,10 @@ void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_min
     }
 }
 
+units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterMotorSpeed () {
+    return units::angular_velocity::revolutions_per_minute_t(m_ShooterMotor1Encoder.GetVelocity() / kShooterGearRatio);
+}
+
 void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
     frc::SmartDashboard::PutNumber("Turret Speed Setpoint (RPM)", units::unit_cast<double>(speed));
     
@@ -113,8 +117,4 @@ void Shooter::TrackingPeriodic () {
     }
 
     SetTurretSpeed(kMaxTurretVelocity * speed);
-}
-
-void Shooter::SetFeeder (bool on) {
-    m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.4 : 0);
 }

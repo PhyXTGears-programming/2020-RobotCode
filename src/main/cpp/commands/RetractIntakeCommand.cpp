@@ -8,7 +8,7 @@ RetractIntakeCommand::RetractIntakeCommand (Intake* intake) {
 void RetractIntakeCommand::Initialize () {}
 
 void RetractIntakeCommand::Execute () {
-    m_Intake->RetractIntake();
+    m_Intake->IntakeRetract();
 }
 
 void RetractIntakeCommand::End (bool interrupted) {}

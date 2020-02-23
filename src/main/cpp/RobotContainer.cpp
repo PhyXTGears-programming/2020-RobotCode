@@ -18,6 +18,7 @@ enum class Pov : int {
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
+    frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
 
     // Configure the button bindings
     ConfigureButtonBindings();

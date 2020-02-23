@@ -37,8 +37,8 @@ class RobotContainer {
   frc::XboxController m_OperatorJoystick{1};
 
   // The robot's subsystems and commands are defined here...
-  Drivetrain m_Drivetrain;
-  Intake m_Intake;
+  Drivetrain m_Drivetrain {};
+  Intake m_Intake {};
   Shooter m_Shooter {};
 
   AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
@@ -47,7 +47,7 @@ class RobotContainer {
   RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
   ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
-  ShootCommand m_ShootCommand {&m_Shooter};
+  ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
 
   void ConfigureButtonBindings();
 };
