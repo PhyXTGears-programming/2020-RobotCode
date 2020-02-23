@@ -1,7 +1,6 @@
 #include "commands/ExtendIntakeCommand.h"
 
 ExtendIntakeCommand::ExtendIntakeCommand (Intake* intake) {
-    //sets required subsystem
     AddRequirements(intake);
     m_Intake = intake;
 }
