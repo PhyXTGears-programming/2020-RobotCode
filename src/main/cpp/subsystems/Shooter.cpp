@@ -59,6 +59,44 @@ void Shooter::Periodic () {
     m_ShooterMotor1PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D)); 
     m_ShooterMotor2PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D));
 
+    double factor = 1 / kShooterGearRatio;
+    frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1Encoder.GetVelocity() * factor);
+    frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity() * factor);
+    
+    frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
+
+    TrackingPeriodic();
+}
+
+void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
+    if (units::math::fabs(speed) > 50_rpm) {
+        double motorSpeed = kShooterGearRatio * units::unit_cast<double>(speed);
+        m_ShooterMotor1PID.SetReference(motorSpeed, rev::kVelocity);
+        m_ShooterMotor2PID.SetReference(motorSpeed, rev::kVelocity);
+    } else {
+        m_ShooterMotor1.Set(0);
+        m_ShooterMotor2.Set(0);
+    }
+}
+
+void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
+    frc::SmartDashboard::PutNumber("Turret Speed Setpoint (RPM)", units::unit_cast<double>(speed));
+
+    if (units::math::fabs(speed) < 1_deg_per_s) {
+        m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
+        return;
+    }
+
+    double motorSpeed = kTurretGearRatio * units::unit_cast<double>(speed * kMotorRPMtoEncoderVelocity); // in encoder ticks per 100 ms
+    
+    m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
+}
+
+void Shooter::SetFeeder (bool on) {
+    m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.4 : 0);
+}
+
+void Shooter::TrackingPeriodic () {
     double speed = 0;
 
     if (m_TrackingActive) {
@@ -78,35 +116,5 @@ void Shooter::Periodic () {
         }
     }
 
-    std::cout << speed << std::endl;
     SetTurretSpeed(kMaxTurretVelocity * speed);
-}
-
-void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
-    if (units::math::fabs(speed) > 50_rpm) {
-        double motorSpeed = kShooterGearRatio * units::unit_cast<double>(speed);
-        m_ShooterMotor1PID.SetReference(motorSpeed, rev::kVelocity);
-        m_ShooterMotor2PID.SetReference(motorSpeed, rev::kVelocity);
-    } else {
-        m_ShooterMotor1.Set(0);
-        m_ShooterMotor2.Set(0);
-    }
-
-    double factor = 1 / kShooterGearRatio;
-    frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1Encoder.GetVelocity() * factor);
-    frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity() * factor);
-}
-
-void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
-    frc::SmartDashboard::PutNumber("Turret Speed Setpoint (RPM)", units::unit_cast<double>(speed));
-    frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
-    
-    if (units::math::fabs(speed) < 1_deg_per_s) {
-        m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
-        return;
-    }
-
-    double motorSpeed = kTurretGearRatio * units::unit_cast<double>(speed * kMotorRPMtoEncoderVelocity); // in encoder ticks per 100 ms
-    
-    m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
