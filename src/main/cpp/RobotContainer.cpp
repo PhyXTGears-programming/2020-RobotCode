@@ -49,18 +49,18 @@ void RobotContainer::PollInput () {
         m_Shooter.SetTracking(!m_Shooter.GetTracking());
         std::cout << "tracking?: " << m_Shooter.GetTracking() << std::endl;
     }
-    
-    if (m_DriverJoystick.GetAButton()) {
-        m_ShootCommand.Schedule();
-    } else {
-        m_ShootCommand.Cancel();
-    }
 
     double operatorLeftX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand);
     if (std::abs(operatorLeftX) > 0.1) {
         m_Shooter.SetTracking(false);
         m_Shooter.SetTurretSpeed(static_cast<units::angular_velocity::revolutions_per_minute_t>(operatorLeftX) * 25
         );
+    }
+    
+    if (m_OperatorJoystick.GetAButton()) {
+        m_ShootCommand.Schedule();
+    } else {
+        m_ShootCommand.Cancel();
     }
 
     // Intake / Carwash controls

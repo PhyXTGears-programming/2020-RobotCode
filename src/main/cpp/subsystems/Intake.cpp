@@ -1,5 +1,7 @@
 #include "subsystems/Intake.h"
 
+#include <iostream>
+
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
 
 #define kCornerMotorAdjust 1
@@ -15,6 +17,7 @@ void Intake::SetIntakeSpeed (double intakeSpeed) {
 }
 
 void Intake::SetConveyorSpeed (double conveyorSpeed) {
+    std::cout << "setting conveyor speed to " << conveyorSpeed << std::endl;
     m_ConveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, conveyorSpeed);
 }
 
