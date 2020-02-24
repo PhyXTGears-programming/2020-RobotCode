@@ -10,7 +10,7 @@ Intake::Intake () {
 
 void Intake::Periodic () {}
 
-void Intake::SetSpeed (double intakeSpeed) {
+void Intake::SetIntakeSpeed (double intakeSpeed) {
     m_IntakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, intakeSpeed);
 }
 
@@ -19,16 +19,25 @@ void Intake::SetConveyorSpeed (double conveyorSpeed) {
 }
 
 void Intake::IntakeStart () {
-    SetSpeed(-1);
-    SetConveyorSpeed(1);
+    SetIntakeSpeed(-1);
 }
 
 void Intake::IntakeStop () {
-    SetSpeed(0);
-    SetConveyorSpeed(0);
+    SetIntakeSpeed(0);
 }
 
 void Intake::IntakeReverse () {
-    SetSpeed(0.5);
+    SetIntakeSpeed(0.5);
+}
+
+void Intake::ConveyorStart () {
+    SetConveyorSpeed(1);
+}
+
+void Intake::ConveyorStop () {
     SetConveyorSpeed(0);
+}
+
+void Intake::ConveyorReverse () {
+    SetConveyorSpeed(-0.5);
 }

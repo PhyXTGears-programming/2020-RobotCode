@@ -11,12 +11,16 @@ class Intake : public frc2::SubsystemBase {
         Intake();
         void Periodic() override;
 
-        void SetSpeed(double intakeSpeed);
+        void SetIntakeSpeed(double intakeSpeed);
         void SetConveyorSpeed(double conveyorSpeed);
 
         void IntakeStart();
         void IntakeStop();
         void IntakeReverse();
+
+        void ConveyorStart();
+        void ConveyorStop();
+        void ConveyorReverse();
     
         int GetNumBalls () {
             return m_NumBalls + m_BallDetected;
