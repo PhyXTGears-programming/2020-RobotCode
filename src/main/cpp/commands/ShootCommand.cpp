@@ -28,6 +28,6 @@ void ShootCommand::Execute () {
 
 void ShootCommand::End (bool interrupted) {
     m_Shooter->SetShooterMotorSpeed(0_rpm);
-    m_Intake->SetConveyorSpeed(0);
+    m_Intake->ConveyorStop();
     m_Intake->FeederStop();
 }

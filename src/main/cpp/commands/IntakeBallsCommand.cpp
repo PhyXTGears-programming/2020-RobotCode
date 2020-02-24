@@ -15,9 +15,11 @@ void IntakeBallsCommand::Execute () {
     if (m_Intake->GetNumBalls() >= 5) {
         // If robot has 5 balls, stop intake & expel balls in intake
         m_Intake->IntakeReverse();
+        m_Intake->ConveyorStop();
     } else {
         // Starts intake
         m_Intake->IntakeStart();
+        m_Intake->ConveyorStart();
     }
 }
 
