@@ -59,8 +59,7 @@ void RobotContainer::PollInput () {
     double operatorLeftX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand);
     if (std::abs(operatorLeftX) > 0.1) {
         m_Shooter.SetTracking(false);
-        m_Shooter.SetTurretSpeed(static_cast<units::angular_velocity::revolutions_per_minute_t>(operatorLeftX)
-        );
+        m_Shooter.SetTurretSpeed(static_cast<units::angular_velocity::revolutions_per_minute_t>(operatorLeftX) * 2);
     }
 
     // Intake / Carwash controls
