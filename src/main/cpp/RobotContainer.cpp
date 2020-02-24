@@ -1,6 +1,7 @@
 #include "RobotContainer.h"
 
 #include <iostream>
+#include <cmath>
 
 #include <frc2/command/CommandScheduler.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -35,38 +36,66 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
 }
 
 void RobotContainer::PollInput () {
-    if (m_OperatorJoystick.GetYButtonPressed()) {
-        m_ExpelIntakeCommand.Schedule();
-    } else if (m_OperatorJoystick.GetYButtonReleased()) {
-        m_ExpelIntakeCommand.Cancel();
+    // ##################
+    // Driver Controls.
+    // ##################
+    // TODO: ADD CONTROLS AND TUNE THEM
+
+    // ##################
+    // Operator Controls.
+    // ##################
+    // Shooter controls
+    if (m_OperatorJoystick.GetXButtonPressed()) {
+        m_Shooter.SetTracking(!m_Shooter.GetTracking());
+        std::cout << "tracking?: " << m_Shooter.GetTracking() << std::endl;
     }
     
-    if (m_OperatorJoystick.GetBButtonPressed()) {
-        m_IntakeBallsCommand.Schedule();
-    } else if (m_OperatorJoystick.GetBButtonReleased()) {
-        m_IntakeBallsCommand.Cancel();
-    }
-
-    if (static_cast<int>(Pov::kRight) == m_OperatorJoystick.GetPOV()) {
-        m_ExtendIntakeCommand.Schedule();
-    } else if (static_cast<int>(Pov::kLeft) == m_OperatorJoystick.GetPOV()) {
-        m_RetractIntakeCommand.Schedule();
-    }
-
-    if (m_OperatorJoystick.GetAButtonPressed()) {
-        m_Shooter.SetTracking(true);
-        std::cout << "tracking" << std::endl;
-    } else if (m_OperatorJoystick.GetAButtonReleased()) {
-        m_Shooter.SetTracking(false);
-    }
-
     if (m_DriverJoystick.GetAButton()) {
         m_ShootCommand.Schedule();
     } else {
         m_ShootCommand.Cancel();
     }
 
-    // double speed = m_OperatorJoystick.GetX(frc::XboxController::kLeftHand);
-    // speed = fabs(speed) < 0.2 ? 0 : speed;
-    // m_Shooter.SetTurretSpeed(speed * 10_rpm);
+    double operatorLeftX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand);
+    if (std::abs(operatorLeftX) > 0.1) {
+        m_Shooter.SetTracking(false);
+        m_Shooter.SetTurretSpeed(static_cast<units::angular_velocity::revolutions_per_minute_t>(operatorLeftX)
+        );
+    }
+
+    // Intake / Carwash controls
+    if (m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kLeftHand)) {
+        if (m_Intake.IsExtended()) {
+            m_RetractIntakeCommand.Schedule();
+        } else {
+            m_ExtendIntakeCommand.Schedule();
+        }
+    }
+
+    if (m_OperatorJoystick.GetBButtonPressed()) {
+        m_Intake.ConveyorStop();
+        m_Intake.IntakeStop();
+    } else {
+        switch (m_OperatorJoystick.GetPOV())
+        {
+            case static_cast<int>(Pov::kUp):    m_Intake.IntakeStart();     break; //m_IntakeBallsCommand.Schedule ?
+            case static_cast<int>(Pov::kDown):  m_Intake.IntakeReverse();   break; //m_ExpelIntakeCommand.Schedule ?
+            case static_cast<int>(Pov::kLeft):  m_Intake.ConveyorReverse(); break;
+            case static_cast<int>(Pov::kRight): m_Intake.ConveyorStart();   break;
+            default: break;
+        }
+    }
+
+    // Control panel controls
+    // TODO: CHANGE TO REAL CODE
+    // if (m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kRightHand)) {
+    //     if (m_Controller.IsExtended()) {
+    //         m_RetractControllerCommand.Schedule();
+    //     } else {
+    //         m_ExtendControllerCommand.Schedule();
+    //     }
+    // }
+    // if (m_OperatorJoystick.GetYButtonPressed()) {
+    //     m_ControlPanelControl.Schedule();
+    // }
 }

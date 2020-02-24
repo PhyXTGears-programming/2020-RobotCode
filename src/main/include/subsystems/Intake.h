@@ -29,11 +29,13 @@ class Intake : public frc2::SubsystemBase {
         void IntakeExtend () {
             m_IntakeExtendSolenoid.Set(true);
             m_IntakeRetractSolenoid.Set(false);
+            m_IntakeExtended = true;
         }
 
         void IntakeRetract () {
             m_IntakeExtendSolenoid.Set(false);
             m_IntakeRetractSolenoid.Set(true);
+            m_IntakeExtended = false;
         }
 
         inline void FeederStart () {
@@ -44,6 +46,10 @@ class Intake : public frc2::SubsystemBase {
             SetFeeder(false);
         }
 
+        inline bool IsExtended() {
+            return m_IntakeExtended;
+        }
+
     private:
         void SetFeeder (bool on) {
             m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.48 : 0);
@@ -51,6 +57,8 @@ class Intake : public frc2::SubsystemBase {
 
         int m_NumBalls = 0;
         bool m_BallDetected = false;
+
+        bool m_IntakeExtended = false;
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_IntakeMotor {kIntakeMotor};
         ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorMotor {kConveyorMotor};
