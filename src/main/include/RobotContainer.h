@@ -14,6 +14,7 @@
 #include "commands/ExpelIntakeCommand.h"
 #include "commands/ExtendIntakeCommand.h"
 #include "commands/RetractIntakeCommand.h"
+#include "commands/ReverseBrushesCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -50,6 +51,8 @@ class RobotContainer {
         ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
         TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
         ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
+        ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake};
 
         bool m_TurretManualControl = false; // Currently running manual control
+        bool m_IntakeExtended = false;
 };

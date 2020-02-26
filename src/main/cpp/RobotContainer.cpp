@@ -36,15 +36,35 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
 
 void RobotContainer::PollInput () {
     // ####################
-    // #####  Driver  #####
+    // #####   Both   #####
     // ####################
 
-    // Shooting (A [operator: B])
+    // Shooting (driver: RB, operator: B)
     if (m_DriverJoystick.GetAButtonPressed() || m_OperatorJoystick.GetBButtonPressed()) {
         m_ShootCommand.Schedule();
     } else if (m_DriverJoystick.GetAButtonReleased() || m_OperatorJoystick.GetBButtonReleased()) {
         m_ShootCommand.Cancel();
     }
+
+    // Intake (driver: LB, operator: RT)
+    bool intakeAxis = m_OperatorJoystick.GetTriggerAxis(frc::GenericHID::JoystickHand::kRightHand)) > 0.1;
+    if (intakeAxis && !m_IntakeBallsCommand.IsScheduled()) {
+        m_IntakeBallsCommand.Schedule();
+    } else if (intakeAxis <= 0.1 && m_IntakeBallsCommand.IsScheduled()) {
+        m_IntakeBallsCommand.Cancel();
+    }
+
+    // Deploy/Retract Intake (driver: X, operator: LB)
+    if (m_DriverJoystick.GetXButtonPressed() || m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kLeftHand)) {
+        if (m_IntakeExtended) {
+            m_RetractIntakeCommand.Schedule();
+        } else {
+            m_ExtendIntakeCommand.Schedule();
+        }
+        m_IntakeExtended = !m_IntakeExtended;
+    }
+
+    // Swap Camera (driver: A, operator: RB)
 
     // ####################
     // ##### Operator #####
@@ -76,13 +96,6 @@ void RobotContainer::PollInput () {
         m_TurretManualControl = false;
     }
 
-    // Intake (RT)
-    if (m_OperatorJoystick.GetTriggerAxis(frc::GenericHID::JoystickHand::kRightHand) > 0.1 && !m_IntakeBallsCommand.IsScheduled()) {
-        m_IntakeBallsCommand.Schedule();
-    } else if (m_OperatorJoystick.GetTriggerAxis(frc::GenericHID::JoystickHand::kRightHand) <= 0.1 && m_IntakeBallsCommand.IsScheduled()) {
-        m_IntakeBallsCommand.Cancel();
-    }
-
     // Expel Intake (DP Left)
     if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Left) && !m_ExpelIntakeCommand.IsScheduled()) {
         m_ExpelIntakeCommand.Schedule();
@@ -90,11 +103,11 @@ void RobotContainer::PollInput () {
         m_ExpelIntakeCommand.Cancel();
     }
 
-    // Deploy/Retract Intake (LB/RB)
-    if (m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kRightHand)) {
-        m_ExtendIntakeCommand.Schedule();
-    } else if (m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kLeftHand)) {
-        m_RetractIntakeCommand.Schedule();
+    // Reverse Brushes (DP Right)
+    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Right) && !m_ReverseBrushesCommand.IsScheduled()) {
+        m_ReverseBrushesCommand.Schedule();
+    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Right) && m_ReverseBrushesCommand.IsScheduled()) {
+        m_ReverseBrushesCommand.Cancel();
     }
 
     // Control Panel (Y)

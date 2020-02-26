@@ -9,7 +9,7 @@
 #define SetPIDSlot(motor, P, I, D, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot)
 #define SetPIDFSlot(motor, P, I, D, F, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot); motor.SetFF(F, slot)
 
-double P = 0.001000;
+double P = 0.001;
 double I = 0;
 double D = 0.01;
 double F = 0.00018;
