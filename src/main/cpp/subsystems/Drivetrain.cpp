@@ -8,7 +8,21 @@
 
 #define kTurnInputConstant  0.2
 
-Drivetrain::Drivetrain () {}
+constexpr auto kWheelDiameter = 5.875_in;
+constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
+constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
+
+#define leftSideAngularPosition()  units::angle::radian_t(m_LeftEncoder.GetPosition())
+#define rightSideAngularPosition() units::angle::radian_t(m_RightEncoder.GetPosition())
+
+#define leftSidePosition()  leftSideAngularPosition() * kDistancePerWheelRadian
+#define rightSidePosition() rightSideAngularPosition() * kDistancePerWheelRadian
+
+#define leftSideAngularVelocity()  units::angular_velocity::radians_per_second_t(m_LeftEncoder.GetVelocity())
+#define rightSideAngularVelocity() units::angular_velocity::radians_per_second_t(m_RightEncoder.GetVelocity())
+
+#define leftSideVelocity()  leftSideAngularVelocity() * kDistancePerWheelRadian
+#define rightSideVelocity() rightSideAngularVelocity() * kDistancePerWheelRadian
 
 void Drivetrain::Periodic () {
     m_OdometryHelper.Update();

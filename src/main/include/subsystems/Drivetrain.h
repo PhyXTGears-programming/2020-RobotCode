@@ -1,11 +1,12 @@
 #pragma once
 
-#include <rev/CANSparkMax.h>
 #include <frc2/command/SubsystemBase.h>
+#include <rev/CANSparkMax.h>
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/SpeedControllerGroup.h>
 #include <frc/XboxController.h>
 #include <units/units.h>
+#include <frc/kinematics/DifferentialDriveOdometry.h>
 
 #include "Constants.h"
 #include "kinematics/OdometryHelper.h"
@@ -31,6 +32,9 @@ class Drivetrain : public frc2::SubsystemBase {
 
         frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
         frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
+
+        rev::CANEncoder m_LeftEncoder {m_LeftMotor1};
+        rev::CANEncoder m_RightEncoder {m_RightMotor1};
 
         OdometryHelper m_OdometryHelper {new rev::CANEncoder(m_LeftMotor1), new rev::CANEncoder(m_RightMotor1)};
 };

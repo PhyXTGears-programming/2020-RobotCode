@@ -4,8 +4,17 @@
 #include <frc/XboxController.h>
 
 #include "subsystems/Drivetrain.h"
+#include "subsystems/Shooter.h"
 #include "commands/AutonomousCommand.h"
 #include "commands/TeleopDriveCommand.h"
+#include "commands/ShootCommand.h"
+
+#include "commands/AutonomousCommand.h"
+#include "commands/IntakeBallsCommand.h"
+#include "commands/ExpelIntakeCommand.h"
+#include "commands/ExtendIntakeCommand.h"
+#include "commands/RetractIntakeCommand.h"
+#include "commands/ReverseBrushesCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -15,20 +24,35 @@
  * commands, and button mappings) should be declared here.
  */
 class RobotContainer {
- public:
-  RobotContainer();
+    public:
+        RobotContainer();
 
-  frc2::Command* GetAutonomousCommand();
+        frc2::Command* GetAutonomousCommand();
 
- private:
-  // Operators' input devices.
-  // These are 0 indexed!
-  frc::XboxController m_DriverJoystick{0};
+        void PollInput();
 
-  // The robot's subsystems and commands are defined here...
-  Drivetrain m_Drivetrain;
-  AutonomousCommand m_AutonomousCommand;
-  TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
+    private:
+        void ConfigureButtonBindings();
 
-  void ConfigureButtonBindings();
+        // Operators' input devices.
+        // These are 0 indexed!
+        frc::XboxController m_DriverJoystick{0};
+        frc::XboxController m_OperatorJoystick{1};
+
+        // The robot's subsystems and commands are defined here...
+        Drivetrain m_Drivetrain {};
+        Intake m_Intake {};
+        Shooter m_Shooter {};
+
+        AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
+        IntakeBallsCommand m_IntakeBallsCommand {&m_Intake};
+        ExpelIntakeCommand m_ExpelIntakeCommand {&m_Intake};
+        RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
+        ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
+        TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
+        ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
+        ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake};
+
+        bool m_TurretManualControl = false; // Currently running manual control
+        bool m_IntakeExtended = false;
 };
