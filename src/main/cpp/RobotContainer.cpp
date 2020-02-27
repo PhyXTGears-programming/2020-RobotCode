@@ -39,23 +39,23 @@ void RobotContainer::PollInput () {
     // #####   Both   #####
     // ####################
 
-    // Shooting (driver: RB, operator: B)
-    if (m_DriverJoystick.GetAButtonPressed() || m_OperatorJoystick.GetBButtonPressed()) {
+    // Shooting (driver: RB, operator: A)
+    if (m_DriverJoystick.GetAButtonPressed() || m_OperatorJoystick.GetAButtonPressed()) {
         m_ShootCommand.Schedule();
-    } else if (m_DriverJoystick.GetAButtonReleased() || m_OperatorJoystick.GetBButtonReleased()) {
+    } else if (m_DriverJoystick.GetAButtonReleased() || m_OperatorJoystick.GetAButtonReleased()) {
         m_ShootCommand.Cancel();
     }
 
     // Intake (driver: LB, operator: RT)
-    bool intakeAxis = m_OperatorJoystick.GetTriggerAxis(frc::GenericHID::JoystickHand::kRightHand)) > 0.1;
+    bool intakeAxis = m_OperatorJoystick.GetTriggerAxis(frc::GenericHID::JoystickHand::kRightHand) > 0.1;
     if (intakeAxis && !m_IntakeBallsCommand.IsScheduled()) {
         m_IntakeBallsCommand.Schedule();
     } else if (intakeAxis <= 0.1 && m_IntakeBallsCommand.IsScheduled()) {
         m_IntakeBallsCommand.Cancel();
     }
 
-    // Deploy/Retract Intake (driver: X, operator: LB)
-    if (m_DriverJoystick.GetXButtonPressed() || m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kLeftHand)) {
+    // Deploy/Retract Intake (driver: X, operator: RB)
+    if (m_DriverJoystick.GetXButtonPressed() || m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kRightHand)) {
         if (m_IntakeExtended) {
             m_RetractIntakeCommand.Schedule();
         } else {
@@ -64,32 +64,33 @@ void RobotContainer::PollInput () {
         m_IntakeExtended = !m_IntakeExtended;
     }
 
-    // Swap Camera (driver: A, operator: RB)
+    // Swap Camera (driver: A, operator: Y)
 
     // ####################
     // ##### Operator #####
     // ####################
 
-    // Camera Aiming (A)
-    if (m_OperatorJoystick.GetAButtonPressed()) {
+    // Camera Aiming (X)
+    if (m_OperatorJoystick.GetXButtonPressed()) {
         m_Shooter.SetTrackingMode(TrackingMode::CameraTracking);
-    } else if (m_OperatorJoystick.GetAButtonReleased()) {
+    } else if (m_OperatorJoystick.GetXButtonReleased()) {
         m_Shooter.SetTrackingMode(TrackingMode::Off);
     }
 
-    // Gyro Aiming (X)
-    if (!m_OperatorJoystick.GetAButton()) {
-        if (m_OperatorJoystick.GetXButtonPressed()) {
+    // Gyro Aiming (B)
+    if (!m_OperatorJoystick.GetXButton()) {
+        if (m_OperatorJoystick.GetBButtonPressed()) {
             m_Shooter.SetTrackingMode(TrackingMode::GyroTracking);
-        } else if (m_OperatorJoystick.GetXButtonReleased()) {
+        } else if (m_OperatorJoystick.GetBButtonReleased()) {
             m_Shooter.SetTrackingMode(TrackingMode::Off);
         }
     }
 
     // Manual Aiming (LS)
-    if (fabs(m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand)) > 0.1) {
+    double operatorLeftX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand);
+    if (std::abs(operatorLeftX) > 0.1) {
         m_Shooter.SetTrackingMode(TrackingMode::Off);
-        m_Shooter.SetTurretSpeed(std::copysign(1, m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand)) * 20_rpm);
+        m_Shooter.SetTurretSpeed(operatorLeftX * 25_rpm);
         m_TurretManualControl = true;
     } else if (m_TurretManualControl) {
         m_Shooter.SetTurretSpeed(0_rpm);
@@ -110,7 +111,11 @@ void RobotContainer::PollInput () {
         m_ReverseBrushesCommand.Cancel();
     }
 
-    // Control Panel (Y)
+    // Control Panel (LB, LT)
+    // LB to deploy/retract
+    // LT to spin wheel
 
-    // Climb (Back/Start)
+    // Climb (RS)
+    // Right stick click to toggle solenoids
+    // Right stick X to move with motor
 }
