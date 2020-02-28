@@ -37,7 +37,8 @@ class OdometryHelper {
     private:
         rev::CANEncoder* GetEncoder(WheelSide side);
 
-        frc::DifferentialDriveOdometry* m_Odometry;
         rev::CANEncoder* m_LeftEncoder;
         rev::CANEncoder* m_RightEncoder;
+        
+        frc::DifferentialDriveOdometry* m_Odometry;
 };

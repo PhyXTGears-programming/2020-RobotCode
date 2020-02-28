@@ -51,7 +51,7 @@ class RobotContainer {
         ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
         TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
         ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
-        ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake};
+        ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake, &m_Drivetrain};
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;

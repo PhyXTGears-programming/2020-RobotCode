@@ -24,6 +24,20 @@ constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
 #define leftSideVelocity()  leftSideAngularVelocity() * kDistancePerWheelRadian
 #define rightSideVelocity() rightSideAngularVelocity() * kDistancePerWheelRadian
 
+Drivetrain::Drivetrain () {
+    // Position in wheel angular displacement (rad)
+    m_LeftEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
+    m_RightEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
+
+    // Velocity in wheel angular velocity (rad/s)
+    m_LeftEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
+    m_RightEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
+
+    // Initial Position is 0
+    m_LeftEncoder.SetPosition(0.0);
+    m_RightEncoder.SetPosition(0.0);
+}
+
 void Drivetrain::Periodic () {
     m_OdometryHelper.Update();
 }
@@ -44,15 +58,12 @@ void Drivetrain::Drive (double yInput, double xInput) {
 }
 
 // Given a radius and speed, drive around the circle
-template<typename LengthUnit>
-void Drivetrain::RadiusDrive (double speed, LengthUnit radius) {
-    static_assert(units::traits::is_length_unit<LengthUnit>::value, "Input value radius must represent a length quantity.");
-
+void Drivetrain::RadiusDrive (double speed, units::length::meter_t radius) {
     radius *= -1;
 
     // Calculate the radius for each wheel
-    LengthUnit leftWheelRadius = radius + RobotPhysicalConstants::halfWheelBase;
-    LengthUnit rightWheelRadius = radius - RobotPhysicalConstants::halfWheelBase;
+    units::length::meter_t leftWheelRadius = radius + RobotPhysicalConstants::halfWheelBase;
+    units::length::meter_t rightWheelRadius = radius - RobotPhysicalConstants::halfWheelBase;
 
     // Default speed is 1
     double leftWheelSpeed = 1;
@@ -84,4 +95,13 @@ void Drivetrain::RadiusDrive (double speed, LengthUnit radius) {
     // Write to motors
     m_LeftMotors.Set(leftWheelSpeed);
     m_RightMotors.Set(rightWheelSpeed);
+}
+
+void Drivetrain::TankDriveVolts (units::volt_t left, units::volt_t right) {
+    m_LeftMotor1PID.SetReference(units::unit_cast<double>(left), rev::ControlType::kVoltage);
+    m_LeftMotor2PID.SetReference(units::unit_cast<double>(left), rev::ControlType::kVoltage);
+    m_LeftMotor3PID.SetReference(units::unit_cast<double>(left), rev::ControlType::kVoltage);
+    m_RightMotor1PID.SetReference(units::unit_cast<double>(right), rev::ControlType::kVoltage);
+    m_RightMotor2PID.SetReference(units::unit_cast<double>(right), rev::ControlType::kVoltage);
+    m_RightMotor3PID.SetReference(units::unit_cast<double>(right), rev::ControlType::kVoltage);
 }

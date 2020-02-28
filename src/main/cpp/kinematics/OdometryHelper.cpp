@@ -5,8 +5,6 @@
 #include <AHRS.h>
 #include <frc/SPI.h>
 
-#define PI 3.14159265358979323846
-
 AHRS navx {frc::SPI::Port::kMXP}; // Declared here because the AHRS.h file contains "using namespace std;"
 
 OdometryHelper::OdometryHelper (rev::CANEncoder* leftEncoder, rev::CANEncoder* rightEncoder) {
@@ -37,6 +35,9 @@ void OdometryHelper::Update () {
         std::cout << "Linear Position: " << GetLinearPosition(WheelSide::leftWheels) << " " << GetLinearPosition(WheelSide::rightWheels) << std::endl;
         std::cout << "Linear Velocity: " << GetLinearVelocity(WheelSide::leftWheels) << " " << GetLinearVelocity(WheelSide::rightWheels) << std::endl;
         std::cout << "Angle: " << GetRobotAngle().Degrees() << std::endl;
+    
+        frc::Pose2d pose = GetRobotPose();
+        std::cout << "(" << pose.Translation().X() << ", " << pose.Translation().Y() << ") " << pose.Rotation().Degrees() << std::endl;
     }
     m_Odometry->Update(GetRobotAngle(), GetLinearPosition(WheelSide::leftWheels), GetLinearPosition(WheelSide::rightWheels));
     c++;
@@ -46,7 +47,9 @@ frc::DifferentialDriveWheelSpeeds OdometryHelper::GetWheelSpeeds () {
     return {GetLinearVelocity(WheelSide::leftWheels), GetLinearVelocity(WheelSide::rightWheels)};
 }
 
-// GetRobotPose
+frc::Pose2d OdometryHelper::GetRobotPose () {
+    return m_Odometry->GetPose();
+}
 
 frc::Rotation2d OdometryHelper::GetRobotAngle () {
     return frc::Rotation2d(units::angle::degree_t(-navx.GetYaw()));
