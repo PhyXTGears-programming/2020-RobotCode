@@ -10,6 +10,8 @@
 #include <networktables/NetworkTableInstance.h>
 #include <units/units.h>
 
+enum class TrackingMode { Off, GyroTracking, CameraTracking, Auto };
+
 class Shooter : public frc2::SubsystemBase {
     public:
         Shooter();
@@ -18,15 +20,14 @@ class Shooter : public frc2::SubsystemBase {
         void SetShooterMotorSpeed(units::angular_velocity::revolutions_per_minute_t speed);
         units::angular_velocity::revolutions_per_minute_t GetShooterMotorSpeed();
 
-        inline void SetTracking (bool enabled) { m_TrackingActive = enabled; }
-        inline bool GetTracking () { return m_TrackingActive; } 
+        void SetTrackingMode (TrackingMode mode);
 
         void SetTurretSpeed(units::angular_velocity::revolutions_per_minute_t speed);
 
     private:
-        void TrackingPeriodic();
+        void TrackingPeriodic(TrackingMode mode);
 
-        bool m_TrackingActive = false;
+        TrackingMode m_TrackingMode = TrackingMode::Off;
 
         rev::CANSparkMax m_ShooterMotor1 {kShooterMotor1, rev::CANSparkMax::MotorType::kBrushless};
         rev::CANPIDController m_ShooterMotor1PID {m_ShooterMotor1};
@@ -39,5 +40,5 @@ class Shooter : public frc2::SubsystemBase {
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
 
         std::shared_ptr<nt::NetworkTable> m_VisionTable;
-        frc2::PIDController m_TurretPID {0.05, 0, 0};
+        frc2::PIDController m_TurretPID {0.05, 0, 0.0};
 };
