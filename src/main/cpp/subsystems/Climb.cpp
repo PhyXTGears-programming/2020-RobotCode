@@ -15,9 +15,11 @@ void Climb::SetWinchSpeed (double ClimbWinchSpeed) {
 void Climb::PistonExtend () {
     m_ClimbExtendSolenoid.Set(true);
     m_ClimbRetractSolenoid.Set(false);
+    m_IsClimbing = true;
 }
 
 void Climb::PistonRetract () {
     m_ClimbExtendSolenoid.Set(false);
     m_ClimbRetractSolenoid.Set(true);
+    m_IsClimbing = false;
 }

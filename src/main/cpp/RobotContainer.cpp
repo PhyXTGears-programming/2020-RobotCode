@@ -105,17 +105,24 @@ void RobotContainer::PollInput () {
     }
 
     // Reverse Brushes (DP Right)
-    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Right) && !m_ReverseBrushesCommand.IsScheduled()) {
-        m_ReverseBrushesCommand.Schedule();
-    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Right) && m_ReverseBrushesCommand.IsScheduled()) {
-        m_ReverseBrushesCommand.Cancel();
-    }
+    // if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Right) && !m_ReverseBrushesCommand.IsScheduled()) {
+    //     m_ReverseBrushesCommand.Schedule();
+    // } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Right) && m_ReverseBrushesCommand.IsScheduled()) {
+    //     m_ReverseBrushesCommand.Cancel();
+    // }
 
     // Control Panel (LB, LT)
     // LB to deploy/retract
     // LT to spin wheel
 
     // Climb (RS)
+    if (m_OperatorJoystick.GetStickButtonPressed(frc::GenericHID::JoystickHand::kRightHand)) {
+        if (m_Climb.IsClimbing()) {
+            m_ExtendClimbCommand.Schedule();
+        } else {
+            m_RetractClimbCommand.Schedule();
+        }
+    }
     // Right stick click to toggle solenoids
     // Right stick X to move with motor
 }

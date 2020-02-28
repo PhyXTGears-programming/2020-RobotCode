@@ -16,9 +16,13 @@ class Climb : public frc2::SubsystemBase {
 
         void SetWinchSpeed(double speed);
 
+        bool IsClimbing() { return m_IsClimbing; }
+
         // TODO movement on bar 
 
     private:
+        bool m_IsClimbing = false;
+
         ctre::phoenix::motorcontrol::can::TalonSRX m_ClimbWinchMotor {kClimbWinchMotor};
 
         frc::Solenoid m_ClimbExtendSolenoid {kClimbExtendSolenoid};
