@@ -13,7 +13,9 @@
 #include "commands/IntakeBallsCommand.h"
 #include "commands/ExpelIntakeCommand.h"
 #include "commands/ExtendIntakeCommand.h"
+#include "commands/ExtendClimbCommand.h"
 #include "commands/RetractIntakeCommand.h"
+#include "commands/RetractClimbCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -39,13 +41,16 @@ class RobotContainer {
   // The robot's subsystems and commands are defined here...
   Drivetrain m_Drivetrain {};
   Intake m_Intake {};
+  Climb m_Climb {};
   Shooter m_Shooter {};
 
   AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
   IntakeBallsCommand m_IntakeBallsCommand {&m_Intake};
   ExpelIntakeCommand m_ExpelIntakeCommand {&m_Intake};
   RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
+  RetractClimbCommand m_RetractClimbCommand {&m_Climb};
   ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
+  ExtendClimbCommand m_ExtendClimbCommand {&m_Climb};
   TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
   ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
 
