@@ -10,7 +10,7 @@ class Climb : public frc2::SubsystemBase {
     public:
         Climb();
         void Periodic() override;
-        
+
         void PistonExtend();
         void PistonRetract();
 
@@ -18,7 +18,7 @@ class Climb : public frc2::SubsystemBase {
 
         bool IsClimbing() { return m_IsClimbing; }
 
-        // TODO movement on bar 
+        // TODO movement on bar
 
     private:
         bool m_IsClimbing = false;
