@@ -8,11 +8,11 @@
 #include <frc2/command/PrintCommand.h>
 #include <units/units.h>
 
-enum class Pov : int {
-    Right = 90,
-    Left = 270,
-    Up = 0,
-    Down = 180
+enum Pov {
+    POV_RIGHT = 90,
+    POV_LEFT = 270,
+    POV_UP = 0,
+    POV_DOWN = 180,
 };
 
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
@@ -98,16 +98,16 @@ void RobotContainer::PollInput () {
     }
 
     // Expel Intake (DP Left)
-    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Left) && !m_ExpelIntakeCommand.IsScheduled()) {
+    if (POV_LEFT == m_OperatorJoystick.GetPOV() && !m_ExpelIntakeCommand.IsScheduled()) {
         m_ExpelIntakeCommand.Schedule();
-    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Left) && m_ExpelIntakeCommand.IsScheduled()) {
+    } else if (POV_LEFT != m_OperatorJoystick.GetPOV() && m_ExpelIntakeCommand.IsScheduled()) {
         m_ExpelIntakeCommand.Cancel();
     }
 
     // Reverse Brushes (DP Right)
-    // if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Right) && !m_ReverseBrushesCommand.IsScheduled()) {
+    // if (POV_RIGHT == m_OperatorJoystick.GetPOV() && !m_ReverseBrushesCommand.IsScheduled()) {
     //     m_ReverseBrushesCommand.Schedule();
-    // } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Right) && m_ReverseBrushesCommand.IsScheduled()) {
+    // } else if (POV_RIGHT != m_OperatorJoystick.GetPOV() && m_ReverseBrushesCommand.IsScheduled()) {
     //     m_ReverseBrushesCommand.Cancel();
     // }
 
