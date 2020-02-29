@@ -56,13 +56,15 @@ void Climb::WinchStop() {
 void Climb::WinchLock() {
     // Stop the winch motor, we're about to stall it.
     WinchStop();
-    m_Brake.Set(true);
+    m_BrakeLockSolenoid.Set(true);
+    m_BrakeUnlockSolenoid.Set(false);
 
     SetWinchLockFlag();
 }
 
 void Climb::WinchUnlock() {
-    m_Brake.Set(false);
+    m_BrakeLockSolenoid.Set(false);
+    m_BrakeUnlockSolenoid.Set(true);
 
     ResetWinchLockFlag();
 }

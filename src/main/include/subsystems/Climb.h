@@ -45,7 +45,8 @@ class Climb : public frc2::SubsystemBase {
         frc::Solenoid m_ClimbExtendSolenoid {kClimbExtendSolenoid};
         frc::Solenoid m_ClimbRetractSolenoid {kClimbRetractSolenoid};
 
-        frc::Solenoid m_Brake {kBrakeSolenoid};
+        frc::Solenoid m_BrakeLockSolenoid {kBrakeLockSolenoid};
+        frc::Solenoid m_BrakeUnlockSolenoid {kBrakeUnlockSolenoid};
 
         frc::Relay m_ClimbRoller {kClimbRollerRelay};
 
