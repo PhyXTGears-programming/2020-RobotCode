@@ -1,6 +1,6 @@
 #include "commands/ReverseBrushesCommand.h"
 
-ReverseBrushesCommand::ReverseBrushesCommand (Intake* intake, Drivetrain* drivetrain) {
+ReverseBrushesCommand::ReverseBrushesCommand (Intake* intake) {
     AddRequirements(intake);
     m_Intake = intake;
 }
