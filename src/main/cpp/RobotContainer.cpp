@@ -1,11 +1,14 @@
 #include "RobotContainer.h"
 
+#include "commands/SimpleDriveCommand.h"
+
 #include <iostream>
 
 #include <frc2/command/CommandScheduler.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/PrintCommand.h>
+#include <frc2/command/ParallelRaceGroup.h>
 #include <units/units.h>
 
 enum class Pov : int {
@@ -20,6 +23,10 @@ RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
 
+    m_SimpleAutoCommand = new frc2::SequentialCommandGroup(
+        SimpleDriveCommand{0.25, 0.0, &m_Drivetrain}.WithTimeout(1.0_s)
+    );
+
     // Configure the button bindings
     ConfigureButtonBindings();
 }
@@ -31,7 +38,7 @@ void RobotContainer::ConfigureButtonBindings() {
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
-    return &m_AutonomousCommand;
+    return m_SimpleAutoCommand;
 }
 
 void RobotContainer::PollInput () {
