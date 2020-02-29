@@ -57,7 +57,8 @@ void RobotContainer::PollInput () {
     }
 
     // Deploy/Retract Intake (driver: X, operator: RB)
-    if (m_DriverJoystick.GetXButtonPressed() || m_OperatorJoystick.GetBumperPressed(JoystickHand::kRightHand)) {
+    if (m_DriverJoystick.GetXButtonPressed()
+        || (m_OperatorJoystick.GetBumperPressed(JoystickHand::kRightHand) && !m_DriverJoystick.GetXButton())) {
         if (m_IntakeExtended) {
             m_RetractIntakeCommand.Schedule();
         } else {
