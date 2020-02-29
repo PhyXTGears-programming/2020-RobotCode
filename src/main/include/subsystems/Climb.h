@@ -18,10 +18,14 @@ class Climb : public frc2::SubsystemBase {
         void WinchCableIn(double percentSpeed);
         void WinchStop();
 
+        void WinchLock();
+        void WinchUnlock();
+
         // Contract: m_IsClimbing = m_IsClimbing || m_IsWinchOut
         bool IsClimbing() { return m_IsClimbing; }
         bool IsPistonExtended() { return m_IsPistonExtended; }
         bool IsWinchCableOut() { return m_IsWinchCableOut; }
+        bool IsWinchLocked() { return m_IsWinchLocked; }
 
         // TODO movement on bar
 
@@ -29,11 +33,14 @@ class Climb : public frc2::SubsystemBase {
         bool m_IsClimbing = false;
         bool m_IsPistonExtended = false;
         bool m_IsWinchCableOut = false;
+        bool m_IsWinchLocked = false;
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_ClimbWinchMotor {kClimbWinchMotor};
 
         frc::Solenoid m_ClimbExtendSolenoid {kClimbExtendSolenoid};
         frc::Solenoid m_ClimbRetractSolenoid {kClimbRetractSolenoid};
+
+        frc::Solenoid m_Brake {kBrakeSolenoid};
 
         void SetWinchSpeed(double speed);
 
@@ -43,5 +50,8 @@ class Climb : public frc2::SubsystemBase {
         void SetWinchCableOutFlag();
         // No reset winch flag.  Cannot detect when winch is fully reset.
         // Restart robot code if need cleared.
+
+        void SetWinchLockFlag();
+        void ResetWinchLockFlag();
 };
 

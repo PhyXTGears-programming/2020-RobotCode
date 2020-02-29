@@ -26,6 +26,11 @@ void Climb::PistonRetract () {
 }
 
 void Climb::WinchCableOut(double percentSpeed) {
+    // Winch motor cannot turn when latch is engaged.
+    if (m_IsWinchLocked) {
+        return;
+    }
+
     percentSpeed = std::clamp(percentSpeed, 0.0, 1.0);
     auto speed = (MAX_WINCH_SPEED - MIN_WINCH_SPEED) * percentSpeed + MIN_WINCH_SPEED;
     SetWinchSpeed(speed);
@@ -34,6 +39,11 @@ void Climb::WinchCableOut(double percentSpeed) {
 }
 
 void Climb::WinchCableIn(double percentSpeed) {
+    // Winch motor cannot turn when latch is engaged.
+    if (m_IsWinchLocked) {
+        return;
+    }
+
     percentSpeed = std::clamp(percentSpeed, 0.0, 1.0);
     auto speed = (MAX_WINCH_SPEED - MIN_WINCH_SPEED) * percentSpeed + MIN_WINCH_SPEED;
     SetWinchSpeed(-speed);
@@ -41,6 +51,20 @@ void Climb::WinchCableIn(double percentSpeed) {
 
 void Climb::WinchStop() {
     SetWinchSpeed(0.0);
+}
+
+void Climb::WinchLock() {
+    // Stop the winch motor, we're about to stall it.
+    WinchStop();
+    m_Brake.Set(true);
+
+    SetWinchLockFlag();
+}
+
+void Climb::WinchUnlock() {
+    m_Brake.Set(false);
+
+    ResetWinchLockFlag();
 }
 
 void Climb::SetWinchSpeed (double ClimbWinchSpeed) {
@@ -58,4 +82,12 @@ void Climb::ResetPistonFlag() {
 void Climb::SetWinchCableOutFlag() {
     m_IsWinchCableOut = true;
     m_IsClimbing = true;
+}
+
+void Climb::SetWinchLockFlag() {
+    m_IsWinchLocked = true;
+}
+
+void Climb::ResetWinchLockFlag() {
+    m_IsWinchLocked = false;
 }

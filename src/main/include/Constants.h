@@ -101,3 +101,6 @@
 
 #define kClimbExtendSolenoid AIR_3
 #define kClimbRetractSolenoid AIR_5
+
+#error("Identify and set winch latch solenoid IO in Constants.h")
+#define kBrakeSolenoid AIR_0
