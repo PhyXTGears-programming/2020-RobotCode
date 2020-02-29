@@ -11,8 +11,8 @@
 enum class Pov : int {
     Right = 90,
     Left = 270,
-    Up = 180,
-    Down = 0
+    Up = 0,
+    Down = 180
 };
 
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
