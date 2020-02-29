@@ -14,7 +14,9 @@ class Climb : public frc2::SubsystemBase {
         void PistonExtend();
         void PistonRetract();
 
-        void SetWinchSpeed(double speed);
+        void WinchCableOut(double percentSpeed);
+        void WinchCableIn(double percentSpeed);
+        void WinchStop();
 
         bool IsClimbing() { return m_IsClimbing; }
 
@@ -27,5 +29,7 @@ class Climb : public frc2::SubsystemBase {
 
         frc::Solenoid m_ClimbExtendSolenoid {kClimbExtendSolenoid};
         frc::Solenoid m_ClimbRetractSolenoid {kClimbRetractSolenoid};
+
+        void SetWinchSpeed(double speed);
 };
 
