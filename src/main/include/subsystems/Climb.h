@@ -2,6 +2,7 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
+#include <frc/Relay.h>
 #include <frc/Solenoid.h>
 
 #include "Constants.h"
@@ -20,6 +21,10 @@ class Climb : public frc2::SubsystemBase {
 
         void WinchLock();
         void WinchUnlock();
+
+        void RollLeft();
+        void RollRight();
+        void RollStop();
 
         // Contract: m_IsClimbing = m_IsClimbing || m_IsWinchOut
         bool IsClimbing() { return m_IsClimbing; }
@@ -41,6 +46,8 @@ class Climb : public frc2::SubsystemBase {
         frc::Solenoid m_ClimbRetractSolenoid {kClimbRetractSolenoid};
 
         frc::Solenoid m_Brake {kBrakeSolenoid};
+
+        frc::Relay m_ClimbRoller {kClimbRollerRelay};
 
         void SetWinchSpeed(double speed);
 

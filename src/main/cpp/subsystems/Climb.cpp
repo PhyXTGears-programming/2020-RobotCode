@@ -67,6 +67,18 @@ void Climb::WinchUnlock() {
     ResetWinchLockFlag();
 }
 
+void Climb::RollLeft() {
+    m_ClimbRoller.Set(frc::Relay::Value::kForward);
+}
+
+void Climb::RollRight() {
+    m_ClimbRoller.Set(frc::Relay::Value::kReverse);
+}
+
+void Climb::RollStop() {
+    m_ClimbRoller.Set(frc::Relay::Value::kOff);
+}
+
 void Climb::SetWinchSpeed (double ClimbWinchSpeed) {
     m_ClimbWinchMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, ClimbWinchSpeed);
 }
