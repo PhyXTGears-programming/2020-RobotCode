@@ -6,16 +6,10 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/PrintCommand.h>
+#include <frc/Relay.h>
 #include <units/units.h>
 
-enum class Pov : int {
-    Right = 90,
-    Left = 270,
-    Up = 180,
-    Down = 0
-};
-
-RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
+RobotContainer::RobotContainer() {
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
@@ -116,13 +110,36 @@ void RobotContainer::PollInput () {
     // LT to spin wheel
 
     // Climb (RS)
+    // Toggle Climb mode
     if (m_OperatorJoystick.GetStickButtonPressed(frc::GenericHID::JoystickHand::kRightHand)) {
-        if (m_Climb.IsClimbing()) {
-            m_ExtendClimbCommand.Schedule();
+        if (m_ClimbMode == ClimbMode::WinchMode) {
+            m_ClimbMode = ClimbMode::BarMode;
         } else {
-            m_RetractClimbCommand.Schedule();
+            m_ClimbMode = ClimbMode::WinchMode;
         }
     }
-    // Right stick click to toggle solenoids
-    // Right stick X to move with motor
+    
+    if (m_ClimbMode == ClimbMode::WinchMode) { // Move mechanism up and down
+        double operatorRightY = m_OperatorJoystick.GetY(frc::GenericHID::JoystickHand::kRightHand);
+        if (std::abs(operatorRightY) > 0.5) {
+            if (operatorRightY > 0) {
+                m_ExtendClimbCommand.Schedule();
+            } else if (operatorRightY < 0) {
+                m_RetractClimbCommand.Schedule();
+            }
+        } else {
+            if (m_ExtendClimbCommand.IsScheduled()) m_ExtendClimbCommand.Cancel();
+            if (m_RetractClimbCommand.IsScheduled()) m_RetractClimbCommand.Cancel();
+        }
+    } else if (m_ClimbMode == ClimbMode::BarMode) { // Move robot left and right on the bar
+        double operatorRightX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kRightHand);
+        if (std::abs(operatorRightX) > 0.5) {
+            // Turn into a command later?
+            if (operatorRightX > 0) { // Right
+                m_Climb.SetRelay(frc::Relay::Value::kForward);
+            } else if (operatorRightX < 0) { // Left
+                m_Climb.SetRelay(frc::Relay::Value::kReverse);
+            }
+        }
+    }
 }

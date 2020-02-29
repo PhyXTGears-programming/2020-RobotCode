@@ -9,7 +9,7 @@ Climb::Climb () {
 void Climb::Periodic () {}
 
 void Climb::SetWinchSpeed (double ClimbWinchSpeed) {
-    m_ClimbWinchMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, ClimbWinchSpeed);
+    m_ClimbWinchMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, ClimbWinchSpeed);
 }
 
 void Climb::PistonExtend () {
@@ -22,4 +22,8 @@ void Climb::PistonRetract () {
     m_ClimbExtendSolenoid.Set(false);
     m_ClimbRetractSolenoid.Set(true);
     m_IsClimbing = false;
+}
+
+void Climb::SetRelay(frc::Relay::Value val) {
+    m_ClimbBarMotor.Set(val);
 }

@@ -18,6 +18,18 @@
 #include "commands/RetractClimbCommand.h"
 #include "commands/ReverseBrushesCommand.h"
 
+enum class Pov {
+    Right = 90,
+    Left = 270,
+    Up = 180,
+    Down = 0
+};
+
+enum class ClimbMode {
+    WinchMode, // Moving the climb mechanism up and down
+    BarMode    // Moving the robot on the generator switch
+};
+
 /**
  * This class is where the bulk of the robot should be declared.  Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -59,4 +71,5 @@ class RobotContainer {
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;
+        ClimbMode m_ClimbMode = ClimbMode::WinchMode;
 };

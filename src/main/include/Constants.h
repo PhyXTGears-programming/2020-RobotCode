@@ -97,6 +97,8 @@
 #define kTurretMotor       CAN_12
 
 // Climb
+#define kClimbBarMotor RELAY_0
+
 #define kClimbWinchMotor CAN_13
 
 #define kClimbExtendSolenoid AIR_3
