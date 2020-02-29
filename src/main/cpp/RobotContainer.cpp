@@ -4,6 +4,7 @@
 #include "commands/AimShootCommand.h"
 #include "commands/SimpleDriveCommand.h"
 
+#include <cmath>
 #include <iostream>
 #include <units/units.h>
 
@@ -305,4 +306,50 @@ void RobotContainer::InitAutonomousChooser () {
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
     m_DashboardAutoChooser.AddOption("6 cell auto", sixCellAutoCommand);
+}
+
+void RobotContainer::DemoClimb() {
+    using JoystickHand = frc::GenericHID::JoystickHand;
+
+    double inAxis = m_OperatorJoystick.GetTriggerAxis(JoystickHand::kRightHand);
+    double outAxis = m_OperatorJoystick.GetTriggerAxis(JoystickHand::kLeftHand);
+
+    double winchVec = (0.1 < inAxis ? inAxis : 0.0) - (0.1 < outAxis ? outAxis : 0.0);
+
+
+    // Winch cable out  (operator: RT)
+    // Winch cable in   (operator: LT)
+    if (0.0 < winchVec) {
+        m_Climb->WinchCableOut(winchVec);
+    } else if (0.0 > winchVec) {
+        m_Climb->WinchCableIn(std::fabs(winchVec));
+    } else {
+        m_Climb->WinchStop();
+    }
+
+    // Piston extend    (operator: POV up)
+    // Piston retract   (operator: POV down)
+    if (POV_UP == m_OperatorJoystick.GetPOV() && !m_Climb->IsPistonExtended()) {
+        m_Climb->PistonExtend();
+    } else if (POV_DOWN == m_OperatorJoystick.GetPOV() && m_Climb->IsPistonExtended()) {
+        m_Climb->PistonRetract();
+    }
+
+    // Lock Winch   (operator: A)
+    if (m_OperatorJoystick.GetAButtonPressed()) {
+        m_Climb->WinchLock();
+    } else if (m_OperatorJoystick.GetBButtonPressed()) {
+        m_Climb->WinchUnlock();
+    }
+
+    // If the intake is the front.
+    // Climb roll left (operator: POV left)
+    // Climb roll right (operator: POV right)
+    if (POV_LEFT == m_OperatorJoystick.GetPOV() && m_Climb->IsClimbing()) {
+        m_Climb->RollLeft();
+    } else if (POV_RIGHT == m_OperatorJoystick.GetPOV() && m_Climb->IsClimbing()) {
+        m_Climb->RollRight();
+    } else {
+        m_Climb->RollStop();
+    }
 }

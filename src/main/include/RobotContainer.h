@@ -52,6 +52,9 @@ class RobotContainer {
 
         void PollInput();
 
+        void DemoClimb();
+
+
     private:
         void ConfigureButtonBindings();
 
