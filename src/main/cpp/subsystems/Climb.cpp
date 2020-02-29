@@ -33,7 +33,7 @@ void Climb::WinchCableOut(double percentSpeed) {
 
     percentSpeed = std::clamp(percentSpeed, 0.0, 1.0);
     auto speed = (MAX_WINCH_SPEED - MIN_WINCH_SPEED) * percentSpeed + MIN_WINCH_SPEED;
-    SetWinchSpeed(speed);
+    SetWinchSpeed(-speed);
 
     SetWinchCableOutFlag();
 }
@@ -46,7 +46,7 @@ void Climb::WinchCableIn(double percentSpeed) {
 
     percentSpeed = std::clamp(percentSpeed, 0.0, 1.0);
     auto speed = (MAX_WINCH_SPEED - MIN_WINCH_SPEED) * percentSpeed + MIN_WINCH_SPEED;
-    SetWinchSpeed(-speed);
+    SetWinchSpeed(speed);
 }
 
 void Climb::WinchStop() {
