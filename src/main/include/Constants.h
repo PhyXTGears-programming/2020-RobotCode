@@ -99,8 +99,8 @@
 // Climb
 #define kClimbWinchMotor CAN_13
 
-#define kClimbExtendSolenoid AIR_3
-#define kClimbRetractSolenoid AIR_5
+#define kClimbExtendSolenoid AIR_7
+#define kClimbRetractSolenoid AIR_0
 
 #define kBrakeLockSolenoid AIR_4
 #define kBrakeUnlockSolenoid AIR_3
