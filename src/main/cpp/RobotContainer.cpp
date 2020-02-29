@@ -35,6 +35,8 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
 }
 
 void RobotContainer::PollInput () {
+    using JoystickHand = frc::GenericHID::JoystickHand;
+
     // ####################
     // #####   Both   #####
     // ####################
@@ -47,7 +49,7 @@ void RobotContainer::PollInput () {
     }
 
     // Intake (driver: LB, operator: RT)
-    bool intakeAxis = m_OperatorJoystick.GetTriggerAxis(frc::GenericHID::JoystickHand::kRightHand) > 0.1;
+    bool intakeAxis = m_OperatorJoystick.GetTriggerAxis(JoystickHand::kRightHand) > 0.1;
     if (intakeAxis && !m_IntakeBallsCommand.IsScheduled()) {
         m_IntakeBallsCommand.Schedule();
     } else if (intakeAxis <= 0.1 && m_IntakeBallsCommand.IsScheduled()) {
@@ -55,7 +57,7 @@ void RobotContainer::PollInput () {
     }
 
     // Deploy/Retract Intake (driver: X, operator: RB)
-    if (m_DriverJoystick.GetXButtonPressed() || m_OperatorJoystick.GetBumperPressed(frc::GenericHID::JoystickHand::kRightHand)) {
+    if (m_DriverJoystick.GetXButtonPressed() || m_OperatorJoystick.GetBumperPressed(JoystickHand::kRightHand)) {
         if (m_IntakeExtended) {
             m_RetractIntakeCommand.Schedule();
         } else {
@@ -87,7 +89,7 @@ void RobotContainer::PollInput () {
     }
 
     // Manual Aiming (LS)
-    double operatorLeftX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand);
+    double operatorLeftX = m_OperatorJoystick.GetX(JoystickHand::kLeftHand);
     if (std::abs(operatorLeftX) > 0.1) {
         m_Shooter.SetTrackingMode(TrackingMode::Off);
         m_Shooter.SetTurretSpeed(operatorLeftX * 25_rpm);
