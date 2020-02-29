@@ -117,7 +117,7 @@ void RobotContainer::PollInput () {
 
     // Climb (RS)
     if (m_OperatorJoystick.GetStickButtonPressed(frc::GenericHID::JoystickHand::kRightHand)) {
-        if (m_Climb.IsClimbing()) {
+        if (m_Climb.IsPistonExtended()) {
             m_ExtendClimbCommand.Schedule();
         } else {
             m_RetractClimbCommand.Schedule();
