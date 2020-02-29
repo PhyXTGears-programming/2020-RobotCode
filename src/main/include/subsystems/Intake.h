@@ -46,7 +46,7 @@ class Intake : public frc2::SubsystemBase {
 
     private:
         void SetFeeder (bool on) {
-            m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.48 : 0);
+            m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -1.0 : 0);
         }
 
         int m_NumBalls = 0;
