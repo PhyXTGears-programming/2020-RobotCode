@@ -41,3 +41,7 @@ void Intake::ConveyorStop () {
 void Intake::ConveyorReverse () {
     SetConveyorSpeed(-0.5);
 }
+
+bool Intake::IsPowerCellInFeeder() {
+    return m_FeederPowerCellDetector.Get();
+}

@@ -2,6 +2,7 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
+#include <frc/DigitalInput.h>
 #include <frc/Solenoid.h>
 
 #include "Constants.h"
@@ -40,6 +41,8 @@ class Intake : public frc2::SubsystemBase {
             SetFeeder(false);
         }
 
+        bool IsPowerCellInFeeder();
+
     private:
         void SetFeeder (bool on) {
             m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -1.0 : 0);
@@ -51,5 +54,7 @@ class Intake : public frc2::SubsystemBase {
 
         frc::Solenoid m_IntakeExtendSolenoid {kIntakeExtendSolenoidPin};
         frc::Solenoid m_IntakeRetractSolenoid {kIntakeRetractSolenoidPin};
+
+        frc::DigitalInput m_FeederPowerCellDetector {kBeamPowerCellFeeder};
 };
 

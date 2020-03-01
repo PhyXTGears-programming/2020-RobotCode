@@ -90,6 +90,8 @@
 #define kIntakeExtendSolenoidPin  AIR_6
 #define kIntakeRetractSolenoidPin AIR_2
 
+#define kBeamPowerCellFeeder DIO_2
+
 #define kShooterMotor1 CAN_9
 #define kShooterMotor2 CAN_10
 
