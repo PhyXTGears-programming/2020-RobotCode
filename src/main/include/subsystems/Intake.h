@@ -21,10 +21,6 @@ class Intake : public frc2::SubsystemBase {
         void ConveyorStart();
         void ConveyorStop();
         void ConveyorReverse();
-    
-        int GetNumBalls () {
-            return m_NumBalls + m_BallDetected;
-        }
 
         void IntakeExtend () {
             m_IntakeExtendSolenoid.Set(true);
@@ -48,9 +44,6 @@ class Intake : public frc2::SubsystemBase {
         void SetFeeder (bool on) {
             m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.48 : 0);
         }
-
-        int m_NumBalls = 0;
-        bool m_BallDetected = false;
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_IntakeMotor {kIntakeMotor};
         ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorMotor {kConveyorMotor};

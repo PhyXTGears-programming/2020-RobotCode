@@ -44,7 +44,7 @@ class RobotContainer {
   Shooter m_Shooter {};
 
   AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
-  IntakeBallsCommand m_IntakeBallsCommand {&m_Intake};
+  IntakeBallsCommand m_IntakeBallsCommand {&m_Intake, &m_PowerCellCounter};
   ExpelIntakeCommand m_ExpelIntakeCommand {&m_Intake};
   RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
   ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
