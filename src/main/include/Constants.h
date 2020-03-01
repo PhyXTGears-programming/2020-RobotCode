@@ -87,8 +87,8 @@
 #define kConveyorMotor  CAN_8
 
 // PCM pin for intake solenoid
-#define kIntakeExtendSolenoidPin  AIR_2
-#define kIntakeRetractSolenoidPin AIR_6
+#define kIntakeExtendSolenoidPin  AIR_6
+#define kIntakeRetractSolenoidPin AIR_2
 
 #define kShooterMotor1 CAN_9
 #define kShooterMotor2 CAN_10

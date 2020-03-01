@@ -29,6 +29,7 @@ void IntakeBallsCommand::Execute () {
 
 void IntakeBallsCommand::End (bool interrupted) {
     m_Intake->IntakeStop();
+    m_Intake->ConveyorStop();
 }
 
 bool IntakeBallsCommand::IsFinished() {
