@@ -85,6 +85,6 @@
 // CAN ID for intake Talon SRX
 #define kIntakeMotor CAN_0 // Needs to be set to the right CAN id
 
-//PowerCellCounter
-#define kPowerCellIn    DIO_0
-#define kPowerCellOut   DIO_1
+// PowerCellCounter
+#define kBeamPowerCellIn    DIO_0
+#define kBeamPowerCellOut   DIO_1
