@@ -12,7 +12,11 @@ IntakeBallsCommand::IntakeBallsCommand (Intake* intake, PowerCellCounter* cellCo
     m_PowerCellCounter = cellCounter;
 }
 
-void IntakeBallsCommand::Initialize () {}
+void IntakeBallsCommand::Initialize () {
+    m_Intake->ConveyorStart();
+    m_Intake->IntakeStart();
+    m_Intake->FeedLoadStart();
+}
 
 void IntakeBallsCommand::Execute () {
     std::cout << "Balls: " << m_PowerCellCounter->GetCount() << std::endl;
@@ -20,16 +24,16 @@ void IntakeBallsCommand::Execute () {
         // If robot has 5 balls, stop intake & expel balls in intake
         m_Intake->IntakeReverse();
         m_Intake->ConveyorStop();
-    } else {
-        // Starts intake
-        m_Intake->IntakeStart();
-        m_Intake->ConveyorStart();
+    }
+    if (m_Intake->IsPowerCellInFeeder()) {
+        m_Intake->FeedStop();
     }
 }
 
 void IntakeBallsCommand::End (bool interrupted) {
     m_Intake->IntakeStop();
     m_Intake->ConveyorStop();
+    m_Intake->FeedStop();
 }
 
 bool IntakeBallsCommand::IsFinished() {

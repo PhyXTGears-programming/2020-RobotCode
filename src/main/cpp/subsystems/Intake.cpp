@@ -4,6 +4,9 @@
 
 #define kCornerMotorAdjust 1
 
+#define kFeedShooterSpeed 1.0
+#define kFeedLoadSpeed 0.8
+
 Intake::Intake () {
     m_ConveyorMotor.SetInverted(true);
 }
@@ -42,6 +45,22 @@ void Intake::ConveyorReverse () {
     SetConveyorSpeed(-0.5);
 }
 
+void Intake::FeedShooterStart () {
+    SetFeederSpeed(kFeedShooterSpeed);
+}
+
+void Intake::FeedLoadStart () {
+    SetFeederSpeed(kFeedLoadSpeed);
+}
+
+void Intake::FeedStop () {
+    SetFeederSpeed(0.0);
+}
+
 bool Intake::IsPowerCellInFeeder() {
     return m_FeederPowerCellDetector.Get();
+}
+
+void Intake::SetFeederSpeed (double percentSpeed) {
+    m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, -percentSpeed);
 }

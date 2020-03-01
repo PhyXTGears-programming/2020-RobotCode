@@ -33,20 +33,14 @@ class Intake : public frc2::SubsystemBase {
             m_IntakeRetractSolenoid.Set(true);
         }
 
-        inline void FeederStart () {
-            SetFeeder(true);
-        }
-
-        inline void FeederStop () {
-            SetFeeder(false);
-        }
+        void FeedShooterStart ();
+        void FeedLoadStart ();
+        void FeedStop ();
 
         bool IsPowerCellInFeeder();
 
     private:
-        void SetFeeder (bool on) {
-            m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -1.0 : 0);
-        }
+        void SetFeederSpeed (double percentSpeed);
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_IntakeMotor {kIntakeMotor};
         ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorMotor {kConveyorMotor};

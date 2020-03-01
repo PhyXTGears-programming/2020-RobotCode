@@ -21,7 +21,7 @@ void ShootCommand::Initialize () {
 void ShootCommand::Execute () {
     if (!feederActivated && m_Shooter->GetShooterMotorSpeed() > kShooterRPM * 0.95) {
         m_Intake->SetConveyorSpeed(0.8);
-        m_Intake->FeederStart();
+        m_Intake->FeedShooterStart();
         feederActivated = true;
     }
 }
@@ -29,5 +29,5 @@ void ShootCommand::Execute () {
 void ShootCommand::End (bool interrupted) {
     m_Shooter->SetShooterMotorSpeed(0_rpm);
     m_Intake->ConveyorStop();
-    m_Intake->FeederStop();
+    m_Intake->FeedStop();
 }
