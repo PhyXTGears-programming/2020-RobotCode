@@ -95,3 +95,7 @@
 
 #define kTurretFeederMotor CAN_11
 #define kTurretMotor       CAN_12
+
+// PowerCellCounter
+#define kBeamPowerCellIn    DIO_0
+#define kBeamPowerCellOut   DIO_1
