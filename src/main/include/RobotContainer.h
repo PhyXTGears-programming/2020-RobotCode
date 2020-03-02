@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc2/command/Command.h>
+#include <frc2/command/SequentialCommandGroup.h>
 #include <frc/XboxController.h>
 
 #include "subsystems/Drivetrain.h"
@@ -54,6 +55,8 @@ class RobotContainer {
         TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
         ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
         ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake};
+
+        frc2::SequentialCommandGroup * m_SimpleAutoCommand;
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;

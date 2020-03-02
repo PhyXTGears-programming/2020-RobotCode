@@ -1,11 +1,17 @@
 #include "RobotContainer.h"
 
+#include "commands/AimCommand.h"
+#include "commands/AimShootCommand.h"
+#include "commands/SimpleDriveCommand.h"
+
 #include <iostream>
 
 #include <frc2/command/CommandScheduler.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/PrintCommand.h>
+#include <frc2/command/ParallelRaceGroup.h>
+#include <frc2/command/StartEndCommand.h>
 #include <units/units.h>
 
 enum class Pov : int {
@@ -20,6 +26,17 @@ RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
 
+    m_SimpleAutoCommand = new frc2::SequentialCommandGroup(
+        frc2::StartEndCommand{
+            [=]() { m_Shooter.SetTurretSpeed(0.8); },
+            [=]() { m_Shooter.SetTurretSpeed(0.0); },
+            &m_Shooter
+        }.WithTimeout(0.5_s),
+        AimCommand{&m_Shooter}.WithTimeout(2.0_s),
+        AimShootCommand{&m_Shooter, &m_Intake}.WithTimeout(3.5_s),
+        SimpleDriveCommand{0.25, 0.0, &m_Drivetrain}.WithTimeout(1.0_s)
+    );
+
     // Configure the button bindings
     ConfigureButtonBindings();
 }
@@ -31,7 +48,7 @@ void RobotContainer::ConfigureButtonBindings() {
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
-    return &m_AutonomousCommand;
+    return m_SimpleAutoCommand;
 }
 
 void RobotContainer::PollInput () {
