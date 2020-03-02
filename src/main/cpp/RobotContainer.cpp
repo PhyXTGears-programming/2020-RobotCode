@@ -11,6 +11,7 @@
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/PrintCommand.h>
 #include <frc2/command/ParallelRaceGroup.h>
+#include <frc2/command/StartEndCommand.h>
 #include <units/units.h>
 
 enum class Pov : int {
@@ -26,9 +27,14 @@ RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
 
     m_SimpleAutoCommand = new frc2::SequentialCommandGroup(
-        SimpleDriveCommand{0.25, 0.0, &m_Drivetrain}.WithTimeout(1.0_s),
-        AimCommand{&m_Shooter}.WithTimeout(5.0_s),
-        AimShootCommand{&m_Shooter, &m_Intake}.WithTimeout(5.0_s)
+        frc2::StartEndCommand{
+            [=]() { m_Shooter.SetTurretSpeed(0.8); },
+            [=]() { m_Shooter.SetTurretSpeed(0.0); },
+            &m_Shooter
+        }.WithTimeout(0.5_s),
+        AimCommand{&m_Shooter}.WithTimeout(2.0_s),
+        AimShootCommand{&m_Shooter, &m_Intake}.WithTimeout(3.5_s),
+        SimpleDriveCommand{0.25, 0.0, &m_Drivetrain}.WithTimeout(1.0_s)
     );
 
     // Configure the button bindings
