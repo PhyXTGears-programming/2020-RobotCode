@@ -13,7 +13,7 @@
 
 #define kTurnInputConstant  0.2
 
-constexpr auto kWheelDiameter = 5.875_in;
+constexpr auto kWheelDiameter = 6_in;
 constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
 constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
 

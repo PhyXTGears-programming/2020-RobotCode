@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cpptoml.h>
+
 #include <frc2/command/Command.h>
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc/XboxController.h>
@@ -35,6 +37,7 @@ class RobotContainer {
     private:
         void ConfigureButtonBindings();
 
+        std::shared_ptr<cpptoml::table> LoadConfig(std::string path);
 
         // Operators' input devices.
         // These are 0 indexed!

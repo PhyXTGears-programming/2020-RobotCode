@@ -22,9 +22,11 @@ enum class Pov : int {
 };
 
 RobotContainer::RobotContainer () {
+    std::shared_ptr<cpptoml::table> toml = LoadConfig(ConfigFiles::ConfigFile);
+
     m_Drivetrain = new Drivetrain();
-    m_Intake = new Intake();
-    m_Shooter = new Shooter();
+    m_Intake = new Intake(toml->get_table("shooter"));
+    m_Shooter = new Shooter(toml->get_table("shooter"));
     m_PowerCellCounter = new PowerCellCounter();
 
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(m_Drivetrain, *m_TeleopDriveCommand);
@@ -162,4 +164,13 @@ void RobotContainer::ConfigureButtonBindings () {
     // frc2::JoystickButton aButton{&m_DriverJoystick, 1};
     // aButton.WhenPressed(m_VisionAimingCommand);
     // aButton.WhenPressed(frc2::PrintCommand("Testing")).WhenReleased(frc2::PrintCommand("Released"));
+}
+
+std::shared_ptr<cpptoml::table> RobotContainer::LoadConfig (std::string path) {
+    try {
+        return cpptoml::parse_file("deploy/testbot.toml");
+    } catch (const cpptoml::parse_exception & ex) {
+        std::cerr << "Unable to load config file: " << path << std::endl << ex.what() << std::endl;
+        exit(1);
+    }
 }
