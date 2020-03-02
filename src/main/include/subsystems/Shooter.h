@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cpptoml.h>
+#include <units/units.h>
 
 #include <frc/SpeedControllerGroup.h>
 #include <frc2/command/SubsystemBase.h>
@@ -8,7 +9,6 @@
 #include <rev/CANSparkMax.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 #include <networktables/NetworkTableInstance.h>
-#include <units/units.h>
 
 #include "Constants.h"
 
@@ -51,6 +51,7 @@ class Shooter : public frc2::SubsystemBase {
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
 
         std::shared_ptr<nt::NetworkTable> m_VisionTable;
+        
         frc2::PIDController* m_TurretPID;
         
         struct {
