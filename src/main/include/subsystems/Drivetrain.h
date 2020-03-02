@@ -19,12 +19,12 @@ class Drivetrain : public frc2::SubsystemBase {
         void RadiusDrive(double speed, double radius);
 
     private:
-        rev::CANSparkMax m_LeftMotor1 {kLeftMotor1, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_LeftMotor2 {kLeftMotor2, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_LeftMotor3 {kLeftMotor3, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_RightMotor1 {kRightMotor1, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_RightMotor2 {kRightMotor2, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_RightMotor3 {kRightMotor3, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor1 {DriveMotorPins::Left1, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor2 {DriveMotorPins::Left2, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor3 {DriveMotorPins::Left3, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor1 {DriveMotorPins::Right1, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor2 {DriveMotorPins::Right2, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor3 {DriveMotorPins::Right3, rev::CANSparkMax::MotorType::kBrushless};
 
         frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
         frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
