@@ -5,15 +5,14 @@ RetractClimbCommand::RetractClimbCommand (Climb* Climb) {
     m_Climb = Climb;
 }
 
-void RetractClimbCommand::Initialize () {}
-
-void RetractClimbCommand::Execute () {
+void RetractClimbCommand::Initialize () {
     m_Climb->PistonRetract();
-    m_Climb->SetWinchSpeed(-WINCH_SPEED * 2);
 }
+
+void RetractClimbCommand::Execute () {}
 
 void RetractClimbCommand::End (bool interrupted) {}
 
 bool RetractClimbCommand::IsFinished() {
-    return false;
+    return true;
 }

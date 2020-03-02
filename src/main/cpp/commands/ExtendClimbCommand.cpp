@@ -6,15 +6,13 @@ ExtendClimbCommand::ExtendClimbCommand (Climb* Climb) {
 }
 
 void ExtendClimbCommand::Initialize () {
+    m_Climb->PistonExtend();
 }
 
-void ExtendClimbCommand::Execute () {
-    m_Climb->PistonExtend();
-    m_Climb->SetWinchSpeed(WINCH_SPEED);
-}
+void ExtendClimbCommand::Execute () {}
 
 void ExtendClimbCommand::End (bool interrupted) {}
 
 bool ExtendClimbCommand::IsFinished() {
-    return false;
+    return true;
 }

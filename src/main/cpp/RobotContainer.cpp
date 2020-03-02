@@ -9,7 +9,14 @@
 #include <frc/Relay.h>
 #include <units/units.h>
 
-RobotContainer::RobotContainer() {
+enum Pov {
+    POV_RIGHT = 90,
+    POV_LEFT = 270,
+    POV_UP = 0,
+    POV_DOWN = 180,
+};
+
+RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
@@ -92,16 +99,16 @@ void RobotContainer::PollInput () {
     }
 
     // Expel Intake (DP Left)
-    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Left) && !m_ExpelIntakeCommand.IsScheduled()) {
+    if (POV_LEFT == m_OperatorJoystick.GetPOV() && !m_ExpelIntakeCommand.IsScheduled()) {
         m_ExpelIntakeCommand.Schedule();
-    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Left) && m_ExpelIntakeCommand.IsScheduled()) {
+    } else if (POV_LEFT != m_OperatorJoystick.GetPOV() && m_ExpelIntakeCommand.IsScheduled()) {
         m_ExpelIntakeCommand.Cancel();
     }
 
     // Reverse Brushes (DP Right)
-    // if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Right) && !m_ReverseBrushesCommand.IsScheduled()) {
+    // if (POV_RIGHT == m_OperatorJoystick.GetPOV() && !m_ReverseBrushesCommand.IsScheduled()) {
     //     m_ReverseBrushesCommand.Schedule();
-    // } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Right) && m_ReverseBrushesCommand.IsScheduled()) {
+    // } else if (POV_RIGHT != m_OperatorJoystick.GetPOV() && m_ReverseBrushesCommand.IsScheduled()) {
     //     m_ReverseBrushesCommand.Cancel();
     // }
 
@@ -118,7 +125,7 @@ void RobotContainer::PollInput () {
             m_ClimbMode = ClimbMode::WinchMode;
         }
     }
-    
+
     if (m_ClimbMode == ClimbMode::WinchMode) { // Move mechanism up and down
         double operatorRightY = m_OperatorJoystick.GetY(frc::GenericHID::JoystickHand::kRightHand);
         if (std::abs(operatorRightY) > 0.5) {
@@ -136,9 +143,9 @@ void RobotContainer::PollInput () {
         if (std::abs(operatorRightX) > 0.5) {
             // Turn into a command later?
             if (operatorRightX > 0) { // Right
-                m_Climb.SetRelay(frc::Relay::Value::kForward);
+                m_Climb.RollRight();
             } else if (operatorRightX < 0) { // Left
-                m_Climb.SetRelay(frc::Relay::Value::kReverse);
+                m_Climb.RollLeft();
             }
         }
     }
