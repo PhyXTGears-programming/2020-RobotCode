@@ -12,25 +12,33 @@
 
 #define kPDriveVel 1.0
 
-GenerateTrajectoryFollower::GenerateTrajectoryFollower (OdometryHelper* odometryHelper) {
+GenerateTrajectoryFollower::GenerateTrajectoryFollower (Drivetrain* drivetrain, OdometryHelper* odometryHelper) {
+    m_Drivetrain = drivetrain;
     m_OdometryHelper = odometryHelper;
-
-    m_Trajectory = GetTrajectory(m_DifferentialDriveKinematics);
 }
 
-frc2::SequentialCommandGroup* GenerateTrajectoryFollower::GetDriveCommand (Drivetrain* drivetrain) {
+frc2::SequentialCommandGroup* GenerateTrajectoryFollower::GetDriveCommand () {
+    m_Trajectory = GetTrajectory(m_DifferentialDriveKinematics);
+
     frc2::RamseteCommand ramseteCommand(
-        m_Trajectory, [this]() { return m_OdometryHelper->GetRobotPose(); },
+        m_Trajectory,
+        [=]() { return m_OdometryHelper->GetRobotPose(); },
         frc::RamseteController(KinematicsConstants::kRamseteB,
                                 KinematicsConstants::kRamseteZeta),
         frc::SimpleMotorFeedforward<units::meters>(
             KinematicsConstants::kS, KinematicsConstants::kV, KinematicsConstants::kA),
         m_DifferentialDriveKinematics,
-        [this] { return m_OdometryHelper->GetWheelSpeeds(); },
+        [=]() { return m_OdometryHelper->GetWheelSpeeds(); },
         frc2::PIDController(kPDriveVel, 0, 0),
         frc2::PIDController(kPDriveVel, 0, 0),
-        [this](auto left, auto right) { drivetrain.TankDriveVolts(left, right); },
-        {&drivetrain});
+        [=](auto left, auto right) { m_Drivetrain->TankDriveVolts(left, right); },
+        {m_Drivetrain}
+    );
+
+    return new frc2::SequentialCommandGroup(
+        std::move(ramseteCommand),
+        frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {})
+    );
 }
 
 frc::Trajectory GenerateTrajectoryFollower::GetTrajectory (frc::DifferentialDriveKinematics kinematics) {
@@ -43,7 +51,7 @@ frc::Trajectory GenerateTrajectoryFollower::GetTrajectory (frc::DifferentialDriv
     trajectoryConfig.SetKinematics(kinematics);
     trajectoryConfig.AddConstraint(voltageConstraint); 
 
-    frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectoryFollower(
+    frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
         {frc::Translation2d(1_m, 1_m), frc::Translation2d(2_m, -1_m)}, 
         frc::Pose2d(3_m, 0_m, frc::Rotation2d(0_deg)),
@@ -52,3 +60,5 @@ frc::Trajectory GenerateTrajectoryFollower::GetTrajectory (frc::DifferentialDriv
 
     return trajectory;
 }
+
+//

@@ -8,13 +8,14 @@
 
 class GenerateTrajectoryFollower {
     public:
-        GenerateTrajectoryFollower(OdometryHelper* odometryHelper);
+        GenerateTrajectoryFollower(Drivetrain* drivetrain, OdometryHelper* odometryHelper);
 
-        frc2::SequentialCommandGroup* GetDriveCommand(Drivetrain* drivetrain);
+        frc2::SequentialCommandGroup* GetDriveCommand();
 
     private:
         frc::Trajectory GetTrajectory (frc::DifferentialDriveKinematics kinematics);
 
+        Drivetrain* m_Drivetrain;
         OdometryHelper* m_OdometryHelper;
 
         frc::DifferentialDriveKinematics m_DifferentialDriveKinematics {RobotPhysicalConstants::wheelBase};
