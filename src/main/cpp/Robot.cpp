@@ -30,6 +30,8 @@ void Robot::RobotPeriodic () {
         c = 0;
     }
     c++;
+
+    // ProfileShooterPID();
 }
 
 
@@ -60,6 +62,33 @@ void Robot::TeleopPeriodic() {}
 void Robot::TestPeriodic() {}
 void Robot::DisabledInit() {}
 void Robot::DisabledPeriodic() {}
+
+
+void Robot::ProfileShooterPID () {
+    hal::fpga_clock::time_point now = hal::fpga_clock::now();
+
+    static bool needsInit = true;
+    static auto startTime = now;
+    if (IsAutonomous() && IsEnabled()) {
+        if (needsInit) {
+            needsInit = false;
+            startTime = now;
+        }
+
+        auto time = std::chrono::duration_cast<std::chrono::microseconds>(now - startTime).count() / 1000000.0;
+        std::cout
+            << time
+            << "\t"
+            << m_container.m_Shooter.MeasureShooterMotorSpeed1()
+            << "\t"
+            << m_container.m_Shooter.MeasureShooterMotorSpeed2()
+            << "\t"
+            << m_container.m_PowerCellCounter.GetCount()
+            << std::endl;
+    } else {
+        needsInit = true;
+    }
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<Robot>(); }

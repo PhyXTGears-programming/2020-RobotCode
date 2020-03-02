@@ -27,6 +27,9 @@ class Shooter : public frc2::SubsystemBase {
 
         bool IsOnTarget();
 
+        double MeasureShooterMotorSpeed1();
+        double MeasureShooterMotorSpeed2();
+
     private:
         void TrackingPeriodic(TrackingMode mode);
 

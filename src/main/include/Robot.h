@@ -21,6 +21,8 @@ class Robot : public frc::TimedRobot {
 
   double GetDeltaTime() { return m_DeltaTime; }
 
+  void ProfileShooterPID();
+
  private:
   // Have it null by default so that if testing teleop it
   // doesn't have undefined behavior and potentially crash.

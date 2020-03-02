@@ -60,4 +60,6 @@ class RobotContainer {
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;
+
+    friend class Robot;
 };

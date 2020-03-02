@@ -115,7 +115,13 @@ bool Shooter::IsOnTarget() {
     return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetError);
 }
 
+double Shooter::MeasureShooterMotorSpeed1 () {
+    return m_ShooterMotor1Encoder.GetVelocity() / kShooterGearRatio;
+}
 
+double Shooter::MeasureShooterMotorSpeed2 () {
+    return m_ShooterMotor2Encoder.GetVelocity() / kShooterGearRatio;
+}
 
 void Shooter::TrackingPeriodic (TrackingMode mode) {
     double speed = 0;
