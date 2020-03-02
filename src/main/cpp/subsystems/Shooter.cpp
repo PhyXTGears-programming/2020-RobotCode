@@ -112,8 +112,10 @@ void Shooter::SetTurretSpeed (double percentSpeed) {
 }
 
 bool Shooter::IsOnTarget() {
-    return 0 < m_TargetCount && 1.0 > std::fabs(m_TargetError);
+    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetError);
 }
+
+
 
 void Shooter::TrackingPeriodic (TrackingMode mode) {
     double speed = 0;
