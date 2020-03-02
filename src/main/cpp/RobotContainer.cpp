@@ -21,7 +21,7 @@ enum class Pov : int {
     Down = 0
 };
 
-RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
+RobotContainer::RobotContainer() {
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);

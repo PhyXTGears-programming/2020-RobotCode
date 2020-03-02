@@ -6,6 +6,8 @@
 #include <frc/trajectory/TrajectoryConfig.h>
 #include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc2/command/SequentialCommandGroup.h>
+#include <frc2/command/InstantCommand.h>
 
 #include "RobotPhysicalConstants.h"
 #include "kinematics/KinematicsConstants.h"
@@ -37,7 +39,7 @@ frc2::SequentialCommandGroup* GenerateTrajectoryFollower::GetDriveCommand () {
 
     return new frc2::SequentialCommandGroup(
         std::move(ramseteCommand),
-        frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {})
+        frc2::InstantCommand([this] { m_Drivetrain->TankDriveVolts(0_V, 0_V); }, {})
     );
 }
 

@@ -8,7 +8,7 @@
 
 class ReverseBrushesCommand : public frc2::CommandHelper<frc2::CommandBase, ReverseBrushesCommand> {
     public:
-        ReverseBrushesCommand(Intake* intake, Drivetrain* drivetrain);
+        ReverseBrushesCommand(Intake* intake);
 
         void Initialize();
         void Execute();

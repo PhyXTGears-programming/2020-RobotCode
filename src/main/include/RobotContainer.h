@@ -48,14 +48,14 @@ class RobotContainer {
         Intake m_Intake {};
         Shooter m_Shooter {};
 
-        AutonomousCommand m_AutonomousCommand {&m_Drivetrain};
+        AutonomousCommand m_AutonomousCommand {&m_Drivetrain, &m_Shooter};
         IntakeBallsCommand m_IntakeBallsCommand {&m_Intake, &m_PowerCellCounter};
         ExpelIntakeCommand m_ExpelIntakeCommand {&m_Intake};
         RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
         ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
         TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
         ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
-        ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake, &m_Drivetrain};
+        ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake};
 
         frc2::SequentialCommandGroup * m_SimpleAutoCommand;
 

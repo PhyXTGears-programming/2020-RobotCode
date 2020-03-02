@@ -21,6 +21,10 @@ class Drivetrain : public frc2::SubsystemBase {
         void RadiusDrive(double speed, units::length::meter_t radius);
         void TankDriveVolts(units::volt_t left, units::volt_t right);
 
+        OdometryHelper GetOdometryHelper () {
+            return m_OdometryHelper;
+        }
+
     private:
         rev::CANSparkMax m_LeftMotor1 {kLeftMotor1, rev::CANSparkMax::MotorType::kBrushless};
         rev::CANSparkMax m_LeftMotor2 {kLeftMotor2, rev::CANSparkMax::MotorType::kBrushless};
