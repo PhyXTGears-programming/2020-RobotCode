@@ -83,13 +83,20 @@
 #define kRightMotor3 CAN_6
 
 // CAN ID for intake Talon SRX
-#define kIntakeMotor CAN_0 // Needs to be set to the right CAN id
+#define kIntakeMotor    CAN_7
+#define kConveyorMotor  CAN_8
+
+// PCM pin for intake solenoid
+#define kIntakeExtendSolenoidPin  AIR_6
+#define kIntakeRetractSolenoidPin AIR_2
+
+#define kBeamPowerCellFeeder DIO_2
 
 #define kShooterMotor1 CAN_9
 #define kShooterMotor2 CAN_10
 
 #define kTurretFeederMotor CAN_11
-#define kTurretMotor CAN_12
+#define kTurretMotor       CAN_12
 
 // PowerCellCounter
 #define kBeamPowerCellIn    DIO_0

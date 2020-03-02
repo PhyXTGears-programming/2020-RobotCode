@@ -9,9 +9,9 @@
 #define SetPIDSlot(motor, P, I, D, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot)
 #define SetPIDFSlot(motor, P, I, D, F, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot); motor.SetFF(F, slot)
 
-double P = 0.000189;
+double P = 0.001;
 double I = 0;
-double D = 0.1;
+double D = 0.01;
 double F = 0.00018;
 
 #define kShooterGearRatio (18.0 / 24.0)
@@ -44,10 +44,10 @@ Shooter::Shooter () {
     m_TurretMotor.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
     m_TurretMotor.ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonSRXFeedbackDevice::CTRE_MagEncoder_Relative);
     m_TurretMotor.SetSensorPhase(true);
-    m_TurretMotor.Config_kP(0, 2.5);
+    m_TurretMotor.Config_kP(0, 0.5);
     m_TurretMotor.Config_kI(0, 0.0);
-    m_TurretMotor.Config_kD(0, 0.0);
-    m_TurretMotor.Config_kF(0, 2.3);
+    m_TurretMotor.Config_kD(0, 0.1);
+    m_TurretMotor.Config_kF(0, 0.85);
 }
 
 void Shooter::Periodic () {
@@ -65,7 +65,9 @@ void Shooter::Periodic () {
     
     frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
 
-    TrackingPeriodic();
+    if (m_TrackingMode != TrackingMode::Off) {
+        TrackingPeriodic(m_TrackingMode);
+    }
 }
 
 void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
@@ -76,6 +78,18 @@ void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_min
     } else {
         m_ShooterMotor1.Set(0);
         m_ShooterMotor2.Set(0);
+    }
+}
+
+units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterMotorSpeed () {
+    return units::angular_velocity::revolutions_per_minute_t(m_ShooterMotor1Encoder.GetVelocity() / kShooterGearRatio);
+}
+
+void Shooter::SetTrackingMode (TrackingMode mode) {
+    m_TrackingMode = mode;
+
+    if (mode == TrackingMode::Off) {
+        SetTurretSpeed(0_rpm);
     }
 }
 
@@ -92,10 +106,14 @@ void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t 
     m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
 
-void Shooter::TrackingPeriodic () {
+void Shooter::TrackingPeriodic (TrackingMode mode) {
     double speed = 0;
 
-    if (m_TrackingActive) {
+    if (mode == TrackingMode::Auto) {
+        // TODO
+    }
+
+    if (mode == TrackingMode::CameraTracking) {
         int count = (int) m_VisionTable->GetNumber("tv", -1);
 
         if (count > 0) {
@@ -103,6 +121,8 @@ void Shooter::TrackingPeriodic () {
 
             double x = -m_VisionTable->GetNumber("tx", 0);
             std::cout << "x: " << x << std::endl;
+
+            frc::SmartDashboard::PutNumber("Turret Error", x);
 
             speed = m_TurretPID.Calculate(x);
         } else if (count == 0) {
@@ -113,8 +133,4 @@ void Shooter::TrackingPeriodic () {
     }
 
     SetTurretSpeed(kMaxTurretVelocity * speed);
-}
-
-void Shooter::SetFeeder (bool on) {
-    m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.4 : 0);
 }
