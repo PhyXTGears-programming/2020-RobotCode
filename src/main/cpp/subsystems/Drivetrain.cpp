@@ -69,6 +69,9 @@ void Drivetrain::Drive (double yInput, double xInput) {
 
 // Given a radius and speed, drive around the circle
 void Drivetrain::RadiusDrive (double speed, double radius) {
+    // Reverse turning direction when driving backwards.  Special request by Caleb S.
+    radius = std::copysign(radius, speed);
+
     // Calculate the radius for each wheel
     double leftWheelRadius = radius + kHalfWheelBase;
     double rightWheelRadius = radius - kHalfWheelBase;

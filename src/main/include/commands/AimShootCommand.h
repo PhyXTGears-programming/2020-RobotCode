@@ -6,9 +6,9 @@
 #include "subsystems/Shooter.h"
 #include "subsystems/Intake.h"
 
-class ShootCommand : public frc2::CommandHelper<frc2::CommandBase, ShootCommand> {
+class AimShootCommand : public frc2::CommandHelper<frc2::CommandBase, AimShootCommand> {
     public:
-        explicit ShootCommand(Shooter* shooter, Intake* intake);
+        explicit AimShootCommand(Shooter* shooter, Intake* intake);
         void Initialize();
         void Execute();
         void End(bool interrupted);

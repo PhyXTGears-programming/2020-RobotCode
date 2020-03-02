@@ -1,15 +1,5 @@
 #pragma once
 
-/**
- * The Constants header provides a convenient place for teams to hold robot-wide
- * numerical or boolean constants.  This should not be used for any other
- * purpose.
- *
- * It is generally a good idea to place constants into subsystem- or
- * command-specific namespaces within this header, which can then be used where
- * they are needed.
- */
-
 // ROBORIO PINS
 #define DIO_0 0
 #define DIO_1 1
@@ -83,10 +73,21 @@
 #define kRightMotor3 CAN_6
 
 // CAN ID for intake Talon SRX
-#define kIntakeMotor CAN_0 // Needs to be set to the right CAN id
+#define kIntakeMotor    CAN_7
+#define kConveyorMotor  CAN_8
+
+// PCM pin for intake solenoid
+#define kIntakeExtendSolenoidPin  AIR_6
+#define kIntakeRetractSolenoidPin AIR_2
+
+#define kBeamPowerCellFeeder DIO_2
 
 #define kShooterMotor1 CAN_9
 #define kShooterMotor2 CAN_10
 
 #define kTurretFeederMotor CAN_11
-#define kTurretMotor CAN_12
+#define kTurretMotor       CAN_12
+
+// PowerCellCounter
+#define kBeamPowerCellIn    DIO_0
+#define kBeamPowerCellOut   DIO_1

@@ -1,10 +1,10 @@
-#include "commands/ShootCommand.h"
+#include "commands/AimShootCommand.h"
 
 #include <math.h>
 
-#define kShooterRPM 4400_rpm
+#define kShooterRPM 4500_rpm
 
-ShootCommand::ShootCommand (Shooter* shooter, Intake* intake) {
+AimShootCommand::AimShootCommand (Shooter* shooter, Intake* intake) {
     AddRequirements(shooter);
     AddRequirements(intake);
 
@@ -12,13 +12,14 @@ ShootCommand::ShootCommand (Shooter* shooter, Intake* intake) {
     m_Intake = intake;
 }
 
-void ShootCommand::Initialize () {
+void AimShootCommand::Initialize () {
+    m_Shooter->SetTrackingMode(TrackingMode::CameraTracking);
     m_Shooter->SetShooterMotorSpeed(kShooterRPM);
 
     feederActivated = false;
 }
 
-void ShootCommand::Execute () {
+void AimShootCommand::Execute () {
     if (!feederActivated && m_Shooter->GetShooterMotorSpeed() > kShooterRPM * 0.95) {
         m_Intake->SetConveyorSpeed(0.8);
         m_Intake->FeedShooterStart();
@@ -26,7 +27,8 @@ void ShootCommand::Execute () {
     }
 }
 
-void ShootCommand::End (bool interrupted) {
+void AimShootCommand::End (bool interrupted) {
+    m_Shooter->SetTrackingMode(TrackingMode::Off);
     m_Shooter->SetShooterMotorSpeed(0_rpm);
     m_Intake->ConveyorStop();
     m_Intake->FeedStop();

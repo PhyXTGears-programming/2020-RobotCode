@@ -1,17 +1,41 @@
 #include "RobotContainer.h"
 
 #include <iostream>
+#include <units/units.h>
 
 #include <frc2/command/CommandScheduler.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/PrintCommand.h>
-#include <units/units.h>
+#include <frc2/command/ParallelRaceGroup.h>
+#include <frc2/command/StartEndCommand.h>
+
+#include "commands/AimCommand.h"
+#include "commands/AimShootCommand.h"
+#include "commands/SimpleDriveCommand.h"
+
+enum class Pov : int {
+    Right = 90,
+    Left = 270,
+    Up = 180,
+    Down = 0
+};
 
 RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
-    // Initialize all of your commands and subsystems here
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(&m_Drivetrain, m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
+    frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
+
+    m_SimpleAutoCommand = new frc2::SequentialCommandGroup(
+        frc2::StartEndCommand{
+            [=]() { m_Shooter.SetTurretSpeed(0.8); },
+            [=]() { m_Shooter.SetTurretSpeed(0.0); },
+            &m_Shooter
+        }.WithTimeout(0.5_s),
+        AimCommand{&m_Shooter}.WithTimeout(2.0_s),
+        AimShootCommand{&m_Shooter, &m_Intake}.WithTimeout(3.5_s),
+        SimpleDriveCommand{0.25, 0.0, &m_Drivetrain}.WithTimeout(1.0_s)
+    );
 
     // Configure the button bindings
     ConfigureButtonBindings();
@@ -24,27 +48,103 @@ void RobotContainer::ConfigureButtonBindings() {
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
-    // An example command will be run in autonomous
-    return &m_AutonomousCommand;
+    return m_SimpleAutoCommand;
 }
 
 void RobotContainer::PollInput () {
-    // This works, but JoystickButton does not.
+    using JoystickHand = frc::GenericHID::JoystickHand;
 
-    if (m_OperatorJoystick.GetAButtonPressed()) {
-        m_Shooter.SetTracking(true);
-        std::cout << "tracking" << std::endl;
-    } else if (m_OperatorJoystick.GetAButtonReleased()) {
-        m_Shooter.SetTracking(false);
+    // ####################
+    // #####  Driver  #####
+    // ####################
+
+    // Retract Intake (X)
+    if (m_DriverJoystick.GetXButtonPressed()) {
+        m_RetractIntakeCommand.Schedule();
+        m_IntakeExtended = false;
     }
 
-    if (m_DriverJoystick.GetAButton()) {
+    // ####################
+    // #####   Both   #####
+    // ####################
+
+    // Shooting (driver: RB, operator: A)
+    if (m_DriverJoystick.GetAButtonPressed() || m_OperatorJoystick.GetAButtonPressed()) {
         m_ShootCommand.Schedule();
-    } else {
+    } else if (m_DriverJoystick.GetAButtonReleased() || m_OperatorJoystick.GetAButtonReleased()) {
         m_ShootCommand.Cancel();
     }
 
-    // double speed = m_OperatorJoystick.GetX(frc::XboxController::kLeftHand);
-    // speed = fabs(speed) < 0.2 ? 0 : speed;
-    // m_Shooter.SetTurretSpeed(speed * 10_rpm);
+    // Intake (driver: LB, operator: RT)
+    bool intakeAxis = m_OperatorJoystick.GetTriggerAxis(JoystickHand::kRightHand) > 0.1;
+    if (intakeAxis && !m_IntakeBallsCommand.IsScheduled()) {
+        m_IntakeBallsCommand.Schedule();
+    } else if (intakeAxis <= 0.1 && m_IntakeBallsCommand.IsScheduled()) {
+        m_IntakeBallsCommand.Cancel();
+    }
+
+    // Swap Camera (driver: A, operator: Y)
+
+    // ####################
+    // ##### Operator #####
+    // ####################
+
+    // Camera Aiming (X)
+    if (m_OperatorJoystick.GetXButtonPressed()) {
+        m_Shooter.SetTrackingMode(TrackingMode::CameraTracking);
+    } else if (m_OperatorJoystick.GetXButtonReleased()) {
+        m_Shooter.SetTrackingMode(TrackingMode::Off);
+    }
+
+    // Gyro Aiming (B)
+    if (!m_OperatorJoystick.GetXButton()) {
+        if (m_OperatorJoystick.GetBButtonPressed()) {
+            m_Shooter.SetTrackingMode(TrackingMode::GyroTracking);
+        } else if (m_OperatorJoystick.GetBButtonReleased()) {
+            m_Shooter.SetTrackingMode(TrackingMode::Off);
+        }
+    }
+
+    // Manual Aiming (LS)
+    double operatorLeftX = m_OperatorJoystick.GetX(JoystickHand::kLeftHand);
+    if (std::abs(operatorLeftX) > 0.1) {
+        m_Shooter.SetTrackingMode(TrackingMode::Off);
+        m_Shooter.SetTurretSpeed(operatorLeftX * 25_rpm);
+        m_TurretManualControl = true;
+    } else if (m_TurretManualControl) {
+        m_Shooter.SetTurretSpeed(0_rpm);
+        m_TurretManualControl = false;
+    }
+
+    // Deploy/Retract Intake (RB)
+    if (m_OperatorJoystick.GetBumperPressed(JoystickHand::kRightHand) && !m_DriverJoystick.GetXButton()) {
+        if (m_IntakeExtended) {
+            m_RetractIntakeCommand.Schedule();
+        } else {
+            m_ExtendIntakeCommand.Schedule();
+        }
+        m_IntakeExtended = !m_IntakeExtended;
+    }
+
+    // Expel Intake (DP Left)
+    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Left) && !m_ExpelIntakeCommand.IsScheduled()) {
+        m_ExpelIntakeCommand.Schedule();
+    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Left) && m_ExpelIntakeCommand.IsScheduled()) {
+        m_ExpelIntakeCommand.Cancel();
+    }
+
+    // Reverse Brushes (DP Right)
+    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Right) && !m_ReverseBrushesCommand.IsScheduled()) {
+        m_ReverseBrushesCommand.Schedule();
+    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Right) && m_ReverseBrushesCommand.IsScheduled()) {
+        m_ReverseBrushesCommand.Cancel();
+    }
+
+    // Control Panel (LB, LT)
+    // LB to deploy/retract
+    // LT to spin wheel
+
+    // Climb (RS)
+    // Right stick click to toggle solenoids
+    // Right stick X to move with motor
 }
