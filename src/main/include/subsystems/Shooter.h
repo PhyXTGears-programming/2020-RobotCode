@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Constants.h"
+#include <units/units.h>
 
 #include <frc/SpeedControllerGroup.h>
 #include <frc2/command/SubsystemBase.h>
@@ -8,7 +8,8 @@
 #include <rev/CANSparkMax.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 #include <networktables/NetworkTableInstance.h>
-#include <units/units.h>
+
+#include "Constants.h"
 
 enum class TrackingMode { Off, GyroTracking, CameraTracking, Auto };
 

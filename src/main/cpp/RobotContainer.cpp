@@ -1,10 +1,7 @@
 #include "RobotContainer.h"
 
-#include "commands/AimCommand.h"
-#include "commands/AimShootCommand.h"
-#include "commands/SimpleDriveCommand.h"
-
 #include <iostream>
+#include <units/units.h>
 
 #include <frc2/command/CommandScheduler.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -12,7 +9,10 @@
 #include <frc2/command/PrintCommand.h>
 #include <frc2/command/ParallelRaceGroup.h>
 #include <frc2/command/StartEndCommand.h>
-#include <units/units.h>
+
+#include "commands/AimCommand.h"
+#include "commands/AimShootCommand.h"
+#include "commands/SimpleDriveCommand.h"
 
 enum class Pov : int {
     Right = 90,
