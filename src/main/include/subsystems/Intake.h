@@ -2,6 +2,7 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
+#include <frc/DigitalInput.h>
 #include <frc/Solenoid.h>
 
 #include "Constants.h"
@@ -21,10 +22,6 @@ class Intake : public frc2::SubsystemBase {
         void ConveyorStart();
         void ConveyorStop();
         void ConveyorReverse();
-    
-        int GetNumBalls () {
-            return m_NumBalls + m_BallDetected;
-        }
 
         void IntakeExtend () {
             m_IntakeExtendSolenoid.Set(true);
@@ -36,21 +33,14 @@ class Intake : public frc2::SubsystemBase {
             m_IntakeRetractSolenoid.Set(true);
         }
 
-        inline void FeederStart () {
-            SetFeeder(true);
-        }
+        void FeedShooterStart ();
+        void FeedLoadStart ();
+        void FeedStop ();
 
-        inline void FeederStop () {
-            SetFeeder(false);
-        }
+        bool IsPowerCellInFeeder();
 
     private:
-        void SetFeeder (bool on) {
-            m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.48 : 0);
-        }
-
-        int m_NumBalls = 0;
-        bool m_BallDetected = false;
+        void SetFeederSpeed (double percentSpeed);
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_IntakeMotor {kIntakeMotor};
         ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorMotor {kConveyorMotor};
@@ -58,5 +48,7 @@ class Intake : public frc2::SubsystemBase {
 
         frc::Solenoid m_IntakeExtendSolenoid {kIntakeExtendSolenoidPin};
         frc::Solenoid m_IntakeRetractSolenoid {kIntakeRetractSolenoidPin};
+
+        frc::DigitalInput m_FeederPowerCellDetector {kBeamPowerCellFeeder};
 };
 

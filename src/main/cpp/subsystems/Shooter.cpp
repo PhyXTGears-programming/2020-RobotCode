@@ -2,6 +2,7 @@
 #include "Robot.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 
+#include <cmath>
 #include <iostream>
 
 #define SetPID(motor, P, I, D) SetPIDSlot(motor, P, I, D, 0)
@@ -106,6 +107,16 @@ void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t 
     m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
 
+void Shooter::SetTurretSpeed (double percentSpeed) {
+    SetTurretSpeed(percentSpeed * kMaxTurretVelocity);
+}
+
+bool Shooter::IsOnTarget() {
+    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetError);
+}
+
+
+
 void Shooter::TrackingPeriodic (TrackingMode mode) {
     double speed = 0;
 
@@ -114,23 +125,23 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
     }
 
     if (mode == TrackingMode::CameraTracking) {
-        int count = (int) m_VisionTable->GetNumber("tv", -1);
+        m_TargetCount = (int) m_VisionTable->GetNumber("tv", -1);
 
-        if (count > 0) {
-            std::cout << "Count: " << count << std::endl;
+        if (m_TargetCount > 0) {
+            std::cout << "Count: " << m_TargetCount << std::endl;
 
-            double x = -m_VisionTable->GetNumber("tx", 0);
-            std::cout << "x: " << x << std::endl;
+            m_TargetError = -m_VisionTable->GetNumber("tx", 0);
+            std::cout << "m_TargetError: " << m_TargetError << std::endl;
 
-            frc::SmartDashboard::PutNumber("Turret Error", x);
+            frc::SmartDashboard::PutNumber("Turret Error", m_TargetError);
 
-            speed = m_TurretPID.Calculate(x);
-        } else if (count == 0) {
+            speed = m_TurretPID.Calculate(m_TargetError);
+        } else if (m_TargetCount == 0) {
             std::cout << "No objects detected" << std::endl;
         } else {
             std::cout << "Variable tv does not exist in table limelight-gears" << std::endl;
         }
     }
 
-    SetTurretSpeed(kMaxTurretVelocity * speed);
+    SetTurretSpeed(speed);
 }

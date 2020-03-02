@@ -90,8 +90,14 @@
 #define kIntakeExtendSolenoidPin  AIR_6
 #define kIntakeRetractSolenoidPin AIR_2
 
+#define kBeamPowerCellFeeder DIO_2
+
 #define kShooterMotor1 CAN_9
 #define kShooterMotor2 CAN_10
 
 #define kTurretFeederMotor CAN_11
 #define kTurretMotor       CAN_12
+
+// PowerCellCounter
+#define kBeamPowerCellIn    DIO_0
+#define kBeamPowerCellOut   DIO_1
