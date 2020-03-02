@@ -55,6 +55,16 @@ void RobotContainer::PollInput () {
     using JoystickHand = frc::GenericHID::JoystickHand;
 
     // ####################
+    // #####  Driver  #####
+    // ####################
+
+    // Retract Intake (X)
+    if (m_DriverJoystick.GetXButtonPressed()) {
+        m_RetractIntakeCommand.Schedule();
+        m_IntakeExtended = false;
+    }
+
+    // ####################
     // #####   Both   #####
     // ####################
 
@@ -71,17 +81,6 @@ void RobotContainer::PollInput () {
         m_IntakeBallsCommand.Schedule();
     } else if (intakeAxis <= 0.1 && m_IntakeBallsCommand.IsScheduled()) {
         m_IntakeBallsCommand.Cancel();
-    }
-
-    // Deploy/Retract Intake (driver: X, operator: RB)
-    if (m_DriverJoystick.GetXButtonPressed()
-        || (m_OperatorJoystick.GetBumperPressed(JoystickHand::kRightHand) && !m_DriverJoystick.GetXButton())) {
-        if (m_IntakeExtended) {
-            m_RetractIntakeCommand.Schedule();
-        } else {
-            m_ExtendIntakeCommand.Schedule();
-        }
-        m_IntakeExtended = !m_IntakeExtended;
     }
 
     // Swap Camera (driver: A, operator: Y)
@@ -115,6 +114,16 @@ void RobotContainer::PollInput () {
     } else if (m_TurretManualControl) {
         m_Shooter.SetTurretSpeed(0_rpm);
         m_TurretManualControl = false;
+    }
+
+    // Deploy/Retract Intake (RB)
+    if (m_OperatorJoystick.GetBumperPressed(JoystickHand::kRightHand) && !m_DriverJoystick.GetXButton()) {
+        if (m_IntakeExtended) {
+            m_RetractIntakeCommand.Schedule();
+        } else {
+            m_ExtendIntakeCommand.Schedule();
+        }
+        m_IntakeExtended = !m_IntakeExtended;
     }
 
     // Expel Intake (DP Left)
