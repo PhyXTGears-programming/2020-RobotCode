@@ -18,13 +18,6 @@
 #include "commands/RetractClimbCommand.h"
 #include "commands/ReverseBrushesCommand.h"
 
-enum class Pov {
-    Right = 90,
-    Left = 270,
-    Up = 180,
-    Down = 0
-};
-
 enum class ClimbMode {
     WinchMode, // Moving the climb mechanism up and down
     BarMode    // Moving the robot on the generator switch
