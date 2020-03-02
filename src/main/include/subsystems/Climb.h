@@ -41,16 +41,15 @@ class Climb : public frc2::SubsystemBase {
         bool m_IsWinchCableOut = false;
         bool m_IsWinchLocked = false;
 
-        ctre::phoenix::motorcontrol::can::TalonSRX m_ClimbWinchMotor {kClimbWinchMotor};
+        ctre::phoenix::motorcontrol::can::TalonSRX m_ClimbWinchMotor {ClimbPins::kClimbWinchMotor};
 
+        frc::Solenoid m_ClimbExtendSolenoid {ClimbPins::kClimbExtendSolenoid};
+        frc::Solenoid m_ClimbRetractSolenoid {ClimbPins::kClimbRetractSolenoid};
 
-        frc::Solenoid m_ClimbExtendSolenoid {kClimbExtendSolenoid};
-        frc::Solenoid m_ClimbRetractSolenoid {kClimbRetractSolenoid};
+        frc::Solenoid m_BrakeLockSolenoid {ClimbPins::kBrakeLockSolenoid};
+        frc::Solenoid m_BrakeUnlockSolenoid {ClimbPins::kBrakeUnlockSolenoid};
 
-        frc::Solenoid m_BrakeLockSolenoid {kBrakeLockSolenoid};
-        frc::Solenoid m_BrakeUnlockSolenoid {kBrakeUnlockSolenoid};
-
-        frc::Relay m_ClimbRoller {kClimbRollerRelay};
+        frc::Relay m_ClimbRoller {ClimbPins::kClimbRollerRelay};
 
         void SetWinchSpeed(double speed);
 
