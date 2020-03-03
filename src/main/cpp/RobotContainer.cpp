@@ -11,6 +11,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/PrintCommand.h>
+#include <frc2/command/ParallelCommandGroup.h>
 #include <frc2/command/ParallelRaceGroup.h>
 #include <frc2/command/StartEndCommand.h>
 
@@ -53,6 +54,27 @@ RobotContainer::RobotContainer () {
         AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s),
         SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s)
     );
+
+    m_SixCellAutoCommand = new frc2::SequentialCommandGroup{
+        frc2::ParallelCommandGroup{
+            frc2::SequentialCommandGroup{
+                frc2::StartEndCommand {
+                    [=]() { m_Shooter->SetTurretSpeed(0.8); },
+                    [=]() { m_Shooter->SetTurretSpeed(0.0); },
+                    m_Shooter
+                }.WithTimeout(0.5_s),
+                AimCommand{m_Shooter}.WithTimeout(2.0_s),
+                AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
+            },
+            ExtendIntakeCommand{m_Intake}
+        },
+        frc2::ParallelCommandGroup{
+            SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s),
+            IntakeBallsCommand{m_Intake, m_PowerCellCounter}
+        },
+        AimCommand{m_Shooter}.WithTimeout(2.0_s),
+        AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
+    };
 
     // Configure the button bindings
     ConfigureButtonBindings();
