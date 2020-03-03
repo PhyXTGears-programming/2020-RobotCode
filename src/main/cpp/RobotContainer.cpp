@@ -7,12 +7,13 @@
 #include <iostream>
 #include <units/units.h>
 
-#include <frc2/command/CommandScheduler.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
+#include <frc2/command/CommandScheduler.h>
 #include <frc2/command/PrintCommand.h>
 #include <frc2/command/ParallelCommandGroup.h>
 #include <frc2/command/ParallelRaceGroup.h>
+#include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/StartEndCommand.h>
 
 enum class Pov : int {
@@ -44,44 +45,15 @@ RobotContainer::RobotContainer () {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Intake);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_PowerCellCounter);
 
-    m_ThreeCellAutoCommand = new frc2::SequentialCommandGroup(
-        frc2::StartEndCommand {
-            [=]() { m_Shooter->SetTurretSpeed(0.8); },
-            [=]() { m_Shooter->SetTurretSpeed(0.0); },
-            m_Shooter
-        }.WithTimeout(0.5_s),
-        AimCommand{m_Shooter}.WithTimeout(2.0_s),
-        AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s),
-        SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s)
-    );
-
-    m_SixCellAutoCommand = new frc2::SequentialCommandGroup{
-        frc2::ParallelCommandGroup{
-            frc2::SequentialCommandGroup{
-                frc2::StartEndCommand {
-                    [=]() { m_Shooter->SetTurretSpeed(0.8); },
-                    [=]() { m_Shooter->SetTurretSpeed(0.0); },
-                    m_Shooter
-                }.WithTimeout(0.5_s),
-                AimCommand{m_Shooter}.WithTimeout(2.0_s),
-                AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
-            },
-            ExtendIntakeCommand{m_Intake}
-        },
-        frc2::ParallelCommandGroup{
-            SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s),
-            IntakeBallsCommand{m_Intake, m_PowerCellCounter}
-        },
-        AimCommand{m_Shooter}.WithTimeout(2.0_s),
-        AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
-    };
+    InitAutonomousChooser();
+    frc::SmartDashboard::PutData("Auto Modes", &m_DashboardAutoChooser);
 
     // Configure the button bindings
     ConfigureButtonBindings();
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand () {
-    return m_ThreeCellAutoCommand;
+    return m_DashboardAutoChooser.GetSelected();
 }
 
 void RobotContainer::PollInput () {
@@ -195,4 +167,43 @@ std::shared_ptr<cpptoml::table> RobotContainer::LoadConfig (std::string path) {
         std::cerr << "Unable to load config file: " << path << std::endl << ex.what() << std::endl;
         exit(1);
     }
+}
+
+void RobotContainer::InitAutonomousChooser () {
+    frc2::SequentialCommandGroup* m_ThreeCellAutoCommand =
+        new frc2::SequentialCommandGroup(
+            frc2::StartEndCommand {
+                [=]() { m_Shooter->SetTurretSpeed(0.8); },
+                [=]() { m_Shooter->SetTurretSpeed(0.0); },
+                m_Shooter
+            }.WithTimeout(0.5_s),
+            AimCommand{m_Shooter}.WithTimeout(2.0_s),
+            AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s),
+            SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s)
+        );
+
+    frc2::SequentialCommandGroup* m_SixCellAutoCommand =
+        new frc2::SequentialCommandGroup{
+            frc2::ParallelCommandGroup{
+                frc2::SequentialCommandGroup{
+                    frc2::StartEndCommand {
+                        [=]() { m_Shooter->SetTurretSpeed(0.8); },
+                        [=]() { m_Shooter->SetTurretSpeed(0.0); },
+                        m_Shooter
+                    }.WithTimeout(0.5_s),
+                    AimCommand{m_Shooter}.WithTimeout(2.0_s),
+                    AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
+                },
+                ExtendIntakeCommand{m_Intake}
+            },
+            frc2::ParallelCommandGroup{
+                SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s),
+                IntakeBallsCommand{m_Intake, m_PowerCellCounter}
+            },
+            AimCommand{m_Shooter}.WithTimeout(2.0_s),
+            AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
+        };
+
+    m_DashboardAutoChooser.SetDefaultOption("3 cell auto", m_ThreeCellAutoCommand);
+    m_DashboardAutoChooser.AddOption("6 cell auto", m_SixCellAutoCommand);
 }

@@ -3,7 +3,7 @@
 #include <cpptoml.h>
 
 #include <frc2/command/Command.h>
-#include <frc2/command/SequentialCommandGroup.h>
+#include <frc/smartdashboard/SendableChooser.h>
 #include <frc/XboxController.h>
 
 #include "subsystems/Drivetrain.h"
@@ -39,6 +39,8 @@ class RobotContainer {
 
         std::shared_ptr<cpptoml::table> LoadConfig(std::string path);
 
+        void InitAutonomousChooser();
+
         // Operators' input devices.
         // These are 0 indexed!
         frc::XboxController m_DriverJoystick{0};
@@ -59,8 +61,7 @@ class RobotContainer {
         ShootCommand* m_ShootCommand;
         ReverseBrushesCommand* m_ReverseBrushesCommand;
 
-        frc2::SequentialCommandGroup* m_ThreeCellAutoCommand;
-        frc2::SequentialCommandGroup* m_SixCellAutoCommand;
+        frc::SendableChooser<frc2::Command *> m_DashboardAutoChooser;
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;
