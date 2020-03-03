@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cpptoml.h>
+
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 #include <frc/DigitalInput.h>
@@ -9,7 +11,7 @@
 
 class Intake : public frc2::SubsystemBase {
     public:
-        Intake();
+        Intake(std::shared_ptr<cpptoml::table> toml);
         void Periodic() override;
 
         void SetIntakeSpeed(double intakeSpeed);
@@ -50,5 +52,11 @@ class Intake : public frc2::SubsystemBase {
         frc::Solenoid m_IntakeRetractSolenoid {kIntakeRetractSolenoidPin};
 
         frc::DigitalInput m_FeederPowerCellDetector {kBeamPowerCellFeeder};
+        
+        struct {
+            struct {
+                double load, shoot;
+            } speed;
+        } config;
 };
 

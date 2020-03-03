@@ -2,12 +2,10 @@
 
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
 
-#define kCornerMotorAdjust 1
+Intake::Intake (std::shared_ptr<cpptoml::table> toml) {
+    config.speed.load  = toml->get_qualified_as<double>("speed.load").value_or(0.0);
+    config.speed.shoot = toml->get_qualified_as<double>("speed.shoot").value_or(0.0);
 
-#define kFeedShooterSpeed 1.0
-#define kFeedLoadSpeed 0.8
-
-Intake::Intake () {
     m_ConveyorMotor.SetInverted(true);
 }
 
@@ -46,11 +44,11 @@ void Intake::ConveyorReverse () {
 }
 
 void Intake::FeedShooterStart () {
-    SetFeederSpeed(kFeedShooterSpeed);
+    SetFeederSpeed(config.speed.shoot);
 }
 
 void Intake::FeedLoadStart () {
-    SetFeederSpeed(kFeedLoadSpeed);
+    SetFeederSpeed(config.speed.load);
 }
 
 void Intake::FeedStop () {

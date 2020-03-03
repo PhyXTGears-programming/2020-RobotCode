@@ -26,7 +26,6 @@ void Robot::RobotPeriodic () {
     // ProfileShooterPID();
 }
 
-
 void Robot::AutonomousInit () {
     m_autonomousCommand = m_container.GetAutonomousCommand();
 
@@ -71,11 +70,11 @@ void Robot::ProfileShooterPID () {
         std::cout
             << time
             << "\t"
-            << m_container.m_Shooter.MeasureShooterMotorSpeed1()
+            << m_container.m_Shooter->MeasureShooterMotorSpeed1()
             << "\t"
-            << m_container.m_Shooter.MeasureShooterMotorSpeed2()
+            << m_container.m_Shooter->MeasureShooterMotorSpeed2()
             << "\t"
-            << m_container.m_PowerCellCounter.GetCount()
+            << m_container.m_PowerCellCounter->GetCount()
             << std::endl;
     } else {
         needsInit = true;
