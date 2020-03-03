@@ -6,19 +6,9 @@
 #include "Robot.h"
 #include "RobotPhysicalConstants.h"
 
-Drivetrain::Drivetrain () {
-    // Position in wheel angular displacement (rad)
-    m_LeftEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
-    m_RightEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
+#define kTurnInputConstant 1.0 // lowering makes robot drive more straight, raising makes it turn more at any given input (other than -1, 0, or 1)
 
-    // Velocity in wheel angular velocity (rad/s)
-    m_LeftEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
-    m_RightEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
-
-    // Initial Position is 0
-    m_LeftEncoder.SetPosition(0.0);
-    m_RightEncoder.SetPosition(0.0);
-}
+Drivetrain::Drivetrain () {}
 
 void Drivetrain::Periodic () {
     m_OdometryHelper.Update();

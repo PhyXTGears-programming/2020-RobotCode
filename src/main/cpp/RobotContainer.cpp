@@ -29,7 +29,7 @@ RobotContainer::RobotContainer () {
     m_Shooter = new Shooter(toml->get_table("shooter"));
     m_PowerCellCounter = new PowerCellCounter();
 
-    m_AutonomousCommand     = new AutonomousCommand(m_Drivetrain);
+    m_AutonomousCommand     = new AutonomousCommand(m_Drivetrain, m_Shooter);
     m_IntakeBallsCommand    = new IntakeBallsCommand(m_Intake, m_PowerCellCounter);
     m_ExpelIntakeCommand    = new ExpelIntakeCommand(m_Intake);
     m_RetractIntakeCommand  = new RetractIntakeCommand(m_Intake);

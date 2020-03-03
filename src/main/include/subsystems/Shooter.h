@@ -14,8 +14,6 @@
 
 enum class TrackingMode { Off, GyroTracking, CameraTracking, Auto };
 
-enum class TrackingMode { Off, GyroTracking, CameraTracking, Auto };
-
 class Shooter : public frc2::SubsystemBase {
     public:
         Shooter(std::shared_ptr<cpptoml::table> toml);
