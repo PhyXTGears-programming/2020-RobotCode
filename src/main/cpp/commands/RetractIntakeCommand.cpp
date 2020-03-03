@@ -5,10 +5,11 @@ RetractIntakeCommand::RetractIntakeCommand (Intake* intake) {
     m_Intake = intake;
 }
 
-void RetractIntakeCommand::Initialize () {}
+void RetractIntakeCommand::Initialize () {
+    m_Intake->IntakeRetract();
+}
 
 void RetractIntakeCommand::Execute () {
-    m_Intake->IntakeRetract();
 }
 
 void RetractIntakeCommand::End (bool interrupted) {}
