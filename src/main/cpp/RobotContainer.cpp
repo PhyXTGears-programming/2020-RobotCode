@@ -43,7 +43,7 @@ RobotContainer::RobotContainer () {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Intake);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_PowerCellCounter);
 
-    m_SimpleAutoCommand = new frc2::SequentialCommandGroup(
+    m_ThreeCellAutoCommand = new frc2::SequentialCommandGroup(
         frc2::StartEndCommand {
             [=]() { m_Shooter->SetTurretSpeed(0.8); },
             [=]() { m_Shooter->SetTurretSpeed(0.0); },
@@ -59,7 +59,7 @@ RobotContainer::RobotContainer () {
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand () {
-    return m_SimpleAutoCommand;
+    return m_ThreeCellAutoCommand;
 }
 
 void RobotContainer::PollInput () {

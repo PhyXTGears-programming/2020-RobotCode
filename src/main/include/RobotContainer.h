@@ -59,7 +59,7 @@ class RobotContainer {
         ShootCommand* m_ShootCommand;
         ReverseBrushesCommand* m_ReverseBrushesCommand;
 
-        frc2::SequentialCommandGroup * m_SimpleAutoCommand;
+        frc2::SequentialCommandGroup* m_ThreeCellAutoCommand;
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;
