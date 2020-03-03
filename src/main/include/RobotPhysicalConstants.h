@@ -14,7 +14,7 @@ namespace RobotPhysicalConstants {
     static constexpr auto maxRobotAcceleration = 1_mps_sq;
 
     // Wheels
-    static constexpr auto wheelDiameter = 5.75_in;
+    static constexpr auto wheelDiameter = 6_in;
     static constexpr auto wheelRadius = wheelDiameter / 2.0;
     static constexpr auto distancePerWheelRadian = wheelRadius / (1_rad);
 }

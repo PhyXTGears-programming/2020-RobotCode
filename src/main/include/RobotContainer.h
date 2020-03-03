@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cpptoml.h>
+
 #include <frc2/command/Command.h>
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc/XboxController.h>
@@ -7,9 +9,15 @@
 #include "subsystems/Drivetrain.h"
 #include "subsystems/PowerCellCounter.h"
 #include "subsystems/Shooter.h"
+
 #include "commands/AutonomousCommand.h"
-#include "commands/TeleopDriveCommand.h"
+#include "commands/ExpelIntakeCommand.h"
+#include "commands/ExtendIntakeCommand.h"
+#include "commands/IntakeBallsCommand.h"
+#include "commands/RetractIntakeCommand.h"
+#include "commands/ReverseBrushesCommand.h"
 #include "commands/ShootCommand.h"
+#include "commands/TeleopDriveCommand.h"
 
 #include "commands/AutonomousCommand.h"
 #include "commands/IntakeBallsCommand.h"
@@ -36,6 +44,7 @@ class RobotContainer {
     private:
         void ConfigureButtonBindings();
 
+        std::shared_ptr<cpptoml::table> LoadConfig(std::string path);
 
         // Operators' input devices.
         // These are 0 indexed!
@@ -43,22 +52,24 @@ class RobotContainer {
         frc::XboxController m_OperatorJoystick{1};
 
         // The robot's subsystems and commands are defined here...
-        PowerCellCounter m_PowerCellCounter {};
-        Drivetrain m_Drivetrain {};
-        Intake m_Intake {};
-        Shooter m_Shooter {};
+        Drivetrain* m_Drivetrain;
+        Intake* m_Intake;
+        Shooter* m_Shooter;
+        PowerCellCounter* m_PowerCellCounter;
 
-        AutonomousCommand m_AutonomousCommand {&m_Drivetrain, &m_Shooter};
-        IntakeBallsCommand m_IntakeBallsCommand {&m_Intake, &m_PowerCellCounter};
-        ExpelIntakeCommand m_ExpelIntakeCommand {&m_Intake};
-        RetractIntakeCommand m_RetractIntakeCommand {&m_Intake};
-        ExtendIntakeCommand m_ExtendIntakeCommand {&m_Intake};
-        TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
-        ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
-        ReverseBrushesCommand m_ReverseBrushesCommand {&m_Intake};
+        AutonomousCommand* m_AutonomousCommand;
+        IntakeBallsCommand* m_IntakeBallsCommand;
+        ExpelIntakeCommand* m_ExpelIntakeCommand;
+        RetractIntakeCommand* m_RetractIntakeCommand;
+        ExtendIntakeCommand* m_ExtendIntakeCommand;
+        TeleopDriveCommand* m_TeleopDriveCommand;
+        ShootCommand* m_ShootCommand;
+        ReverseBrushesCommand* m_ReverseBrushesCommand;
 
         frc2::SequentialCommandGroup * m_SimpleAutoCommand;
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;
+
+    friend class Robot;
 };

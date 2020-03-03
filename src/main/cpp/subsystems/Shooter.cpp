@@ -1,19 +1,14 @@
 #include "subsystems/Shooter.h"
-#include "Robot.h"
-#include "frc/smartdashboard/SmartDashboard.h"
 
 #include <cmath>
 #include <iostream>
 
-#define SetPID(motor, P, I, D) SetPIDSlot(motor, P, I, D, 0)
-#define SetPIDF(motor, P, I, D, F) SetPIDFSlot(motor, P, I, D, F, 0)
-#define SetPIDSlot(motor, P, I, D, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot)
-#define SetPIDFSlot(motor, P, I, D, F, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot); motor.SetFF(F, slot)
+#include <frc/smartdashboard/SmartDashboard.h>
 
-double P = 0.001;
-double I = 0;
-double D = 0.01;
-double F = 0.00018;
+#include "Robot.h"
+
+#define SetPIDF(motor, vals) SetPIDFSlot(motor, vals.p, vals.i, vals.d, vals.f, 0)
+#define SetPIDFSlot(motor, P, I, D, F, slot) motor.SetP(P, slot); motor.SetI(I, slot); motor.SetD(D, slot); motor.SetFF(F, slot)
 
 #define kShooterGearRatio (18.0 / 24.0)
 
@@ -22,10 +17,24 @@ double F = 0.00018;
 
 #define kMaxTurretVelocity 20_rpm
 
-Shooter::Shooter () {
-    // Implementation of subsystem constructor goes here.
-    SetPIDF(m_ShooterMotor1PID, P, I, D, F);
-    SetPIDF(m_ShooterMotor2PID, P, I, D, F);
+Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
+    config.turretVelocity.p = toml->get_qualified_as<double>("turretVelocity.p").value_or(0.0);
+    config.turretVelocity.i = toml->get_qualified_as<double>("turretVelocity.i").value_or(0.0);
+    config.turretVelocity.d = toml->get_qualified_as<double>("turretVelocity.d").value_or(0.0);
+    config.turretVelocity.f = toml->get_qualified_as<double>("turretVelocity.f").value_or(0.0);
+
+    config.turretPosition.p = toml->get_qualified_as<double>("turretPosition.p").value_or(0.0);
+    config.turretPosition.i = toml->get_qualified_as<double>("turretPosition.i").value_or(0.0);
+    config.turretPosition.d = toml->get_qualified_as<double>("turretPosition.d").value_or(0.0);
+    
+    config.shooterVelocity.p = toml->get_qualified_as<double>("shooterVelocity.p").value_or(0.0);
+    config.shooterVelocity.i = toml->get_qualified_as<double>("shooterVelocity.i").value_or(0.0);
+    config.shooterVelocity.d = toml->get_qualified_as<double>("shooterVelocity.d").value_or(0.0);
+    config.shooterVelocity.f = toml->get_qualified_as<double>("shooterVelocity.f").value_or(0.0);
+
+    // Setup shooter motors
+    SetPIDF(m_ShooterMotor1PID, config.shooterVelocity);
+    SetPIDF(m_ShooterMotor2PID, config.shooterVelocity);
 
     m_ShooterMotor1.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
     m_ShooterMotor2.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -33,33 +42,26 @@ Shooter::Shooter () {
     m_ShooterMotor1.SetInverted(false);
     m_ShooterMotor2.SetInverted(true);
 
-    frc::SmartDashboard::PutNumber("Shooter Motor F", F);
-    frc::SmartDashboard::PutNumber("Shooter Motor P", P);
-    frc::SmartDashboard::PutNumber("Shooter Motor D", D);
-
+    // Setup vision NT
     m_VisionTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight-gears");
 
-    // ctre::phoenix::motorcontrol::can::TalonSRXPIDSetConfiguration turretMotorPIDConfig {ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Relative};
-    // m_TurretMotor.ConfigurePID(turretMotorPIDConfig);
+    // Set up turret motor velocity PIDF
+    ctre::phoenix::motorcontrol::can::TalonSRXPIDSetConfiguration turretMotorPIDConfig {ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Relative};
+    m_TurretMotor.ConfigurePID(turretMotorPIDConfig);
     m_TurretMotor.SetInverted(true);
     m_TurretMotor.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
     m_TurretMotor.ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonSRXFeedbackDevice::CTRE_MagEncoder_Relative);
     m_TurretMotor.SetSensorPhase(true);
-    m_TurretMotor.Config_kP(0, 0.5);
-    m_TurretMotor.Config_kI(0, 0.0);
-    m_TurretMotor.Config_kD(0, 0.1);
-    m_TurretMotor.Config_kF(0, 0.85);
+    m_TurretMotor.Config_kP(0, config.turretVelocity.p);
+    m_TurretMotor.Config_kI(0, config.turretVelocity.i);
+    m_TurretMotor.Config_kD(0, config.turretVelocity.d);
+    m_TurretMotor.Config_kF(0, config.turretVelocity.f);
+
+    // Set up turret motor position PID
+    m_TurretPID = new frc2::PIDController(config.turretPosition.p, config.turretPosition.i, config.turretPosition.d);
 }
 
 void Shooter::Periodic () {
-    // Implementation of subsystem periodic method goes here.
-    m_ShooterMotor1PID.SetFF(frc::SmartDashboard::GetNumber("Shooter Motor F", F));
-    m_ShooterMotor2PID.SetFF(frc::SmartDashboard::GetNumber("Shooter Motor F", F));
-    m_ShooterMotor1PID.SetP(frc::SmartDashboard::GetNumber("Shooter Motor P", P));
-    m_ShooterMotor2PID.SetP(frc::SmartDashboard::GetNumber("Shooter Motor P", P));
-    m_ShooterMotor1PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D)); 
-    m_ShooterMotor2PID.SetD(frc::SmartDashboard::GetNumber("Shooter Motor D", D));
-
     double factor = 1 / kShooterGearRatio;
     frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1Encoder.GetVelocity() * factor);
     frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity() * factor);
@@ -115,7 +117,13 @@ bool Shooter::IsOnTarget() {
     return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetError);
 }
 
+double Shooter::MeasureShooterMotorSpeed1 () {
+    return m_ShooterMotor1Encoder.GetVelocity() / kShooterGearRatio;
+}
 
+double Shooter::MeasureShooterMotorSpeed2 () {
+    return m_ShooterMotor2Encoder.GetVelocity() / kShooterGearRatio;
+}
 
 void Shooter::TrackingPeriodic (TrackingMode mode) {
     double speed = 0;
@@ -135,7 +143,7 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
 
             frc::SmartDashboard::PutNumber("Turret Error", m_TargetError);
 
-            speed = m_TurretPID.Calculate(m_TargetError);
+            speed = m_TurretPID->Calculate(m_TargetError);
         } else if (m_TargetCount == 0) {
             std::cout << "No objects detected" << std::endl;
         } else {

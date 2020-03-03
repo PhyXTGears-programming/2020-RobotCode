@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Constants.h"
+#include <cpptoml.h>
+#include <units/units.h>
 
 #include <frc/SpeedControllerGroup.h>
 #include <frc2/command/SubsystemBase.h>
@@ -8,13 +9,16 @@
 #include <rev/CANSparkMax.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 #include <networktables/NetworkTableInstance.h>
-#include <units/units.h>
+
+#include "Constants.h"
+
+enum class TrackingMode { Off, GyroTracking, CameraTracking, Auto };
 
 enum class TrackingMode { Off, GyroTracking, CameraTracking, Auto };
 
 class Shooter : public frc2::SubsystemBase {
     public:
-        Shooter();
+        Shooter(std::shared_ptr<cpptoml::table> toml);
         void Periodic() override;
 
         void SetShooterMotorSpeed(units::angular_velocity::revolutions_per_minute_t speed);
@@ -26,6 +30,9 @@ class Shooter : public frc2::SubsystemBase {
         void SetTurretSpeed(double percentSpeed);
 
         bool IsOnTarget();
+
+        double MeasureShooterMotorSpeed1();
+        double MeasureShooterMotorSpeed2();
 
     private:
         void TrackingPeriodic(TrackingMode mode);
@@ -46,5 +53,20 @@ class Shooter : public frc2::SubsystemBase {
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
 
         std::shared_ptr<nt::NetworkTable> m_VisionTable;
-        frc2::PIDController m_TurretPID {0.05, 0, 0.0};
+        
+        frc2::PIDController* m_TurretPID;
+        
+        struct {
+            struct {
+                double p, i, d, f;
+            } turretVelocity;
+
+            struct {
+                double p, i, d;
+            } turretPosition;
+
+            struct {
+                double p, i, d, f;
+            } shooterVelocity;
+        } config;
 };

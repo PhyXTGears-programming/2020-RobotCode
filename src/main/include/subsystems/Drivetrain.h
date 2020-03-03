@@ -26,12 +26,12 @@ class Drivetrain : public frc2::SubsystemBase {
         }
 
     private:
-        rev::CANSparkMax m_LeftMotor1 {kLeftMotor1, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_LeftMotor2 {kLeftMotor2, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_LeftMotor3 {kLeftMotor3, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_RightMotor1 {kRightMotor1, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_RightMotor2 {kRightMotor2, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANSparkMax m_RightMotor3 {kRightMotor3, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor1 {DriveMotorPins::Left1, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor2 {DriveMotorPins::Left2, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor3 {DriveMotorPins::Left3, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor1 {DriveMotorPins::Right1, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor2 {DriveMotorPins::Right2, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor3 {DriveMotorPins::Right3, rev::CANSparkMax::MotorType::kBrushless};
 
         rev::CANPIDController m_LeftMotor1PID {m_LeftMotor1};
         rev::CANPIDController m_LeftMotor2PID {m_LeftMotor2};

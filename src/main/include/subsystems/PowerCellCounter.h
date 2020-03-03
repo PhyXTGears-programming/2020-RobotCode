@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Constants.h"
-
 #include <frc2/command/SubsystemBase.h>
 #include <frc/DigitalInput.h>
 
 #include <hal/cpp/fpga_clock.h>
 
+#include "Constants.h"
 
 class PowerCellCounter : public frc2::SubsystemBase {
     public:

@@ -6,24 +6,6 @@
 #include "Robot.h"
 #include "RobotPhysicalConstants.h"
 
-#define kTurnInputConstant  0.2
-
-constexpr auto kWheelDiameter = 5.875_in;
-constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
-constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
-
-#define leftSideAngularPosition()  units::angle::radian_t(m_LeftEncoder.GetPosition())
-#define rightSideAngularPosition() units::angle::radian_t(m_RightEncoder.GetPosition())
-
-#define leftSidePosition()  leftSideAngularPosition() * kDistancePerWheelRadian
-#define rightSidePosition() rightSideAngularPosition() * kDistancePerWheelRadian
-
-#define leftSideAngularVelocity()  units::angular_velocity::radians_per_second_t(m_LeftEncoder.GetVelocity())
-#define rightSideAngularVelocity() units::angular_velocity::radians_per_second_t(m_RightEncoder.GetVelocity())
-
-#define leftSideVelocity()  leftSideAngularVelocity() * kDistancePerWheelRadian
-#define rightSideVelocity() rightSideAngularVelocity() * kDistancePerWheelRadian
-
 Drivetrain::Drivetrain () {
     // Position in wheel angular displacement (rad)
     m_LeftEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
@@ -45,6 +27,7 @@ void Drivetrain::Periodic () {
 // Calculate radius from x stick, and drive
 void Drivetrain::Drive (double yInput, double xInput) {
     // Radius math in Desmos (https://www.desmos.com/calculator/htvtwcp39g)
+    xInput = pow(xInput, 3);
     double r = 1/(kTurnInputConstant * xInput) - xInput/kTurnInputConstant;
 
     // When the radius is 0, RadiusDrive turns the robot clockwise by default
@@ -59,7 +42,8 @@ void Drivetrain::Drive (double yInput, double xInput) {
 
 // Given a radius and speed, drive around the circle
 void Drivetrain::RadiusDrive (double speed, units::length::meter_t radius) {
-    radius *= -1;
+    // Reverse turning direction when driving backwards. Special request by Caleb S.
+    radius *= std::copysign(1.0, speed);
 
     // Calculate the radius for each wheel
     units::length::meter_t leftWheelRadius = radius + RobotPhysicalConstants::halfWheelBase;

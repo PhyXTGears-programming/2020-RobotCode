@@ -4,16 +4,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
-void Robot::RobotInit() {}
+void Robot::RobotInit () {}
 
-/**
- * This function is called every robot packet, no matter the mode. Use
- * this for items like diagnostics that you want to run during disabled,
- * autonomous, teleoperated and test.
- *
- * <p> This runs after the mode specific periodic functions, but before
- * LiveWindow and SmartDashboard integrated updating.
- */
 void Robot::RobotPeriodic () {
     frc2::CommandScheduler::GetInstance().Run();
 
@@ -30,8 +22,9 @@ void Robot::RobotPeriodic () {
         c = 0;
     }
     c++;
-}
 
+    // ProfileShooterPID();
+}
 
 void Robot::AutonomousInit () {
     m_autonomousCommand = m_container.GetAutonomousCommand();
@@ -56,10 +49,37 @@ void Robot::TeleopInit () {
 
 void Robot::TeleopPeriodic() {}
 
-// Currently unused but we're keeping them defined.
-void Robot::TestPeriodic() {}
-void Robot::DisabledInit() {}
-void Robot::DisabledPeriodic() {}
+void Robot::TestPeriodic () {}
+
+void Robot::DisabledInit () {}
+
+void Robot::DisabledPeriodic () {}
+
+void Robot::ProfileShooterPID () {
+    hal::fpga_clock::time_point now = hal::fpga_clock::now();
+
+    static bool needsInit = true;
+    static auto startTime = now;
+    if (IsAutonomous() && IsEnabled()) {
+        if (needsInit) {
+            needsInit = false;
+            startTime = now;
+        }
+
+        auto time = std::chrono::duration_cast<std::chrono::microseconds>(now - startTime).count() / 1000000.0;
+        std::cout
+            << time
+            << "\t"
+            << m_container.m_Shooter->MeasureShooterMotorSpeed1()
+            << "\t"
+            << m_container.m_Shooter->MeasureShooterMotorSpeed2()
+            << "\t"
+            << m_container.m_PowerCellCounter->GetCount()
+            << std::endl;
+    } else {
+        needsInit = true;
+    }
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<Robot>(); }
