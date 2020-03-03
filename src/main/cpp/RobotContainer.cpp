@@ -116,11 +116,12 @@ void RobotContainer::PollInput () {
         }
     }
 
-    // Manual Aiming (LS)
+    // Manual Aiming (LS, LT)
     double operatorLeftX = m_OperatorJoystick.GetX(JoystickHand::kLeftHand);
     if (std::abs(operatorLeftX) > 0.1) {
+        double mult = 1 - m_OperatorJoystick.GetTriggerAxis(JoystickHand::kLeftHand) * 0.9;
         m_Shooter->SetTrackingMode(TrackingMode::Off);
-        m_Shooter->SetTurretSpeed(operatorLeftX * 25_rpm);
+        m_Shooter->SetTurretSpeed(operatorLeftX * mult * 25_rpm);
         m_TurretManualControl = true;
     } else if (m_TurretManualControl) {
         m_Shooter->SetTurretSpeed(0_rpm);

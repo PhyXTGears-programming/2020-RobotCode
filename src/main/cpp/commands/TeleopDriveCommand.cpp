@@ -1,6 +1,7 @@
 #include "commands/TeleopDriveCommand.h"
 
 #include <math.h>
+#include <iostream>
 
 #define defaultSpeed 0.6 // Default driving speed
 #define maxSpeed     1.0 // Maximum sprint speed
@@ -30,6 +31,7 @@ void TeleopDriveCommand::Execute () {
 
     // Get inputs from the controller
     double xInput = deadzone(m_Controller->GetX(frc::XboxController::kRightHand));
+    std::cout << xInput << std::endl;
     double yInput = -deadzone(m_Controller->GetY(frc::XboxController::kLeftHand));
     
     m_Drivetrain->Drive(speedFactor * yInput, xInput);
