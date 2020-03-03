@@ -7,11 +7,9 @@
 
 #define PI 3.14159265358979323846
 
-#define kTurnInputConstant  0.2
+#define kTurnInputConstant 0.3 // lowering makes robot drive more straight, raising makes it turn more at any given input (other than -1, 0, or 1)
 
 #define kHalfWheelBase 0.953125
-
-#define kTurnInputConstant  0.2
 
 constexpr auto kWheelDiameter = 6_in;
 constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
@@ -55,6 +53,7 @@ void Drivetrain::Periodic () {
 // Calculate radius from x stick, and drive
 void Drivetrain::Drive (double yInput, double xInput) {
     // Radius math in Desmos (https://www.desmos.com/calculator/htvtwcp39g)
+    xInput = pow(xInput, 3);
     double r = 1/(kTurnInputConstant * xInput) - xInput/kTurnInputConstant;
 
     // When the radius is 0, RadiusDrive turns the robot clockwise by default
@@ -70,7 +69,7 @@ void Drivetrain::Drive (double yInput, double xInput) {
 // Given a radius and speed, drive around the circle
 void Drivetrain::RadiusDrive (double speed, double radius) {
     // Reverse turning direction when driving backwards.  Special request by Caleb S.
-    radius = std::copysign(radius, speed);
+    radius *= std::copysign(1.0, speed);
 
     // Calculate the radius for each wheel
     double leftWheelRadius = radius + kHalfWheelBase;

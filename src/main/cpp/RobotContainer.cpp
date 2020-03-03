@@ -22,17 +22,12 @@ enum class Pov : int {
 };
 
 RobotContainer::RobotContainer () {
-    std::shared_ptr<cpptoml::table> toml = LoadConfig(ConfigFiles::ConfigFile);
+    std::shared_ptr<cpptoml::table> toml = LoadConfig("/home/lvuser/deploy/" + ConfigFiles::ConfigFile);
 
     m_Drivetrain = new Drivetrain();
-    m_Intake = new Intake(toml->get_table("shooter"));
+    m_Intake = new Intake(toml->get_table("intake"));
     m_Shooter = new Shooter(toml->get_table("shooter"));
     m_PowerCellCounter = new PowerCellCounter();
-
-    frc2::CommandScheduler::GetInstance().SetDefaultCommand(m_Drivetrain, *m_TeleopDriveCommand);
-    frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Shooter);
-    frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Intake);
-    frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_PowerCellCounter);
 
     m_AutonomousCommand     = new AutonomousCommand(m_Drivetrain);
     m_IntakeBallsCommand    = new IntakeBallsCommand(m_Intake, m_PowerCellCounter);
@@ -42,6 +37,11 @@ RobotContainer::RobotContainer () {
     m_TeleopDriveCommand    = new TeleopDriveCommand(m_Drivetrain, &m_DriverJoystick);
     m_ShootCommand          = new ShootCommand(m_Shooter, m_Intake);
     m_ReverseBrushesCommand = new ReverseBrushesCommand(m_Intake);
+
+    frc2::CommandScheduler::GetInstance().SetDefaultCommand(m_Drivetrain, *m_TeleopDriveCommand);
+    frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Shooter);
+    frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Intake);
+    frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_PowerCellCounter);
 
     m_SimpleAutoCommand = new frc2::SequentialCommandGroup(
         frc2::StartEndCommand {
@@ -168,7 +168,7 @@ void RobotContainer::ConfigureButtonBindings () {
 
 std::shared_ptr<cpptoml::table> RobotContainer::LoadConfig (std::string path) {
     try {
-        return cpptoml::parse_file("deploy/testbot.toml");
+        return cpptoml::parse_file(path);
     } catch (const cpptoml::parse_exception & ex) {
         std::cerr << "Unable to load config file: " << path << std::endl << ex.what() << std::endl;
         exit(1);

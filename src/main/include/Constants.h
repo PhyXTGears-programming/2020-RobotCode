@@ -1,8 +1,8 @@
 #pragma once
 
 namespace ConfigFiles {
-    constexpr char ConfigFile []     = "deploy/options.toml";
-    constexpr char AutoConfigFile [] = "deploy/auto.toml";
+    const std::string ConfigFile     = "config.toml";
+    const std::string AutoConfigFile = "auto.toml";
 }
 
 namespace Pins {
