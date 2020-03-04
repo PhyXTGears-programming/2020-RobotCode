@@ -26,6 +26,8 @@ class Shooter : public frc2::SubsystemBase {
 
         void SetTurretSpeed(units::angular_velocity::revolutions_per_minute_t speed);
         void SetTurretSpeed(double percentSpeed);
+        
+        units::angular_velocity::revolutions_per_minute_t GetShooterSpeedForDistance();
 
         bool IsOnTarget();
 
@@ -38,7 +40,8 @@ class Shooter : public frc2::SubsystemBase {
         TrackingMode m_TrackingMode = TrackingMode::Off;
 
         int m_TargetCount = 0;
-        double m_TargetError = 0.0;
+        double m_TargetErrorX = 0.0;
+        double m_TargetErrorY = 0.0;
 
         rev::CANSparkMax m_ShooterMotor1 {kShooterMotor1, rev::CANSparkMax::MotorType::kBrushless};
         rev::CANPIDController m_ShooterMotor1PID {m_ShooterMotor1};

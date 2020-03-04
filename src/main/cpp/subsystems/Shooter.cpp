@@ -1,5 +1,6 @@
 #include "subsystems/Shooter.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -16,6 +17,9 @@
 #define kMotorRPMtoEncoderVelocity (4096 / (600_rpm)) // encoder velocity is measured in ticks per 100 ms
 
 #define kMaxTurretVelocity 20_rpm
+
+#define kNearShooterSpeed 4600_rpm
+#define kFarShooterSpeed 6500_rpm
 
 Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
     config.turretVelocity.p = toml->get_qualified_as<double>("turretVelocity.p").value_or(0.0);
@@ -113,8 +117,18 @@ void Shooter::SetTurretSpeed (double percentSpeed) {
     SetTurretSpeed(percentSpeed * kMaxTurretVelocity);
 }
 
+units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterSpeedForDistance () {
+    auto const lo = -13.9;
+    auto const hi = 3.2;
+
+    double factor = (m_TargetErrorY - lo) / (hi - lo);
+
+    // Clamp speed to far shooter speed.
+    return kNearShooterSpeed + (kFarShooterSpeed - kNearShooterSpeed) * std::clamp(factor, 0.0, 1.0);
+}
+
 bool Shooter::IsOnTarget() {
-    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetError);
+    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetErrorX);
 }
 
 double Shooter::MeasureShooterMotorSpeed1 () {
@@ -138,12 +152,15 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
         if (m_TargetCount > 0) {
             std::cout << "Count: " << m_TargetCount << std::endl;
 
-            m_TargetError = -m_VisionTable->GetNumber("tx", 0);
-            std::cout << "m_TargetError: " << m_TargetError << std::endl;
+            m_TargetErrorX = -m_VisionTable->GetNumber("tx", 0);
+            m_TargetErrorY = -m_VisionTable->GetNumber("ty", 0);
+            std::cout << "m_TargetErrorX: " << m_TargetErrorX << std::endl;
+            std::cout << "m_TargetErrorY: " << m_TargetErrorY << std::endl;
 
-            frc::SmartDashboard::PutNumber("Turret Error", m_TargetError);
+            frc::SmartDashboard::PutNumber("Turret Error X", m_TargetErrorX);
+            frc::SmartDashboard::PutNumber("Turret Error Y", m_TargetErrorY);
 
-            speed = m_TurretPID->Calculate(m_TargetError);
+            speed = m_TurretPID->Calculate(m_TargetErrorX);
         } else if (m_TargetCount == 0) {
             std::cout << "No objects detected" << std::endl;
         } else {
