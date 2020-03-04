@@ -17,6 +17,9 @@
 #include "commands/RetractIntakeCommand.h"
 #include "commands/RetractClimbCommand.h"
 #include "commands/ReverseBrushesCommand.h"
+#include "commands/RollClimbLeftCommand.h"
+#include "commands/RollClimbRightCommand.h"
+
 #include "commands/ControlWinchCommand.h"
 
 enum class ClimbMode {
@@ -62,6 +65,8 @@ class RobotContainer {
         ExtendClimbCommand m_ExtendClimbCommand {&m_Climb};
         TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
         ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
+        RollClimbLeftCommand m_RollClimbLeftCommand {&m_Climb};
+        RollClimbRightCommand m_RollClimbRightCommand {&m_Climb};
         
         ControlWinchCommand* m_ControlWinchCommand;
 

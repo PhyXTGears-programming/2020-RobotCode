@@ -151,13 +151,13 @@ void RobotContainer::PollInput () {
     } else if (m_ClimbMode == ClimbMode::BarMode) { // Move robot left and right on the bar
         double operatorRightX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kRightHand);
         if (std::abs(operatorRightX) > 0.5) {
-            // Turn into a command later?
             if (operatorRightX > 0) { // Right
-                m_Climb.RollRight();
+                if (!m_RollClimbRightCommand.IsScheduled()) m_RollClimbRightCommand.Schedule();
             } else if (operatorRightX < 0) { // Left
-                m_Climb.RollLeft();
-            } else {
-                m_Climb.RollStop();
+                if (!m_RollClimbLeftCommand.IsScheduled()) m_RollClimbLeftCommand.Schedule();
+            } else { // Stop
+                if (m_RollClimbLeftCommand.IsScheduled()) m_RollClimbLeftCommand.Cancel();
+                if (m_RollClimbRightCommand.IsScheduled()) m_RollClimbRightCommand.Cancel();
             }
             
         }
