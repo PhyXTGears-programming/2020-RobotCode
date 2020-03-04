@@ -169,7 +169,7 @@ std::shared_ptr<cpptoml::table> RobotContainer::LoadConfig (std::string path) {
 }
 
 void RobotContainer::InitAutonomousChooser () {
-    frc2::SequentialCommandGroup* m_ThreeCellAutoCommand =
+    frc2::SequentialCommandGroup* threeCellAutoCommand =
         new frc2::SequentialCommandGroup(
             frc2::StartEndCommand {
                 [=]() { m_Shooter->SetTurretSpeed(0.8); },
@@ -181,7 +181,7 @@ void RobotContainer::InitAutonomousChooser () {
             SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s)
         );
 
-    frc2::SequentialCommandGroup* m_SixCellAutoCommand =
+    frc2::SequentialCommandGroup* sixCellAutoCommand =
         new frc2::SequentialCommandGroup{
             frc2::StartEndCommand {
                 [=]() { m_Shooter->SetTurretSpeed(0.8); },
@@ -199,6 +199,6 @@ void RobotContainer::InitAutonomousChooser () {
             AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
         };
 
-    m_DashboardAutoChooser.SetDefaultOption("3 cell auto", m_ThreeCellAutoCommand);
-    m_DashboardAutoChooser.AddOption("6 cell auto", m_SixCellAutoCommand);
+    m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
+    m_DashboardAutoChooser.AddOption("6 cell auto", sixCellAutoCommand);
 }
