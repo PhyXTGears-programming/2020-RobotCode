@@ -112,3 +112,12 @@ namespace ClimbPins {
 
     constexpr int kClimbRollerRelay = Pins::RELAY_0;
 }
+
+// Control Panel
+constexpr int kControlPanelRollerMotor = Pins::CAN_14;
+
+constexpr int kControlPanelExtendSolenoidPin = Pins::AIR_0;     // Fixme:  Verify and assign.
+constexpr int kControlPanelRetractSolenoidPin = Pins::AIR_1;    // Fixme:  Verify and assign.
+
+// PCM 2
+constexpr int kPCM2 = Pins::CAN_15;
