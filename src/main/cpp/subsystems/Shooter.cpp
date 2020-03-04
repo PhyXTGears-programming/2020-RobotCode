@@ -1,5 +1,6 @@
 #include "subsystems/Shooter.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -16,6 +17,9 @@
 #define kMotorRPMtoEncoderVelocity (4096 / (600_rpm)) // encoder velocity is measured in ticks per 100 ms
 
 #define kMaxTurretVelocity 20_rpm
+
+#define kNearShooterSpeed 4600_rpm
+#define kFarShooterSpeed 6500_rpm
 
 Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
     config.turretVelocity.p = toml->get_qualified_as<double>("turretVelocity.p").value_or(0.0);
@@ -111,6 +115,16 @@ void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t 
 
 void Shooter::SetTurretSpeed (double percentSpeed) {
     SetTurretSpeed(percentSpeed * kMaxTurretVelocity);
+}
+
+units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterSpeedForDistance () {
+    auto const lo = -13.9;
+    auto const hi = 3.2;
+
+    double factor = (m_TargetErrorY - lo) / (hi - lo);
+
+    // Clamp speed to far shooter speed.
+    return kNearShooterSpeed + (kFarShooterSpeed - kNearShooterSpeed) * std::clamp(factor, 0.0, 1.0);
 }
 
 bool Shooter::IsOnTarget() {

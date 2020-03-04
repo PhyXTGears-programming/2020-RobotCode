@@ -26,6 +26,8 @@ class Shooter : public frc2::SubsystemBase {
 
         void SetTurretSpeed(units::angular_velocity::revolutions_per_minute_t speed);
         void SetTurretSpeed(double percentSpeed);
+        
+        units::angular_velocity::revolutions_per_minute_t GetShooterSpeedForDistance();
 
         bool IsOnTarget();
 
