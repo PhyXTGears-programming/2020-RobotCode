@@ -183,20 +183,21 @@ void RobotContainer::InitAutonomousChooser () {
 
     frc2::SequentialCommandGroup* sixCellAutoCommand =
         new frc2::SequentialCommandGroup{
+            ExtendIntakeCommand{m_Intake},
             frc2::StartEndCommand {
                 [=]() { m_Shooter->SetTurretSpeed(0.8); },
                 [=]() { m_Shooter->SetTurretSpeed(0.0); },
                 m_Shooter
             }.WithTimeout(0.5_s),
             AimCommand{m_Shooter}.WithTimeout(1.0_s),
-            AimShootCommand{m_Shooter, m_Intake}.WithTimeout(4_s),
-            ExtendIntakeCommand{m_Intake},
+            AimShootCommand{m_Shooter, m_Intake}.WithTimeout(4.0_s),
             frc2::ParallelCommandGroup{
-                SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s),
-                IntakeBallsCommand{m_Intake, m_PowerCellCounter}
+                SimpleDriveCommand{0.35, 0.0, m_Drivetrain}.WithTimeout(2.14_s * 0.9),
+                IntakeBallsCommand{m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s)
             },
-            AimCommand{m_Shooter}.WithTimeout(2.0_s),
-            AimShootCommand{m_Shooter, m_Intake}.WithTimeout(3.5_s)
+            AimCommand{m_Shooter}.WithTimeout(0.5_s),
+            AimShootCommand{m_Shooter, m_Intake}.WithTimeout(4.0_s),
+            RetractIntakeCommand{m_Intake}
         };
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
