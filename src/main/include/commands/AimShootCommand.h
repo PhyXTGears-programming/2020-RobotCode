@@ -17,5 +17,7 @@ class AimShootCommand : public frc2::CommandHelper<frc2::CommandBase, AimShootCo
         Shooter* m_Shooter;
         Intake* m_Intake;
 
+        units::angular_velocity::revolutions_per_minute_t m_ShootSpeed = 0_rpm;
+
         bool feederActivated = false;
 };
