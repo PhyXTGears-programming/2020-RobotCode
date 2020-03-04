@@ -114,7 +114,7 @@ void Shooter::SetTurretSpeed (double percentSpeed) {
 }
 
 bool Shooter::IsOnTarget() {
-    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetError);
+    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetErrorX);
 }
 
 double Shooter::MeasureShooterMotorSpeed1 () {
@@ -138,12 +138,15 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
         if (m_TargetCount > 0) {
             std::cout << "Count: " << m_TargetCount << std::endl;
 
-            m_TargetError = -m_VisionTable->GetNumber("tx", 0);
-            std::cout << "m_TargetError: " << m_TargetError << std::endl;
+            m_TargetErrorX = -m_VisionTable->GetNumber("tx", 0);
+            m_TargetErrorY = -m_VisionTable->GetNumber("ty", 0);
+            std::cout << "m_TargetErrorX: " << m_TargetErrorX << std::endl;
+            std::cout << "m_TargetErrorY: " << m_TargetErrorY << std::endl;
 
-            frc::SmartDashboard::PutNumber("Turret Error", m_TargetError);
+            frc::SmartDashboard::PutNumber("Turret Error X", m_TargetErrorX);
+            frc::SmartDashboard::PutNumber("Turret Error Y", m_TargetErrorY);
 
-            speed = m_TurretPID->Calculate(m_TargetError);
+            speed = m_TurretPID->Calculate(m_TargetErrorX);
         } else if (m_TargetCount == 0) {
             std::cout << "No objects detected" << std::endl;
         } else {
