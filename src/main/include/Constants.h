@@ -99,3 +99,12 @@ constexpr int kTurretMotor       = Pins::CAN_12;
 // PowerCellCounter
 constexpr int kBeamPowerCellIn  = Pins::DIO_0;
 constexpr int kBeamPowerCellOut = Pins::DIO_1;
+
+// Control Panel
+constexpr int kControlPanelRollerMotor = Pins::CAN_14;
+
+constexpr int kControlPanelExtendSolenoidPin = Pins::AIR_0;     // Fixme:  Verify and assign.
+constexpr int kControlPanelRetractSolenoidPin = Pins::AIR_1;    // Fixme:  Verify and assign.
+
+// PCM 2
+constexpr int kPCM2 = Pins::CAN_15;
