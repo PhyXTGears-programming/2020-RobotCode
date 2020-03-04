@@ -123,12 +123,11 @@ void RobotContainer::PollInput () {
 
     // Deploy/Retract Intake (RB)
     if (m_OperatorJoystick.GetBumperPressed(JoystickHand::kRightHand) && !m_DriverJoystick.GetXButton()) {
-        if (m_IntakeExtended) {
+        if (m_Intake->IsExtended()) {
             m_RetractIntakeCommand->Schedule();
         } else {
             m_ExtendIntakeCommand->Schedule();
         }
-        m_IntakeExtended = !m_IntakeExtended;
     }
 
     // Expel Intake (DP Left)

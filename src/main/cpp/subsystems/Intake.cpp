@@ -55,6 +55,10 @@ void Intake::FeedStop () {
     SetFeederSpeed(0.0);
 }
 
+bool Intake::IsExtended() {
+    return m_IsExtended;
+}
+
 bool Intake::IsPowerCellInFeeder() {
     return m_FeederPowerCellDetector.Get();
 }

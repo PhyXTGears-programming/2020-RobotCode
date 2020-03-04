@@ -6,10 +6,10 @@ ExtendIntakeCommand::ExtendIntakeCommand (Intake* intake) {
 }
 
 void ExtendIntakeCommand::Initialize () {
+    m_Intake->IntakeExtend();
 }
 
 void ExtendIntakeCommand::Execute () {
-    m_Intake->IntakeExtend();
 }
 
 void ExtendIntakeCommand::End (bool interrupted) {}

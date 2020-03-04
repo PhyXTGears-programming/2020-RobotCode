@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-#define kShooterRPM 4400_rpm
+#define kShooterRPM 4500_rpm
 
 ShootCommand::ShootCommand (Shooter* shooter, Intake* intake) {
     AddRequirements(shooter);
