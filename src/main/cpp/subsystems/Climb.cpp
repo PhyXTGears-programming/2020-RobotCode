@@ -54,10 +54,11 @@ void Climb::WinchStop() {
 }
 
 void Climb::WinchLock() {
-    // Stop the winch motor, we're about to stall it.
-    WinchStop();
     m_BrakeLockSolenoid.Set(true);
     m_BrakeUnlockSolenoid.Set(false);
+    
+    // Stop the winch motor, we stalled it.
+    WinchStop();
 
     SetWinchLockFlag();
 }

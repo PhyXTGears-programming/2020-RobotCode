@@ -21,6 +21,12 @@ RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Shooter);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(&m_Intake);
 
+    m_ControlWinchCommand = new ControlWinchCommand(
+        &m_Climb,
+        [this] { return m_OperatorJoystick.GetY(frc::GenericHID::JoystickHand::kRightHand); },
+        [this] { return m_OperatorJoystick.GetBackButtonPressed(); }
+    );
+
     // Configure the button bindings
     ConfigureButtonBindings();
 }
@@ -116,7 +122,16 @@ void RobotContainer::PollInput () {
     // LB to deploy/retract
     // LT to spin wheel
 
-    // Climb (RS)
+    // Climb (RS, Start, Select)
+    // Toggle climb piston
+    if (m_OperatorJoystick.GetStartButtonPressed()) {
+        if (m_Climb.IsPistonExtended()) {
+            m_RetractClimbCommand.Schedule();
+        } else {
+            m_ExtendClimbCommand.Schedule();
+        }
+    }
+
     // Toggle Climb mode
     if (m_OperatorJoystick.GetStickButtonPressed(frc::GenericHID::JoystickHand::kRightHand)) {
         if (m_ClimbMode == ClimbMode::WinchMode) {
@@ -128,15 +143,10 @@ void RobotContainer::PollInput () {
 
     if (m_ClimbMode == ClimbMode::WinchMode) { // Move mechanism up and down
         double operatorRightY = m_OperatorJoystick.GetY(frc::GenericHID::JoystickHand::kRightHand);
-        if (std::abs(operatorRightY) > 0.5) {
-            if (operatorRightY > 0) {
-                m_ExtendClimbCommand.Schedule();
-            } else if (operatorRightY < 0) {
-                m_RetractClimbCommand.Schedule();
-            }
+        if (std::abs(operatorRightY) > 0.25) {
+            if (!m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Schedule();
         } else {
-            if (m_ExtendClimbCommand.IsScheduled()) m_ExtendClimbCommand.Cancel();
-            if (m_RetractClimbCommand.IsScheduled()) m_RetractClimbCommand.Cancel();
+            if (m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Cancel();
         }
     } else if (m_ClimbMode == ClimbMode::BarMode) { // Move robot left and right on the bar
         double operatorRightX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kRightHand);
@@ -146,7 +156,12 @@ void RobotContainer::PollInput () {
                 m_Climb.RollRight();
             } else if (operatorRightX < 0) { // Left
                 m_Climb.RollLeft();
+            } else {
+                m_Climb.RollStop();
             }
+            
         }
     }
+
+
 }

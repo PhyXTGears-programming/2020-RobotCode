@@ -17,6 +17,7 @@
 #include "commands/RetractIntakeCommand.h"
 #include "commands/RetractClimbCommand.h"
 #include "commands/ReverseBrushesCommand.h"
+#include "commands/ControlWinchCommand.h"
 
 enum class ClimbMode {
     WinchMode, // Moving the climb mechanism up and down
@@ -61,6 +62,8 @@ class RobotContainer {
         ExtendClimbCommand m_ExtendClimbCommand {&m_Climb};
         TeleopDriveCommand m_TeleopDriveCommand {&m_Drivetrain, &m_DriverJoystick};
         ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
+        
+        ControlWinchCommand* m_ControlWinchCommand;
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;
