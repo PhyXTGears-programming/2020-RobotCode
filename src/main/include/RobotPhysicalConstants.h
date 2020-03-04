@@ -10,8 +10,8 @@ namespace RobotPhysicalConstants {
     static constexpr units::length::inch_t halfWheelBase = wheelBase / 2.0;
     static constexpr double wheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI);
 
-    static constexpr auto maxRobotVelocity = 1_mps;
-    static constexpr auto maxRobotAcceleration = 1_mps_sq;
+    static constexpr auto maxRobotVelocity = 20_fps;
+    static constexpr auto maxRobotAcceleration = 5_fps_sq;
 
     // Wheels
     static constexpr auto wheelDiameter = 6_in;

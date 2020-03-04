@@ -5,11 +5,11 @@
 #include "kinematics/OdometryHelper.h"
 
 AutonomousCommand::AutonomousCommand (Drivetrain* drivetrain, Shooter* shooter) {
-    m_Drivetrain = drivetrain;
-    m_Shooter = shooter;
+    // m_Drivetrain = drivetrain;
+    // m_Shooter = shooter;
 
-    OdometryHelper odometryHelper = m_Drivetrain->GetOdometryHelper();
-    m_GenerateTrajectoryFollower = new GenerateTrajectoryFollower(m_Drivetrain, &odometryHelper);
+    // OdometryHelper odometryHelper = m_Drivetrain->GetOdometryHelper();
+    // m_GenerateTrajectoryFollower = new GenerateTrajectoryFollower(m_Drivetrain, &odometryHelper);
 }
 
 void AutonomousCommand::Initialize () {

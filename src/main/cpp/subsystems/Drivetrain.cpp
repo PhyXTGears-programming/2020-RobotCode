@@ -72,6 +72,7 @@ void Drivetrain::RadiusDrive (double speed, units::length::meter_t radius) {
 }
 
 void Drivetrain::TankDriveVolts (units::volt_t left, units::volt_t right) {
+    std::cout << left << " " << right << std::endl;
     m_LeftMotor1PID.SetReference(units::unit_cast<double>(left), rev::ControlType::kVoltage);
     m_LeftMotor2PID.SetReference(units::unit_cast<double>(left), rev::ControlType::kVoltage);
     m_LeftMotor3PID.SetReference(units::unit_cast<double>(left), rev::ControlType::kVoltage);

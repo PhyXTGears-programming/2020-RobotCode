@@ -14,6 +14,8 @@
 #include <frc2/command/ParallelRaceGroup.h>
 #include <frc2/command/StartEndCommand.h>
 
+#include "kinematics/GenerateTrajectoryFollower.h"
+
 enum class Pov : int {
     Right = 90,
     Left = 270,
@@ -59,7 +61,10 @@ RobotContainer::RobotContainer () {
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand () {
-    return m_SimpleAutoCommand;
+    OdometryHelper odometryHelper = m_Drivetrain->GetOdometryHelper();
+    GenerateTrajectoryFollower* generateTrajectoryFollower = new GenerateTrajectoryFollower(m_Drivetrain, &odometryHelper);
+    return generateTrajectoryFollower->GetDriveCommand();
+    // return m_SimpleAutoCommand;
 }
 
 void RobotContainer::PollInput () {
