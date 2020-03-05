@@ -129,15 +129,30 @@ void RobotContainer::PollInput () {
         }
     }
 
-    // Manual Aiming (LS)
+    // Control Panel (LB, LT)
+    // LB to deploy/retract
+    // LS to spin wheel
+    if (m_OperatorJoystick.GetBumperPressed(JoystickHand::kLeftHand)) {
+        m_ControlPanel->Extend();
+    } else if (m_OperatorJoystick.GetBumperReleased(JoystickHand::kLeftHand)) {
+        m_ControlPanel->Retract();
+    }
+
+    // Left Stick
     double operatorLeftX = m_OperatorJoystick.GetX(JoystickHand::kLeftHand);
-    if (std::abs(operatorLeftX) > 0.1) {
-        m_Shooter->SetTrackingMode(TrackingMode::Off);
-        m_Shooter->SetTurretSpeed(operatorLeftX * 25_rpm);
-        m_TurretManualControl = true;
-    } else if (m_TurretManualControl) {
-        m_Shooter->SetTurretSpeed(0_rpm);
-        m_TurretManualControl = false;
+    if (m_OperatorJoystick.GetBumper(JoystickHand::kLeftHand)) {
+        // Control Panel Manual Control
+        m_ControlPanel->SetSpeed(operatorLeftX);
+    } else {
+        // Manual Aiming
+        if (std::abs(operatorLeftX) > 0.1) {
+            m_Shooter->SetTrackingMode(TrackingMode::Off);
+            m_Shooter->SetTurretSpeed(operatorLeftX * 25_rpm);
+            m_TurretManualControl = true;
+        } else if (m_TurretManualControl) {
+            m_Shooter->SetTurretSpeed(0_rpm);
+            m_TurretManualControl = false;
+        }
     }
 
     // Deploy/Retract Intake (RB)
@@ -162,16 +177,6 @@ void RobotContainer::PollInput () {
     } else if (POV_RIGHT != m_OperatorJoystick.GetPOV() && m_ReverseBrushesCommand->IsScheduled()) {
         m_ReverseBrushesCommand->Cancel();
     }
-
-    // Control Panel (LB, LT)
-    // LB to deploy/retract
-    // LT to spin wheel
-    if (m_OperatorJoystick.GetBumperPressed(JoystickHand::kLeftHand)) {
-        m_ControlPanel->Extend();
-    } else if (m_OperatorJoystick.GetBumperReleased(JoystickHand::kLeftHand)) {
-        m_ControlPanel->Retract();
-    }
-
 
     // ####################
     // #####  Climb   #####
