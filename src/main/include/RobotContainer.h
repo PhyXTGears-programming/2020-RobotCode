@@ -19,13 +19,11 @@
 #include "commands/ReverseBrushesCommand.h"
 #include "commands/RollClimbLeftCommand.h"
 #include "commands/RollClimbRightCommand.h"
-
 #include "commands/ControlWinchCommand.h"
-
-enum class ClimbMode {
-    WinchMode, // Moving the climb mechanism up and down
-    BarMode    // Moving the robot on the generator switch
-};
+#include "commands/LockWinchCommand.h"
+#include "commands/UnlockWinchCommand.h"
+#include "commands/ClimbCylinderExtendCommand.h"
+#include "commands/ClimbCylinderRetractCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -49,6 +47,7 @@ class RobotContainer {
         // These are 0 indexed!
         frc::XboxController m_DriverJoystick{0};
         frc::XboxController m_OperatorJoystick{1};
+        frc::XboxController m_ClimbJoystick{2};
 
         // The robot's subsystems and commands are defined here...
         Drivetrain m_Drivetrain {};
@@ -67,10 +66,13 @@ class RobotContainer {
         ShootCommand m_ShootCommand {&m_Shooter, &m_Intake};
         RollClimbLeftCommand m_RollClimbLeftCommand {&m_Climb};
         RollClimbRightCommand m_RollClimbRightCommand {&m_Climb};
+        LockWinchCommand m_LockWinchCommand {&m_Climb};
+        UnlockWinchCommand m_UnlockWinchCommand {&m_Climb};
+        ClimbCylinderExtendCommand m_ClimbCylinderExtendCommand {&m_Climb};
+        ClimbCylinderRetractCommand m_ClimbCylinderRetractCommand {&m_Climb};
         
         ControlWinchCommand* m_ControlWinchCommand;
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;
-        ClimbMode m_ClimbMode = ClimbMode::WinchMode;
 };

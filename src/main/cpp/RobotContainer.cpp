@@ -23,8 +23,7 @@ RobotContainer::RobotContainer() : m_AutonomousCommand(&m_Drivetrain) {
 
     m_ControlWinchCommand = new ControlWinchCommand(
         &m_Climb,
-        [this] { return m_OperatorJoystick.GetY(frc::GenericHID::JoystickHand::kRightHand); },
-        [this] { return m_OperatorJoystick.GetBackButtonPressed(); }
+        [this] { return m_ClimbJoystick.GetY(frc::GenericHID::JoystickHand::kLeftHand); }
     );
 
     // Configure the button bindings
@@ -132,36 +131,45 @@ void RobotContainer::PollInput () {
         m_TurretManualControl = false;
     }
 
-    // Toggle Climb mode
-    if (m_OperatorJoystick.GetStickButtonPressed(frc::GenericHID::JoystickHand::kRightHand)) {
-        if (m_ClimbMode == ClimbMode::WinchMode) {
-            m_ClimbMode = ClimbMode::BarMode;
-        } else {
-            m_ClimbMode = ClimbMode::WinchMode;
-        }
+    // ####################
+    // #####  Climb   #####
+    // ####################
+
+    // Climb Winch (LS)
+    if (std::abs(m_ClimbJoystick.GetY(frc::GenericHID::JoystickHand::kLeftHand)) > 0.2) {
+        if (!m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Schedule(true); // interruptible
+    } else {
+        if (m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Cancel();
     }
 
-    if (m_ClimbMode == ClimbMode::WinchMode) { // Move mechanism up and down
-        double operatorRightY = m_OperatorJoystick.GetY(frc::GenericHID::JoystickHand::kRightHand);
-        if (std::abs(operatorRightY) > 0.25) {
-            if (!m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Schedule();
-        } else {
-            if (m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Cancel();
-        }
-    } else if (m_ClimbMode == ClimbMode::BarMode) { // Move robot left and right on the bar
-        double operatorRightX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kRightHand);
-        if (std::abs(operatorRightX) > 0.5) {
-            if (operatorRightX > 0) { // Right
-                if (!m_RollClimbRightCommand.IsScheduled()) m_RollClimbRightCommand.Schedule();
-            } else if (operatorRightX < 0) { // Left
-                if (!m_RollClimbLeftCommand.IsScheduled()) m_RollClimbLeftCommand.Schedule();
-            } else { // Stop
-                if (m_RollClimbLeftCommand.IsScheduled()) m_RollClimbLeftCommand.Cancel();
-                if (m_RollClimbRightCommand.IsScheduled()) m_RollClimbRightCommand.Cancel();
-            }
-            
-        }
+    // Climb Roll (RS)
+    double climbRoll = m_ClimbJoystick.GetX(frc::GenericHID::JoystickHand::kRightHand);
+    if (climbRoll > 0.5) { // Right
+        if (!m_RollClimbRightCommand.IsScheduled()) m_RollClimbRightCommand.Schedule();
+    } else if (climbRoll < -0.5) { // Left
+        if (!m_RollClimbLeftCommand.IsScheduled()) m_RollClimbLeftCommand.Schedule();
+    } else {
+        m_RollClimbLeftCommand.Cancel();
+        m_RollClimbRightCommand.Cancel();
     }
 
+    // Climb Lock Winch (B)
+    if (m_ClimbJoystick.GetBButtonPressed()) {
+        m_LockWinchCommand.Schedule();
+    }
 
+    // Climb Unlock Winch (Y)
+    if (m_ClimbJoystick.GetYButtonPressed()) {
+        m_UnlockWinchCommand.Schedule();
+    }
+    
+    // Climb Cylinder Extend (A)
+    if (m_ClimbJoystick.GetAButtonPressed()) {
+        m_ClimbCylinderExtendCommand.Schedule();
+    }
+
+    // Climb Cylinder Retract (X)
+    if (m_ClimbJoystick.GetXButtonPressed()) {
+        m_ClimbCylinderRetractCommand.Schedule();
+    }
 }

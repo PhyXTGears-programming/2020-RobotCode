@@ -9,11 +9,7 @@
 
 class ControlWinchCommand : public frc2::CommandHelper<frc2::CommandBase, ControlWinchCommand> {
     public:
-        ControlWinchCommand(
-            Climb* Climb,
-            std::function<double(void)> rsLambda,
-            std::function<bool(void)> backLambda
-        );
+        ControlWinchCommand(Climb* Climb, std::function<double(void)> rsLambda);
 
         void Initialize();
         void Execute();
@@ -24,5 +20,4 @@ class ControlWinchCommand : public frc2::CommandHelper<frc2::CommandBase, Contro
         Climb* m_Climb;
 
         std::function<double(void)> m_RightStickCheck;
-        std::function<bool(void)> m_BackButtonCheck;
 };
