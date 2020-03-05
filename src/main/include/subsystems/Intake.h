@@ -25,12 +25,12 @@ class Intake : public frc2::SubsystemBase {
         void ConveyorStop();
         void ConveyorReverse();
 
-        void IntakeExtend ();
-        void IntakeRetract ();
+        void IntakeExtend();
+        void IntakeRetract();
 
-        void FeedShooterStart ();
-        void FeedLoadStart ();
-        void FeedStop ();
+        void FeedShooterStart();
+        void FeedLoadStart();
+        void FeedStop();
 
         bool IsExtended();
         bool IsPowerCellInFeeder();
