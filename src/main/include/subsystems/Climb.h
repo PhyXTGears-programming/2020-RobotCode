@@ -36,6 +36,17 @@ class Climb : public frc2::SubsystemBase {
         bool IsWinchLocked() { return m_IsWinchLocked; }
 
     private:
+        void SetWinchSpeed(double speed);
+
+        void SetPistonFlag();
+        void ResetPistonFlag();
+
+        void SetWinchCableOutFlag();
+        // No reset winch flag.  Cannot detect when winch is fully reset.
+        // Restart robot code if need cleared.
+
+        void SetWinchLockFlag();
+        void ResetWinchLockFlag();
         bool m_IsClimbing = false;
         bool m_IsPistonExtended = false;
         bool m_IsWinchCableOut = false;
@@ -50,17 +61,5 @@ class Climb : public frc2::SubsystemBase {
         frc::Solenoid m_BrakeUnlockSolenoid {ClimbPins::kBrakeUnlockSolenoid};
 
         frc::Relay m_ClimbRoller {ClimbPins::kClimbRollerRelay};
-
-        void SetWinchSpeed(double speed);
-
-        void SetPistonFlag();
-        void ResetPistonFlag();
-
-        void SetWinchCableOutFlag();
-        // No reset winch flag.  Cannot detect when winch is fully reset.
-        // Restart robot code if need cleared.
-
-        void SetWinchLockFlag();
-        void ResetWinchLockFlag();
 };
 

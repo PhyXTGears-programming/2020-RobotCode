@@ -93,17 +93,6 @@ void RobotContainer::PollInput () {
         }
     }
 
-    // Manual Aiming (LS)
-    double operatorLeftX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand);
-    if (std::abs(operatorLeftX) > 0.1) {
-        m_Shooter.SetTrackingMode(TrackingMode::Off);
-        m_Shooter.SetTurretSpeed(operatorLeftX * 25_rpm);
-        m_TurretManualControl = true;
-    } else if (m_TurretManualControl) {
-        m_Shooter.SetTurretSpeed(0_rpm);
-        m_TurretManualControl = false;
-    }
-
     // Expel Intake (DP Left)
     if (POV_LEFT == m_OperatorJoystick.GetPOV() && !m_ExpelIntakeCommand.IsScheduled()) {
         m_ExpelIntakeCommand.Schedule();
@@ -130,6 +119,17 @@ void RobotContainer::PollInput () {
         } else {
             m_ExtendClimbCommand.Schedule();
         }
+    }
+
+    // Manual Aiming (LS)
+    double operatorLeftX = m_OperatorJoystick.GetX(frc::GenericHID::JoystickHand::kLeftHand);
+    if (std::abs(operatorLeftX) > 0.1) {
+        m_Shooter.SetTrackingMode(TrackingMode::Off);
+        m_Shooter.SetTurretSpeed(operatorLeftX * 25_rpm);
+        m_TurretManualControl = true;
+    } else if (m_TurretManualControl) {
+        m_Shooter.SetTurretSpeed(0_rpm);
+        m_TurretManualControl = false;
     }
 
     // Toggle Climb mode

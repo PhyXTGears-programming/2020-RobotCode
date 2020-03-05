@@ -7,9 +7,7 @@
 #define MAX_WINCH_SPEED 1.0
 #define MIN_WINCH_SPEED 0.0
 
-Climb::Climb () {
-
-}
+Climb::Climb () {}
 
 void Climb::Periodic () {}
 
@@ -49,11 +47,11 @@ void Climb::WinchCableIn(double percentSpeed) {
     SetWinchSpeed(speed);
 }
 
-void Climb::WinchStop() {
+void Climb::WinchStop () {
     SetWinchSpeed(0.0);
 }
 
-void Climb::WinchLock() {
+void Climb::WinchLock () {
     m_BrakeLockSolenoid.Set(true);
     m_BrakeUnlockSolenoid.Set(false);
     
@@ -63,46 +61,46 @@ void Climb::WinchLock() {
     SetWinchLockFlag();
 }
 
-void Climb::WinchUnlock() {
+void Climb::WinchUnlock () {
     m_BrakeLockSolenoid.Set(false);
     m_BrakeUnlockSolenoid.Set(true);
 
     ResetWinchLockFlag();
 }
 
-void Climb::RollLeft() {
+void Climb::RollLeft () {
     m_ClimbRoller.Set(frc::Relay::Value::kForward);
 }
 
-void Climb::RollRight() {
+void Climb::RollRight () {
     m_ClimbRoller.Set(frc::Relay::Value::kReverse);
 }
 
-void Climb::RollStop() {
+void Climb::RollStop () {
     m_ClimbRoller.Set(frc::Relay::Value::kOff);
 }
 
-void Climb::SetWinchSpeed (double ClimbWinchSpeed) {
-    m_ClimbWinchMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, ClimbWinchSpeed);
+void Climb::SetWinchSpeed (double speed) {
+    m_ClimbWinchMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, speed);
 }
 
-void Climb::SetPistonFlag() {
+void Climb::SetPistonFlag () {
     m_IsPistonExtended = true;
 }
 
-void Climb::ResetPistonFlag() {
+void Climb::ResetPistonFlag () {
     m_IsPistonExtended = false;
 }
 
-void Climb::SetWinchCableOutFlag() {
+void Climb::SetWinchCableOutFlag () {
     m_IsWinchCableOut = true;
     m_IsClimbing = true;
 }
 
-void Climb::SetWinchLockFlag() {
+void Climb::SetWinchLockFlag () {
     m_IsWinchLocked = true;
 }
 
-void Climb::ResetWinchLockFlag() {
+void Climb::ResetWinchLockFlag () {
     m_IsWinchLocked = false;
 }
