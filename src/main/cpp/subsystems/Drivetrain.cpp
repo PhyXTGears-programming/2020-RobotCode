@@ -43,6 +43,9 @@ Drivetrain::Drivetrain () {
     frc::Rotation2d gyroAngle {units::angle::degree_t(-1.0)}; // replace with gyro angle
     frc::Pose2d robotInitialPostion {1_ft, 1_ft, 1_rad}; // replace with robot inital coordinates and angle
     m_Odometry = new frc::DifferentialDriveOdometry(gyroAngle, robotInitialPostion);
+
+    // Brake defaults to off
+    SetBrake(false);
 }
 
 void Drivetrain::Periodic () {
@@ -105,4 +108,13 @@ void Drivetrain::RadiusDrive (double speed, double radius) {
     // Write to motors
     m_LeftMotors.Set(leftWheelSpeed);
     m_RightMotors.Set(rightWheelSpeed);
+}
+
+void Drivetrain::SetBrake (bool on) {
+    m_LeftMotor1.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    m_LeftMotor2.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    m_LeftMotor3.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    m_RightMotor1.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    m_RightMotor2.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    m_RightMotor3.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
 }
