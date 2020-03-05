@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-#define kShooterRPM 6000_rpm
+#define kShooterRPM 4500_rpm
 
 AimShootCommand::AimShootCommand (Shooter* shooter, Intake* intake, PowerCellCounter* counter) {
     AddRequirements(shooter);
@@ -15,7 +15,8 @@ AimShootCommand::AimShootCommand (Shooter* shooter, Intake* intake, PowerCellCou
 }
 
 void AimShootCommand::Initialize () {
-    m_ShootSpeed = m_Shooter->GetShooterSpeedForDistance();
+    //m_ShootSpeed = m_Shooter->GetShooterSpeedForDistance();
+    m_ShootSpeed = kShooterRPM;
 
     m_Shooter->SetTrackingMode(TrackingMode::CameraTracking);
     m_Shooter->SetShooterMotorSpeed(m_ShootSpeed);
