@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#define kShooterRPM 4500_rpm
+
 AimShootCommand::AimShootCommand (Shooter* shooter, Intake* intake, PowerCellCounter* counter) {
     AddRequirements(shooter);
     AddRequirements(intake);

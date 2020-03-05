@@ -21,7 +21,7 @@ class AimShootCommand : public frc2::CommandHelper<frc2::CommandBase, AimShootCo
         PowerCellCounter* m_PowerCellCounter;
 
         struct {
-            units::angular_velocity::revolutions_per_minute_t shootSpeed = 4500_rpm;
+            units::angular_velocity::revolutions_per_minute_t shootSpeed;
         } config;
 
         bool feederActivated = false;
