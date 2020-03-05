@@ -7,6 +7,8 @@
 #include <iostream>
 #include <units/units.h>
 
+#include <cameraserver/CameraServer.h>
+
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/CommandScheduler.h>
@@ -63,6 +65,9 @@ RobotContainer::RobotContainer () {
 
     // Configure the button bindings
     ConfigureButtonBindings();
+
+    auto cameraServer = frc::CameraServer::GetInstance();
+    cameraServer->StartAutomaticCapture();
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand () {
