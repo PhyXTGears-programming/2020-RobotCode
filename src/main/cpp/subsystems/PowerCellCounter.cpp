@@ -5,7 +5,7 @@
 #include <networktables/NetworkTableEntry.h>
 #include <networktables/NetworkTableInstance.h>
 
-constexpr std::chrono::milliseconds debounceDelay(100);
+constexpr std::chrono::milliseconds debounceDelay(200);
 
 PowerCellCounter::PowerCellCounter () {
     using WaitResult = frc::InterruptableSensorBase::WaitResult;
