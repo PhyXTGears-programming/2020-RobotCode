@@ -43,6 +43,18 @@ void Intake::ConveyorReverse () {
     SetConveyorSpeed(-0.5);
 }
 
+void Intake::IntakeExtend () {
+    m_IntakeExtendSolenoid.Set(true);
+    m_IntakeRetractSolenoid.Set(false);
+    m_IsExtended = true;
+}
+
+void Intake::IntakeRetract () {
+    m_IntakeExtendSolenoid.Set(false);
+    m_IntakeRetractSolenoid.Set(true);
+    m_IsExtended = false;
+}
+
 void Intake::FeedShooterStart () {
     SetFeederSpeed(config.speed.shoot);
 }
