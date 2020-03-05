@@ -54,8 +54,8 @@ class Climb : public frc2::SubsystemBase {
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_ClimbWinchMotor {ClimbPins::kClimbWinchMotor};
 
-        frc::Solenoid m_ClimbExtendSolenoid {ClimbPins::kClimbExtendSolenoid};
-        frc::Solenoid m_ClimbRetractSolenoid {ClimbPins::kClimbRetractSolenoid};
+        frc::Solenoid m_ClimbExtendSolenoid {kPCM2, ClimbPins::kClimbExtendSolenoid};
+        frc::Solenoid m_ClimbRetractSolenoid {kPCM2, ClimbPins::kClimbRetractSolenoid};
 
         frc::Solenoid m_BrakeLockSolenoid {ClimbPins::kBrakeLockSolenoid};
         frc::Solenoid m_BrakeUnlockSolenoid {ClimbPins::kBrakeUnlockSolenoid};

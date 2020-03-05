@@ -104,8 +104,8 @@ constexpr int kBeamPowerCellOut = Pins::DIO_1;
 namespace ClimbPins {
     constexpr int kClimbWinchMotor = Pins::CAN_13;
 
-    constexpr int kClimbExtendSolenoid  = Pins::AIR_7;
-    constexpr int kClimbRetractSolenoid = Pins::AIR_0;
+    constexpr int kClimbExtendSolenoid  = Pins::AIR_4;
+    constexpr int kClimbRetractSolenoid = Pins::AIR_5;
 
     constexpr int kBrakeLockSolenoid    = Pins::AIR_4;
     constexpr int kBrakeUnlockSolenoid  = Pins::AIR_3;
