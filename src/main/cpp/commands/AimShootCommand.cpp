@@ -29,6 +29,11 @@ void AimShootCommand::Execute () {
         m_Intake->FeedShooterStart();
         feederActivated = true;
     }
+
+    if (feederActivated && m_Shooter->GetShooterMotorSpeed() < m_ShootSpeed * 0.95) {
+        m_Intake->FeedStop();
+        feederActivated = false;
+    }
 }
 
 void AimShootCommand::End (bool interrupted) {
