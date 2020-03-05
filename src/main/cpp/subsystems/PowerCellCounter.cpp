@@ -1,9 +1,16 @@
 #include "subsystems/PowerCellCounter.h"
 
+#include <frc/smartdashboard/SmartDashboard.h>
+
+#include <networktables/NetworkTableEntry.h>
+#include <networktables/NetworkTableInstance.h>
+
 const std::chrono::milliseconds debounceDelay(1);
 
 PowerCellCounter::PowerCellCounter () {
     using WaitResult = frc::InterruptableSensorBase::WaitResult;
+
+    InitNetworkTables();
 
     m_PowerCellInTimestamp = hal::fpga_clock::now();
     m_PowerCellOutTimestamp = hal::fpga_clock::now();
@@ -55,4 +62,22 @@ void PowerCellCounter::Periodic () {
 
         m_PowerCellOutActive = false;
     }
+
+    m_Table->GetEntry("cell count").SetDouble(m_Count);
+}
+
+void PowerCellCounter::InitNetworkTables () {
+    m_Table = nt::NetworkTableInstance::GetDefault().GetTable("power cell counter");
+
+    auto entryCellCount = m_Table->GetEntry("cell count");
+
+    entryCellCount.SetDouble(m_Count);
+    entryCellCount.AddListener(
+        [=](auto event) {
+            if (event.value->IsDouble()) {
+                m_Count = (int)event.value->GetDouble();
+            }
+        },
+        NT_NOTIFY_NEW | NT_NOTIFY_UPDATE
+    );
 }

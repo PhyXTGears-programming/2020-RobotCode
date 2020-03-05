@@ -5,6 +5,8 @@
 
 #include <hal/cpp/fpga_clock.h>
 
+#include <networktables/NetworkTable.h>
+
 #include "Constants.h"
 
 class PowerCellCounter : public frc2::SubsystemBase {
@@ -25,4 +27,8 @@ class PowerCellCounter : public frc2::SubsystemBase {
 
         hal::fpga_clock::time_point m_PowerCellInTimestamp;
         hal::fpga_clock::time_point m_PowerCellOutTimestamp;
+
+        std::shared_ptr<NetworkTable> m_Table;
+
+        void InitNetworkTables();
 };
