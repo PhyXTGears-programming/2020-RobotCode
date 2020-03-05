@@ -8,8 +8,6 @@
 
 #include "Constants.h"
 
-#define WINCH_SPEED 0.25
-
 class Climb : public frc2::SubsystemBase {
     public:
         Climb();

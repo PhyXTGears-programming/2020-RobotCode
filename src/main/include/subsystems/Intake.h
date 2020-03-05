@@ -25,17 +25,8 @@ class Intake : public frc2::SubsystemBase {
         void ConveyorStop();
         void ConveyorReverse();
 
-        void IntakeExtend () {
-            m_IntakeExtendSolenoid.Set(true);
-            m_IntakeRetractSolenoid.Set(false);
-            m_IsExtended = true;
-        }
-
-        void IntakeRetract () {
-            m_IntakeExtendSolenoid.Set(false);
-            m_IntakeRetractSolenoid.Set(true);
-            m_IsExtended = false;
-        }
+        void IntakeExtend ();
+        void IntakeRetract ();
 
         void FeedShooterStart ();
         void FeedLoadStart ();
