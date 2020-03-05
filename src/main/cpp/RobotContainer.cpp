@@ -19,11 +19,11 @@
 #include <frc2/command/StartEndCommand.h>
 #include <frc2/command/WaitUntilCommand.h>
 
-enum class Pov : int {
-    Right = 90,
-    Left = 270,
-    Up = 180,
-    Down = 0
+enum Pov {
+    POV_RIGHT = 90,
+    POV_LEFT = 270,
+    POV_UP = 0,
+    POV_DOWN = 180,
 };
 
 RobotContainer::RobotContainer () {
@@ -42,6 +42,16 @@ RobotContainer::RobotContainer () {
     m_TeleopDriveCommand    = new TeleopDriveCommand(m_Drivetrain, &m_DriverJoystick);
     m_ShootCommand          = new ShootCommand(m_Shooter, m_Intake);
     m_ReverseBrushesCommand = new ReverseBrushesCommand(m_Intake);
+
+    m_RetractClimbCommand   = new RetractClimbCommand(m_Climb);
+    m_ExtendClimbCommand    = new ExtendClimbCommand(m_Climb);
+    m_RollClimbLeftCommand  = new RollClimbLeftCommand(m_Climb);
+    m_RollClimbRightCommand = new RollClimbRightCommand(m_Climb);
+    m_LockWinchCommand      = new LockWinchCommand(m_Climb);
+    m_UnlockWinchCommand    = new UnlockWinchCommand(m_Climb);
+
+    m_ClimbCylinderExtendCommand    = new ClimbCylinderExtendCommand(m_Climb);
+    m_ClimbCylinderRetractCommand   = new ClimbCylinderRetractCommand(m_Climb);
 
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(m_Drivetrain, *m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Shooter);
@@ -134,16 +144,16 @@ void RobotContainer::PollInput () {
     }
 
     // Expel Intake (DP Left)
-    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Left) && !m_ExpelIntakeCommand->IsScheduled()) {
+    if (POV_LEFT == m_OperatorJoystick.GetPOV() && !m_ExpelIntakeCommand->IsScheduled()) {
         m_ExpelIntakeCommand->Schedule();
-    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Left) && m_ExpelIntakeCommand->IsScheduled()) {
+    } else if (POV_LEFT != m_OperatorJoystick.GetPOV() && m_ExpelIntakeCommand->IsScheduled()) {
         m_ExpelIntakeCommand->Cancel();
     }
 
     // Reverse Brushes (DP Right)
-    if (m_OperatorJoystick.GetPOV() == static_cast<int>(Pov::Right) && !m_ReverseBrushesCommand->IsScheduled()) {
+    if (POV_RIGHT == m_OperatorJoystick.GetPOV() && !m_ReverseBrushesCommand->IsScheduled()) {
         m_ReverseBrushesCommand->Schedule();
-    } else if (m_OperatorJoystick.GetPOV() != static_cast<int>(Pov::Right) && m_ReverseBrushesCommand->IsScheduled()) {
+    } else if (POV_RIGHT != m_OperatorJoystick.GetPOV() && m_ReverseBrushesCommand->IsScheduled()) {
         m_ReverseBrushesCommand->Cancel();
     }
 
@@ -151,9 +161,52 @@ void RobotContainer::PollInput () {
     // LB to deploy/retract
     // LT to spin wheel
 
-    // Climb (RS)
-    // Right stick click to toggle solenoids
-    // Right stick X to move with motor
+
+    // ####################
+    // #####  Climb   #####
+    // ####################
+
+    // Climb Winch (LS)
+    if (std::abs(m_ClimbJoystick.GetY(frc::GenericHID::JoystickHand::kLeftHand)) > 0.2) {
+        if (!m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Schedule(true); // interruptible
+    } else {
+        if (m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Cancel();
+    }
+
+    // Climb Roll (RS)
+    double climbRoll = m_ClimbJoystick.GetX(frc::GenericHID::JoystickHand::kRightHand);
+    if (climbRoll > 0.5) { // Right
+        if (!m_RollClimbRightCommand->IsScheduled()) {
+            m_RollClimbRightCommand->Schedule();
+        }
+    } else if (climbRoll < -0.5) { // Left
+        if (!m_RollClimbLeftCommand->IsScheduled()) {
+            m_RollClimbLeftCommand->Schedule();
+        }
+    } else {
+        m_RollClimbLeftCommand->Cancel();
+        m_RollClimbRightCommand->Cancel();
+    }
+
+    // Climb Lock Winch (B)
+    if (m_ClimbJoystick.GetBButtonPressed()) {
+        m_LockWinchCommand->Schedule();
+    }
+
+    // Climb Unlock Winch (Y)
+    if (m_ClimbJoystick.GetYButtonPressed()) {
+        m_UnlockWinchCommand->Schedule();
+    }
+    
+    // Climb Cylinder Extend (A)
+    if (m_ClimbJoystick.GetAButtonPressed()) {
+        m_ClimbCylinderExtendCommand->Schedule();
+    }
+
+    // Climb Cylinder Retract (X)
+    if (m_ClimbJoystick.GetXButtonPressed()) {
+        m_ClimbCylinderRetractCommand->Schedule();
+    }
 }
 
 void RobotContainer::ConfigureButtonBindings () {
