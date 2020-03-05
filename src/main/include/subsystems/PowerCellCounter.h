@@ -15,6 +15,8 @@ class PowerCellCounter : public frc2::SubsystemBase {
 
         int GetCount();
 
+        void SetCount(int count);
+
         void Periodic();
 
     private:

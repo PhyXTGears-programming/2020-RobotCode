@@ -44,6 +44,10 @@ int PowerCellCounter::GetCount () {
     return m_Count;
 }
 
+void PowerCellCounter::SetCount (int count) {
+    m_Count = count;
+}
+
 void PowerCellCounter::Periodic () {
     auto now = hal::fpga_clock::now();
 
