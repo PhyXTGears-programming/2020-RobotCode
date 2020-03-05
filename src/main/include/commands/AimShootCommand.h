@@ -5,17 +5,22 @@
 
 #include "subsystems/Intake.h"
 #include "subsystems/PowerCellCounter.h"
+#include "subsystems/Shooter.h"
 
-class IntakeBallsCommand : public frc2::CommandHelper<frc2::CommandBase, IntakeBallsCommand> {
+class AimShootCommand : public frc2::CommandHelper<frc2::CommandBase, AimShootCommand> {
     public:
-        IntakeBallsCommand(Intake* intake, PowerCellCounter* cellCounter);
-
+        explicit AimShootCommand(Shooter* shooter, Intake* intake, PowerCellCounter* counter);
         void Initialize();
         void Execute();
         void End(bool interrupted);
         bool IsFinished();
 
     private:
+        Shooter* m_Shooter;
         Intake* m_Intake;
         PowerCellCounter* m_PowerCellCounter;
+
+        units::angular_velocity::revolutions_per_minute_t m_ShootSpeed = 0_rpm;
+
+        bool feederActivated = false;
 };

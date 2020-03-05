@@ -1,14 +1,17 @@
 #pragma once
 
+#include <cpptoml.h>
+
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
+#include <frc/DigitalInput.h>
 #include <frc/Solenoid.h>
 
 #include "Constants.h"
 
 class Intake : public frc2::SubsystemBase {
     public:
-        Intake();
+        Intake(std::shared_ptr<cpptoml::table> toml);
         void Periodic() override;
 
         void SetIntakeSpeed(double intakeSpeed);
@@ -21,36 +24,28 @@ class Intake : public frc2::SubsystemBase {
         void ConveyorStart();
         void ConveyorStop();
         void ConveyorReverse();
-    
-        int GetNumBalls () {
-            return m_NumBalls + m_BallDetected;
-        }
 
         void IntakeExtend () {
             m_IntakeExtendSolenoid.Set(true);
             m_IntakeRetractSolenoid.Set(false);
+            m_IsExtended = true;
         }
 
         void IntakeRetract () {
             m_IntakeExtendSolenoid.Set(false);
             m_IntakeRetractSolenoid.Set(true);
+            m_IsExtended = false;
         }
 
-        inline void FeederStart () {
-            SetFeeder(true);
-        }
+        void FeedShooterStart ();
+        void FeedLoadStart ();
+        void FeedStop ();
 
-        inline void FeederStop () {
-            SetFeeder(false);
-        }
+        bool IsExtended();
+        bool IsPowerCellInFeeder();
 
     private:
-        void SetFeeder (bool on) {
-            m_FeederMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, on ? -0.48 : 0);
-        }
-
-        int m_NumBalls = 0;
-        bool m_BallDetected = false;
+        void SetFeederSpeed (double percentSpeed);
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_IntakeMotor {kIntakeMotor};
         ctre::phoenix::motorcontrol::can::TalonSRX m_ConveyorMotor {kConveyorMotor};
@@ -58,5 +53,15 @@ class Intake : public frc2::SubsystemBase {
 
         frc::Solenoid m_IntakeExtendSolenoid {kIntakeExtendSolenoidPin};
         frc::Solenoid m_IntakeRetractSolenoid {kIntakeRetractSolenoidPin};
+
+        frc::DigitalInput m_FeederPowerCellDetector {kBeamPowerCellFeeder};
+
+        bool m_IsExtended = false;
+        
+        struct {
+            struct {
+                double load, shoot;
+            } speed;
+        } config;
 };
 

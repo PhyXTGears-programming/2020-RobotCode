@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Constants.h"
-
 #include <frc2/command/SubsystemBase.h>
 #include <rev/CANSparkMax.h>
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/SpeedControllerGroup.h>
 #include <frc/XboxController.h>
 #include <frc/kinematics/DifferentialDriveOdometry.h>
+
+#include "Constants.h"
 
 class Drivetrain : public frc2::SubsystemBase {
     public:

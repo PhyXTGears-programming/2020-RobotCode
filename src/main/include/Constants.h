@@ -1,8 +1,8 @@
 #pragma once
 
 namespace ConfigFiles {
-    constexpr char ConfigFile []     = "deploy/options.toml";
-    constexpr char AutoConfigFile [] = "deploy/auto.toml";
+    const std::string ConfigFile     = "config.toml";
+    const std::string AutoConfigFile = "auto.toml";
 }
 
 namespace Pins {
@@ -85,8 +85,8 @@ constexpr int kIntakeMotor    = Pins::CAN_7;
 constexpr int kConveyorMotor  = Pins::CAN_8;
 
 // PCM pin for intake solenoid
-constexpr int kIntakeExtendSolenoidPin  = Pins::AIR_6;
-constexpr int kIntakeRetractSolenoidPin = Pins::AIR_2;
+constexpr int kIntakeExtendSolenoidPin  = Pins::AIR_2;
+constexpr int kIntakeRetractSolenoidPin = Pins::AIR_6;
 
 constexpr int kBeamPowerCellFeeder = Pins::DIO_2;
 

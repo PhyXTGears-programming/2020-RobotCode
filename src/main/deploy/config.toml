@@ -1,0 +1,18 @@
+[shooter]
+turretPosition.p = 0.05
+turretPosition.i = 0.0
+turretPosition.d = 0.0
+
+turretVelocity.p = 0.5
+turretVelocity.i = 0.0
+turretVelocity.d = 0.1
+turretVelocity.f = 0.85
+
+shooterVelocity.p = 0.001
+shooterVelocity.i = 0.0
+shooterVelocity.d = 0.01
+shooterVelocity.f = 0.00018
+
+[intake]
+speed.load  = 0.725
+speed.shoot = 1.0
