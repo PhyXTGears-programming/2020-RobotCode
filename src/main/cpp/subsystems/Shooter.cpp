@@ -127,7 +127,11 @@ units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterSpeedForDis
     return kNearShooterSpeed + (kFarShooterSpeed - kNearShooterSpeed) * std::clamp(factor, 0.0, 1.0);
 }
 
-bool Shooter::IsOnTarget() {
+int Shooter::GetTargetCount () {
+    return m_TargetCount;
+}
+
+bool Shooter::IsOnTarget () {
     return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetErrorX);
 }
 

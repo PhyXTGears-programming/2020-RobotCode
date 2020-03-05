@@ -14,6 +14,7 @@
 #include "commands/ExpelIntakeCommand.h"
 #include "commands/ExtendIntakeCommand.h"
 #include "commands/IntakeBallsCommand.h"
+#include "commands/PreheatShooterCommand.h"
 #include "commands/RetractIntakeCommand.h"
 #include "commands/ReverseBrushesCommand.h"
 #include "commands/ShootCommand.h"
