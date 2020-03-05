@@ -100,6 +100,19 @@ constexpr int kTurretMotor       = Pins::CAN_12;
 constexpr int kBeamPowerCellIn  = Pins::DIO_0;
 constexpr int kBeamPowerCellOut = Pins::DIO_1;
 
+// Climb
+namespace ClimbPins {
+    constexpr int kClimbWinchMotor = Pins::CAN_13;
+
+    constexpr int kClimbExtendSolenoid  = Pins::AIR_4;
+    constexpr int kClimbRetractSolenoid = Pins::AIR_5;
+
+    constexpr int kBrakeLockSolenoid    = Pins::AIR_4;
+    constexpr int kBrakeUnlockSolenoid  = Pins::AIR_3;
+
+    constexpr int kClimbRollerRelay = Pins::RELAY_0;
+}
+
 // Control Panel
 constexpr int kControlPanelRollerMotor = Pins::CAN_14;
 

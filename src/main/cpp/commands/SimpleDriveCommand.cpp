@@ -17,7 +17,5 @@ void SimpleDriveCommand::Initialize () {
 void SimpleDriveCommand::Execute () {}
 
 void SimpleDriveCommand::End (bool interrupted) {
-    if (interrupted) {
-        m_Drivetrain->Drive(0.0, 0.0);
-    }
+    m_Drivetrain->Drive(0.0, 0.0);
 }

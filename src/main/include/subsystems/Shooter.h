@@ -29,6 +29,8 @@ class Shooter : public frc2::SubsystemBase {
         
         units::angular_velocity::revolutions_per_minute_t GetShooterSpeedForDistance();
 
+        int GetTargetCount();
+
         bool IsOnTarget();
 
         double MeasureShooterMotorSpeed1();
@@ -69,5 +71,9 @@ class Shooter : public frc2::SubsystemBase {
             struct {
                 double p, i, d, f;
             } shooterVelocity;
+
+            struct {
+                units::angular_velocity::revolutions_per_minute_t near, far;
+            } shootingSpeed;
         } config;
 };
