@@ -16,3 +16,8 @@ shooterVelocity.f = 0.00018
 [intake]
 speed.load  = 0.725
 speed.shoot = 1.0
+
+[controlPanel]
+extraDegrees = 90.0 # degrees to rotate past 3 rotations
+
+p = 0.1
