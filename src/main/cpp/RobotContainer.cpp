@@ -11,6 +11,7 @@
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/CommandScheduler.h>
 #include <frc2/command/FunctionalCommand.h>
+#include <frc2/command/InstantCommand.h>
 #include <frc2/command/PrintCommand.h>
 #include <frc2/command/ParallelCommandGroup.h>
 #include <frc2/command/ParallelRaceGroup.h>
@@ -207,8 +208,11 @@ void RobotContainer::InitAutonomousChooser () {
         SimpleDriveCommand{-0.2, 0.0, m_Drivetrain}.WithTimeout(0.4_s)
     };
 
+    static hal::fpga_clock::time_point startTime;
+
     frc2::SequentialCommandGroup* sixCellAutoCommand =
         new frc2::SequentialCommandGroup{
+            frc2::InstantCommand{[=]() { startTime = hal::fpga_clock::now(); }},
             ExtendIntakeCommand{m_Intake},
             PreheatShooterCommand{m_Shooter},
             // Rotate target into view of turret.
@@ -233,7 +237,12 @@ void RobotContainer::InitAutonomousChooser () {
             PreheatShooterCommand{m_Shooter},
             AimCommand{m_Shooter}.WithTimeout(0.5_s),
             AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s),
-            RetractIntakeCommand{m_Intake}
+            RetractIntakeCommand{m_Intake},
+            frc2::InstantCommand{[=]() {
+                auto now = hal::fpga_clock::now();
+                auto delta = std::chrono::duration_cast<std::chrono::microseconds>(now - startTime).count() / 1.0E6;
+                std::cout << "Auto done in " << delta << " seconds" << std::endl;
+            }}
         };
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
