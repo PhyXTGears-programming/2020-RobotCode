@@ -5,7 +5,7 @@
 #include <networktables/NetworkTableEntry.h>
 #include <networktables/NetworkTableInstance.h>
 
-const std::chrono::milliseconds debounceDelay(1);
+constexpr std::chrono::milliseconds debounceDelay(100);
 
 PowerCellCounter::PowerCellCounter () {
     using WaitResult = frc::InterruptableSensorBase::WaitResult;
@@ -18,13 +18,17 @@ PowerCellCounter::PowerCellCounter () {
     // Update counter when triggered
     m_PowerCellIn.RequestInterrupts(
         [=](WaitResult res) {
-            m_PowerCellInTimestamp = hal::fpga_clock::now();
-            m_PowerCellInActive = (WaitResult::kRisingEdge == res);
+            if (WaitResult::kRisingEdge == res) {
+                m_PowerCellInTimestamp = hal::fpga_clock::now();
+                m_PowerCellInActive = true;
+            }
         });
     m_PowerCellOut.RequestInterrupts(
         [=](WaitResult res) {
-            m_PowerCellOutTimestamp = hal::fpga_clock::now();
-            m_PowerCellOutActive = (WaitResult::kRisingEdge == res);
+            if (WaitResult::kRisingEdge == res) {
+                m_PowerCellOutTimestamp = hal::fpga_clock::now();
+                m_PowerCellOutActive = true;
+            }
         });
 
     // Trigger interupt on rising edge.
@@ -48,9 +52,8 @@ void PowerCellCounter::Periodic () {
         auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(diff);
         if (debounceDelay <= millis) {
             m_Count++;
+            m_PowerCellInActive = false;
         }
-        
-        m_PowerCellInActive = false;
     }
 
     if (m_PowerCellOutActive) {
@@ -58,9 +61,8 @@ void PowerCellCounter::Periodic () {
         auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(diff);
         if (debounceDelay <= millis) {
             m_Count--;
+            m_PowerCellOutActive = false;
         }
-
-        m_PowerCellOutActive = false;
     }
 
     m_Table->GetEntry("cell count").SetDouble(m_Count);
