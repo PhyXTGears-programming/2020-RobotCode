@@ -20,7 +20,9 @@ class PowerCellCounter : public frc2::SubsystemBase {
     private:
         frc::DigitalInput m_PowerCellIn {kBeamPowerCellIn};
         frc::DigitalInput m_PowerCellOut {kBeamPowerCellOut};
-        int m_Count = 0;
+
+        // All matches start with 3 power cells.
+        int m_Count = 3;
 
         bool m_PowerCellInActive = false;
         bool m_PowerCellOutActive = false;
