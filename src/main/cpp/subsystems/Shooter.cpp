@@ -63,6 +63,9 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
 
     // Set up turret motor position PID
     m_TurretPID = new frc2::PIDController(config.turretPosition.p, config.turretPosition.i, config.turretPosition.d);
+    
+    // Light should start off
+    SetLimelightLight(false);
 }
 
 void Shooter::Periodic () {
@@ -97,6 +100,12 @@ void Shooter::SetTrackingMode (TrackingMode mode) {
 
     if (mode == TrackingMode::Off) {
         SetTurretSpeed(0_rpm);
+    }
+    
+    if (mode == TrackingMode::CameraTracking) {
+        SetLimelightLight(true);
+    } else {
+        SetLimelightLight(false);
     }
 }
 
@@ -173,4 +182,8 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
     }
 
     SetTurretSpeed(speed);
+}
+
+void Shooter::SetLimelightLight (bool on) {
+    m_VisionTable->PutNumber("ledMode", on ? 3 : 1);
 }
