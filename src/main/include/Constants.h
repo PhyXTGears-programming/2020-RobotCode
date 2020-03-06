@@ -85,8 +85,8 @@ constexpr int kIntakeMotor    = Pins::CAN_7;
 constexpr int kConveyorMotor  = Pins::CAN_8;
 
 // PCM pin for intake solenoid
-constexpr int kIntakeExtendSolenoidPin  = Pins::AIR_6;
-constexpr int kIntakeRetractSolenoidPin = Pins::AIR_2;
+constexpr int kIntakeExtendSolenoidPin  = Pins::AIR_2;
+constexpr int kIntakeRetractSolenoidPin = Pins::AIR_6;
 
 constexpr int kBeamPowerCellFeeder = Pins::DIO_2;
 
@@ -99,3 +99,25 @@ constexpr int kTurretMotor       = Pins::CAN_12;
 // PowerCellCounter
 constexpr int kBeamPowerCellIn  = Pins::DIO_0;
 constexpr int kBeamPowerCellOut = Pins::DIO_1;
+
+// Climb
+namespace ClimbPins {
+    constexpr int kClimbWinchMotor = Pins::CAN_13;
+
+    constexpr int kClimbExtendSolenoid  = Pins::AIR_4;
+    constexpr int kClimbRetractSolenoid = Pins::AIR_5;
+
+    constexpr int kBrakeLockSolenoid    = Pins::AIR_4;
+    constexpr int kBrakeUnlockSolenoid  = Pins::AIR_3;
+
+    constexpr int kClimbRollerRelay = Pins::RELAY_0;
+}
+
+// Control Panel
+constexpr int kControlPanelRollerMotor = Pins::CAN_14;
+
+constexpr int kControlPanelExtendSolenoidPin = Pins::AIR_0;     // Fixme:  Verify and assign.
+constexpr int kControlPanelRetractSolenoidPin = Pins::AIR_1;    // Fixme:  Verify and assign.
+
+// PCM 2
+constexpr int kPCM2 = Pins::CAN_15;

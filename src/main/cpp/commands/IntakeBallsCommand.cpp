@@ -15,7 +15,10 @@ IntakeBallsCommand::IntakeBallsCommand (Intake* intake, PowerCellCounter* cellCo
 void IntakeBallsCommand::Initialize () {
     m_Intake->ConveyorStart();
     m_Intake->IntakeStart();
-    m_Intake->FeedLoadStart();
+
+    if (!m_Intake->IsPowerCellInFeeder()) {
+        m_Intake->FeedLoadStart();
+    }
 }
 
 void IntakeBallsCommand::Execute () {

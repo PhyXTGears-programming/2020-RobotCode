@@ -1,5 +1,6 @@
 #include "subsystems/Shooter.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -31,6 +32,9 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
     config.shooterVelocity.i = toml->get_qualified_as<double>("shooterVelocity.i").value_or(0.0);
     config.shooterVelocity.d = toml->get_qualified_as<double>("shooterVelocity.d").value_or(0.0);
     config.shooterVelocity.f = toml->get_qualified_as<double>("shooterVelocity.f").value_or(0.0);
+
+    config.shootingSpeed.near = units::angular_velocity::revolutions_per_minute_t{toml->get_qualified_as<double>("shootingSpeed.near").value_or(0.0)};
+    config.shootingSpeed.far  = units::angular_velocity::revolutions_per_minute_t{toml->get_qualified_as<double>("shootingSpeed.far").value_or(0.0)};
 
     // Setup shooter motors
     SetPIDF(m_ShooterMotor1PID, config.shooterVelocity);
@@ -113,8 +117,22 @@ void Shooter::SetTurretSpeed (double percentSpeed) {
     SetTurretSpeed(percentSpeed * kMaxTurretVelocity);
 }
 
-bool Shooter::IsOnTarget() {
-    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetError);
+units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterSpeedForDistance () {
+    auto const lo = -13.9;
+    auto const hi = 3.2;
+
+    double factor = (m_TargetErrorY - lo) / (hi - lo);
+
+    // Clamp speed to far shooter speed.
+    return config.shootingSpeed.near + (config.shootingSpeed.far - config.shootingSpeed.near) * std::clamp(factor, 0.0, 1.0);
+}
+
+int Shooter::GetTargetCount () {
+    return m_TargetCount;
+}
+
+bool Shooter::IsOnTarget () {
+    return 0 < m_TargetCount && 0.5 > std::fabs(m_TargetErrorX);
 }
 
 double Shooter::MeasureShooterMotorSpeed1 () {
@@ -138,12 +156,15 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
         if (m_TargetCount > 0) {
             std::cout << "Count: " << m_TargetCount << std::endl;
 
-            m_TargetError = -m_VisionTable->GetNumber("tx", 0);
-            std::cout << "m_TargetError: " << m_TargetError << std::endl;
+            m_TargetErrorX = -m_VisionTable->GetNumber("tx", 0);
+            m_TargetErrorY = -m_VisionTable->GetNumber("ty", 0);
+            std::cout << "m_TargetErrorX: " << m_TargetErrorX << std::endl;
+            std::cout << "m_TargetErrorY: " << m_TargetErrorY << std::endl;
 
-            frc::SmartDashboard::PutNumber("Turret Error", m_TargetError);
+            frc::SmartDashboard::PutNumber("Turret Error X", m_TargetErrorX);
+            frc::SmartDashboard::PutNumber("Turret Error Y", m_TargetErrorY);
 
-            speed = m_TurretPID->Calculate(m_TargetError);
+            speed = m_TurretPID->Calculate(m_TargetErrorX);
         } else if (m_TargetCount == 0) {
             std::cout << "No objects detected" << std::endl;
         } else {

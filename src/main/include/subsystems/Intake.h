@@ -25,20 +25,14 @@ class Intake : public frc2::SubsystemBase {
         void ConveyorStop();
         void ConveyorReverse();
 
-        void IntakeExtend () {
-            m_IntakeExtendSolenoid.Set(true);
-            m_IntakeRetractSolenoid.Set(false);
-        }
+        void IntakeExtend();
+        void IntakeRetract();
 
-        void IntakeRetract () {
-            m_IntakeExtendSolenoid.Set(false);
-            m_IntakeRetractSolenoid.Set(true);
-        }
+        void FeedShooterStart();
+        void FeedLoadStart();
+        void FeedStop();
 
-        void FeedShooterStart ();
-        void FeedLoadStart ();
-        void FeedStop ();
-
+        bool IsExtended();
         bool IsPowerCellInFeeder();
 
     private:
@@ -52,6 +46,8 @@ class Intake : public frc2::SubsystemBase {
         frc::Solenoid m_IntakeRetractSolenoid {kIntakeRetractSolenoidPin};
 
         frc::DigitalInput m_FeederPowerCellDetector {kBeamPowerCellFeeder};
+
+        bool m_IsExtended = false;
         
         struct {
             struct {
