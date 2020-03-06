@@ -38,6 +38,7 @@ class ControlPanel : public frc2::SubsystemBase {
             m_ExtendSolenoid2.Set(false);
             m_RetractSolenoid1.Set(true);
             m_RetractSolenoid2.Set(true);
+            SetSpeed(0);
         }
 
     private:
