@@ -21,6 +21,8 @@
 #include <frc2/command/StartEndCommand.h>
 #include <frc2/command/WaitUntilCommand.h>
 
+using JoystickHand = frc::GenericHID::JoystickHand;
+
 enum Pov {
     POV_RIGHT = 90,
     POV_LEFT = 270,
@@ -33,6 +35,7 @@ RobotContainer::RobotContainer () {
 
     m_Drivetrain = new Drivetrain();
     m_Intake = new Intake(toml->get_table("intake"));
+    m_Climb = new Climb();
     m_Shooter = new Shooter(toml->get_table("shooter"));
     m_ControlPanel = new ControlPanel(toml->get_table("controlPanel"));
     m_PowerCellCounter = new PowerCellCounter();
@@ -46,6 +49,7 @@ RobotContainer::RobotContainer () {
     m_ShootCommand          = new ShootCommand(m_Shooter, m_Intake);
     m_ReverseBrushesCommand = new ReverseBrushesCommand(m_Intake);
 
+    m_ControlWinchCommand   = new ControlWinchCommand(m_Climb, [=] { return m_ClimbJoystick.GetY(JoystickHand::kLeftHand); });
     m_RetractClimbCommand   = new RetractClimbCommand(m_Climb);
     m_ExtendClimbCommand    = new ExtendClimbCommand(m_Climb);
     m_RollClimbLeftCommand  = new RollClimbLeftCommand(m_Climb);
@@ -53,8 +57,8 @@ RobotContainer::RobotContainer () {
     m_LockWinchCommand      = new LockWinchCommand(m_Climb);
     m_UnlockWinchCommand    = new UnlockWinchCommand(m_Climb);
 
-    m_ClimbCylinderExtendCommand    = new ClimbCylinderExtendCommand(m_Climb);
-    m_ClimbCylinderRetractCommand   = new ClimbCylinderRetractCommand(m_Climb);
+    m_ClimbCylinderExtendCommand  = new ClimbCylinderExtendCommand(m_Climb);
+    m_ClimbCylinderRetractCommand = new ClimbCylinderRetractCommand(m_Climb);
 
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(m_Drivetrain, *m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Shooter);
@@ -76,8 +80,6 @@ frc2::Command* RobotContainer::GetAutonomousCommand () {
 }
 
 void RobotContainer::PollInput () {
-    using JoystickHand = frc::GenericHID::JoystickHand;
-
     // ####################
     // #####  Driver  #####
     // ####################
