@@ -10,8 +10,10 @@
 
 #include "subsystems/Climb.h"
 #include "subsystems/Drivetrain.h"
-#include "subsystems/PowerCellCounter.h"
+#include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
+#include "subsystems/ControlPanel.h"
+#include "subsystems/PowerCellCounter.h"
 
 #include "commands/AutonomousCommand.h"
 #include "commands/ExpelIntakeCommand.h"
@@ -23,14 +25,8 @@
 #include "commands/ShootCommand.h"
 #include "commands/TeleopDriveCommand.h"
 
-#include "commands/AutonomousCommand.h"
-#include "commands/IntakeBallsCommand.h"
-#include "commands/ExpelIntakeCommand.h"
-#include "commands/ExtendIntakeCommand.h"
 #include "commands/ExtendClimbCommand.h"
-#include "commands/RetractIntakeCommand.h"
 #include "commands/RetractClimbCommand.h"
-#include "commands/ReverseBrushesCommand.h"
 #include "commands/RollClimbLeftCommand.h"
 #include "commands/RollClimbRightCommand.h"
 #include "commands/ControlWinchCommand.h"
@@ -39,13 +35,6 @@
 #include "commands/ClimbCylinderExtendCommand.h"
 #include "commands/ClimbCylinderRetractCommand.h"
 
-/**
- * This class is where the bulk of the robot should be declared.  Since
- * Command-based is a "declarative" paradigm, very little robot logic should
- * actually be handled in the {@link Robot} periodic methods (other than the
- * scheduler calls).  Instead, the structure of the robot (including subsystems,
- * commands, and button mappings) should be declared here.
- */
 class RobotContainer {
     public:
         RobotContainer();
@@ -74,6 +63,7 @@ class RobotContainer {
         Intake* m_Intake;
         Climb* m_Climb;
         Shooter* m_Shooter;
+        ControlPanel* m_ControlPanel;
         PowerCellCounter* m_PowerCellCounter;
 
         AutonomousCommand* m_AutonomousCommand;
