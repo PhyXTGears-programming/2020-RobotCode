@@ -20,6 +20,8 @@ class PowerCellCounter : public frc2::SubsystemBase {
         void Periodic();
 
     private:
+        void InitNetworkTables();
+        
         frc::DigitalInput m_PowerCellIn {kBeamPowerCellIn};
         frc::DigitalInput m_PowerCellOut {kBeamPowerCellOut};
 
@@ -33,6 +35,4 @@ class PowerCellCounter : public frc2::SubsystemBase {
         hal::fpga_clock::time_point m_PowerCellOutTimestamp;
 
         std::shared_ptr<NetworkTable> m_Table;
-
-        void InitNetworkTables();
 };

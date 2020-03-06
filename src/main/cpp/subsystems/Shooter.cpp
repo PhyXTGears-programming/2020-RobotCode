@@ -18,9 +18,6 @@
 
 #define kMaxTurretVelocity 20_rpm
 
-#define kNearShooterSpeed 4600_rpm
-#define kFarShooterSpeed 6500_rpm
-
 Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
     config.turretVelocity.p = toml->get_qualified_as<double>("turretVelocity.p").value_or(0.0);
     config.turretVelocity.i = toml->get_qualified_as<double>("turretVelocity.i").value_or(0.0);
@@ -35,6 +32,9 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
     config.shooterVelocity.i = toml->get_qualified_as<double>("shooterVelocity.i").value_or(0.0);
     config.shooterVelocity.d = toml->get_qualified_as<double>("shooterVelocity.d").value_or(0.0);
     config.shooterVelocity.f = toml->get_qualified_as<double>("shooterVelocity.f").value_or(0.0);
+
+    config.shootingSpeed.near = units::angular_velocity::revolutions_per_minute_t{toml->get_qualified_as<double>("shootingSpeed.near").value_or(0.0)};
+    config.shootingSpeed.far  = units::angular_velocity::revolutions_per_minute_t{toml->get_qualified_as<double>("shootingSpeed.far").value_or(0.0)};
 
     // Setup shooter motors
     SetPIDF(m_ShooterMotor1PID, config.shooterVelocity);
@@ -124,7 +124,7 @@ units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterSpeedForDis
     double factor = (m_TargetErrorY - lo) / (hi - lo);
 
     // Clamp speed to far shooter speed.
-    return kNearShooterSpeed + (kFarShooterSpeed - kNearShooterSpeed) * std::clamp(factor, 0.0, 1.0);
+    return config.shootingSpeed.near + (config.shootingSpeed.far - config.shootingSpeed.near) * std::clamp(factor, 0.0, 1.0);
 }
 
 int Shooter::GetTargetCount () {
