@@ -36,10 +36,10 @@ class Shooter : public frc2::SubsystemBase {
         double MeasureShooterMotorSpeed1();
         double MeasureShooterMotorSpeed2();
 
+        void SetLimelightLight(bool on);
+
     private:
         void TrackingPeriodic(TrackingMode mode);
-
-        void SetLimelightLight(bool on);
 
         TrackingMode m_TrackingMode = TrackingMode::Off;
 

@@ -295,9 +295,8 @@ void RobotContainer::InitAutonomousChooser () {
             frc2::FunctionalCommand {
                 // Init
                 [=]() {
-                    if (0 == m_Shooter->GetTargetCount()) {
-                        m_Shooter->SetTurretSpeed(0.8);
-                    }
+                    m_Shooter->SetLimelightLight(true);
+                    m_Shooter->SetTurretSpeed(16_rpm);
                 },
                 // Execute
                 [=]() {},
