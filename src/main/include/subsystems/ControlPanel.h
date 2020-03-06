@@ -27,24 +27,29 @@ class ControlPanel : public frc2::SubsystemBase {
         }
 
         void Extend () {
-            m_ExtendSolenoid.Set(true);
-            m_RetractSolenoid.Set(false);
+            m_RetractSolenoid1.Set(false);
+            m_RetractSolenoid2.Set(false);
+            m_ExtendSolenoid1.Set(true);
+            m_ExtendSolenoid2.Set(true);
         }
 
         void Retract () {
-            m_ExtendSolenoid.Set(false);
-            m_RetractSolenoid.Set(true);
+            m_ExtendSolenoid1.Set(false);
+            m_ExtendSolenoid2.Set(false);
+            m_RetractSolenoid1.Set(true);
+            m_RetractSolenoid2.Set(true);
         }
 
     private:
-        ctre::phoenix::motorcontrol::can::TalonSRX m_RotationMotor {kIntakeMotor};
+        ctre::phoenix::motorcontrol::can::TalonSRX m_RotationMotor {ControlPanelPins::kControlPanelMotor};
 
-        frc::Solenoid m_ExtendSolenoid {kControlPanelExtendSolenoidPin};
-        frc::Solenoid m_RetractSolenoid {kControlPanelRetractSolenoidPin};
+        frc::Solenoid m_ExtendSolenoid1 {ControlPanelPins::kControlPanelExtendSolenoid1Pin};
+        frc::Solenoid m_ExtendSolenoid2 {ControlPanelPins::kControlPanelExtendSolenoid2Pin};
+        frc::Solenoid m_RetractSolenoid1 {ControlPanelPins::kControlPanelRetractSolenoid1Pin};
+        frc::Solenoid m_RetractSolenoid2 {ControlPanelPins::kControlPanelRetractSolenoid2Pin};
         
         struct {
             double extraDegrees;
             double p;
         } config;
 };
-

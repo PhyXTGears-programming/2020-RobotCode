@@ -129,9 +129,7 @@ void RobotContainer::PollInput () {
         }
     }
 
-    // Control Panel (LB, LT)
-    // LB to deploy/retract
-    // LS to spin wheel
+    // Control Panel Deploy (LB)
     if (m_OperatorJoystick.GetBumperPressed(JoystickHand::kLeftHand)) {
         m_ControlPanel->Extend();
     } else if (m_OperatorJoystick.GetBumperReleased(JoystickHand::kLeftHand)) {
