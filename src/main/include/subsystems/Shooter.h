@@ -22,7 +22,7 @@ class Shooter : public frc2::SubsystemBase {
         void SetShooterMotorSpeed(units::angular_velocity::revolutions_per_minute_t speed);
         units::angular_velocity::revolutions_per_minute_t GetShooterMotorSpeed();
 
-        void SetTrackingMode (TrackingMode mode);
+        void SetTrackingMode(TrackingMode mode);
 
         void SetTurretSpeed(units::angular_velocity::revolutions_per_minute_t speed);
         void SetTurretSpeed(double percentSpeed);
@@ -38,6 +38,8 @@ class Shooter : public frc2::SubsystemBase {
 
     private:
         void TrackingPeriodic(TrackingMode mode);
+
+        void SetLimelightLight(bool on);
 
         TrackingMode m_TrackingMode = TrackingMode::Off;
 

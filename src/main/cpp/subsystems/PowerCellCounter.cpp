@@ -73,7 +73,7 @@ void PowerCellCounter::Periodic () {
 }
 
 void PowerCellCounter::InitNetworkTables () {
-    m_Table = nt::NetworkTableInstance::GetDefault().GetTable("power cell counter");
+    m_Table = nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard");
 
     auto entryCellCount = m_Table->GetEntry("cell count");
 
