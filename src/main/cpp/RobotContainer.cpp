@@ -87,6 +87,13 @@ void RobotContainer::PollInput () {
         m_IntakeExtended = false;
     }
 
+    // Brake (RB)
+    if (m_DriverJoystick.GetBumperPressed(JoystickHand::kRightHand)) {
+        m_Drivetrain->SetBrake(true);
+    } else if (m_DriverJoystick.GetBumperReleased(JoystickHand::kRightHand)) {
+        m_Drivetrain->SetBrake(false);
+    }
+
     // ####################
     // #####   Both   #####
     // ####################

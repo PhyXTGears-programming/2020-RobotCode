@@ -18,6 +18,8 @@ class Drivetrain : public frc2::SubsystemBase {
         void Drive(double yInput, double xInput);
         void RadiusDrive(double speed, double radius);
 
+        void SetBrake(bool on);
+
     private:
         rev::CANSparkMax m_LeftMotor1 {DriveMotorPins::Left1, rev::CANSparkMax::MotorType::kBrushless};
         rev::CANSparkMax m_LeftMotor2 {DriveMotorPins::Left2, rev::CANSparkMax::MotorType::kBrushless};
