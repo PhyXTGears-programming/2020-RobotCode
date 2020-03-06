@@ -1,42 +1,38 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 #pragma once
 
-#include "Constants.h"
-
-#include <rev/CANSparkMax.h>
 #include <frc2/command/SubsystemBase.h>
+#include <rev/CANSparkMax.h>
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/SpeedControllerGroup.h>
 #include <frc/XboxController.h>
+#include <frc/kinematics/DifferentialDriveOdometry.h>
+
+#include "Constants.h"
 
 class Drivetrain : public frc2::SubsystemBase {
- public:
-  Drivetrain();
+    public:
+        Drivetrain();
+        
+        void Periodic() override;
 
-  /**
-   * Will be called periodically whenever the CommandScheduler runs.
-   */
-  void Periodic() override;
-  void Drive(frc::XboxController& driver);
+        void Drive(double yInput, double xInput);
+        void RadiusDrive(double speed, double radius);
 
- private:
-  // Components (e.g. motor controllers and sensors) should generally be
-  // declared private and exposed only through public methods.
-  rev::CANSparkMax m_LeftMotor1 {kLeftMotor1, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_LeftMotor2 {kLeftMotor2, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_LeftMotor3 {kLeftMotor3, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_RightMotor1 {kRightMotor1, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_RightMotor2 {kRightMotor2, rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax m_RightMotor3 {kRightMotor3, rev::CANSparkMax::MotorType::kBrushless};
+        void SetBrake(bool on);
 
-  frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
-  frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
+    private:
+        rev::CANSparkMax m_LeftMotor1 {DriveMotorPins::Left1, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor2 {DriveMotorPins::Left2, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_LeftMotor3 {DriveMotorPins::Left3, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor1 {DriveMotorPins::Right1, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor2 {DriveMotorPins::Right2, rev::CANSparkMax::MotorType::kBrushless};
+        rev::CANSparkMax m_RightMotor3 {DriveMotorPins::Right3, rev::CANSparkMax::MotorType::kBrushless};
 
-  frc::DifferentialDrive m_Drivetrain {m_LeftMotors, m_RightMotors};
+        frc::SpeedControllerGroup m_LeftMotors {m_LeftMotor1, m_LeftMotor2, m_LeftMotor3};
+        frc::SpeedControllerGroup m_RightMotors {m_RightMotor1, m_RightMotor2, m_RightMotor3};
+
+        rev::CANEncoder m_LeftEncoder {m_LeftMotor1};
+        rev::CANEncoder m_RightEncoder {m_RightMotor1};
+
+        frc::DifferentialDriveOdometry* m_Odometry;
 };
