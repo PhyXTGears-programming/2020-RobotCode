@@ -33,6 +33,7 @@ RobotContainer::RobotContainer () {
 
     m_Drivetrain = new Drivetrain();
     m_Intake = new Intake(toml->get_table("intake"));
+    m_Climb = new Climb();
     m_Shooter = new Shooter(toml->get_table("shooter"));
     m_PowerCellCounter = new PowerCellCounter();
 
@@ -52,8 +53,8 @@ RobotContainer::RobotContainer () {
     m_LockWinchCommand      = new LockWinchCommand(m_Climb);
     m_UnlockWinchCommand    = new UnlockWinchCommand(m_Climb);
 
-    m_ClimbCylinderExtendCommand    = new ClimbCylinderExtendCommand(m_Climb);
-    m_ClimbCylinderRetractCommand   = new ClimbCylinderRetractCommand(m_Climb);
+    m_ClimbCylinderExtendCommand  = new ClimbCylinderExtendCommand(m_Climb);
+    m_ClimbCylinderRetractCommand = new ClimbCylinderRetractCommand(m_Climb);
 
     frc2::CommandScheduler::GetInstance().SetDefaultCommand(m_Drivetrain, *m_TeleopDriveCommand);
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_Shooter);
