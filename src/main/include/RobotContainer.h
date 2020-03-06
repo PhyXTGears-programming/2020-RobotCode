@@ -6,6 +6,8 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/XboxController.h>
 
+#include "SendableChooser2.h"
+
 #include "subsystems/Climb.h"
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Intake.h"
@@ -48,6 +50,8 @@ class RobotContainer {
 
         void InitAutonomousChooser();
 
+        void ReportSelectedAuto();
+
         // Operators' input devices.
         // These are 0 indexed!
         frc::XboxController m_DriverJoystick{0};
@@ -79,10 +83,10 @@ class RobotContainer {
         UnlockWinchCommand* m_UnlockWinchCommand;
         ClimbCylinderExtendCommand* m_ClimbCylinderExtendCommand;
         ClimbCylinderRetractCommand* m_ClimbCylinderRetractCommand;
-        
+
         ControlWinchCommand* m_ControlWinchCommand;
 
-        frc::SendableChooser<frc2::Command *> m_DashboardAutoChooser;
+        SendableChooser2<frc2::Command *> m_DashboardAutoChooser;
 
         bool m_TurretManualControl = false; // Currently running manual control
         bool m_IntakeExtended = false;

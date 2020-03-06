@@ -8,17 +8,17 @@ turretVelocity.i = 0.0
 turretVelocity.d = 0.1
 turretVelocity.f = 0.85
 
-shooterVelocity.p = 0.001
+shooterVelocity.p = 0.002
 shooterVelocity.i = 0.0
 shooterVelocity.d = 0.01
-shooterVelocity.f = 0.00018
+shooterVelocity.f = 0.0007
 
 shootingSpeed.near = 4500
 shootingSpeed.far  = 6500
 
 [intake]
 speed.load  = 0.725
-speed.shoot = 1.0
+speed.shoot = 0.9
 
 [controlPanel]
 extraDegrees = 90.0 # degrees to rotate past 3 rotations

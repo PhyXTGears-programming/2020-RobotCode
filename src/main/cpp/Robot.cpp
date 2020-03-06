@@ -53,7 +53,9 @@ void Robot::TestPeriodic () {}
 
 void Robot::DisabledInit () {}
 
-void Robot::DisabledPeriodic () {}
+void Robot::DisabledPeriodic () {
+    m_container.ReportSelectedAuto();
+}
 
 void Robot::ProfileShooterPID () {
     hal::fpga_clock::time_point now = hal::fpga_clock::now();

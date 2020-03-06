@@ -63,6 +63,13 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
 
     // Set up turret motor position PID
     m_TurretPID = new frc2::PIDController(config.turretPosition.p, config.turretPosition.i, config.turretPosition.d);
+
+    frc::SmartDashboard::PutNumber("Shooter P", config.shooterVelocity.p);
+    frc::SmartDashboard::PutNumber("Shooter D", config.shooterVelocity.d);
+    frc::SmartDashboard::PutNumber("Shooter F", config.shooterVelocity.f);
+
+    // Light should start off
+    SetLimelightLight(false);
 }
 
 void Shooter::Periodic () {
@@ -72,9 +79,13 @@ void Shooter::Periodic () {
     
     frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
 
-    if (m_TrackingMode != TrackingMode::Off) {
-        TrackingPeriodic(m_TrackingMode);
-    }
+    config.shooterVelocity.p = frc::SmartDashboard::GetNumber("Shooter P", config.shooterVelocity.p);
+    config.shooterVelocity.d = frc::SmartDashboard::GetNumber("Shooter D", config.shooterVelocity.d);
+    config.shooterVelocity.f = frc::SmartDashboard::GetNumber("Shooter F", config.shooterVelocity.f);
+    SetPIDF(m_ShooterMotor1PID, config.shooterVelocity);
+    SetPIDF(m_ShooterMotor2PID, config.shooterVelocity);
+
+    TrackingPeriodic(m_TrackingMode);
 }
 
 void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
@@ -97,6 +108,12 @@ void Shooter::SetTrackingMode (TrackingMode mode) {
 
     if (mode == TrackingMode::Off) {
         SetTurretSpeed(0_rpm);
+    }
+    
+    if (mode == TrackingMode::CameraTracking) {
+        SetLimelightLight(true);
+    } else {
+        SetLimelightLight(false);
     }
 }
 
@@ -146,15 +163,12 @@ double Shooter::MeasureShooterMotorSpeed2 () {
 void Shooter::TrackingPeriodic (TrackingMode mode) {
     double speed = 0;
 
-    if (mode == TrackingMode::Auto) {
-        // TODO
-    }
-
     if (mode == TrackingMode::CameraTracking) {
         m_TargetCount = (int) m_VisionTable->GetNumber("tv", -1);
 
         if (m_TargetCount > 0) {
             std::cout << "Count: " << m_TargetCount << std::endl;
+            frc::SmartDashboard::PutBoolean("Limelight Has Target", true);
 
             m_TargetErrorX = -m_VisionTable->GetNumber("tx", 0);
             m_TargetErrorY = -m_VisionTable->GetNumber("ty", 0);
@@ -167,10 +181,18 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
             speed = m_TurretPID->Calculate(m_TargetErrorX);
         } else if (m_TargetCount == 0) {
             std::cout << "No objects detected" << std::endl;
+            frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
         } else {
             std::cout << "Variable tv does not exist in table limelight-gears" << std::endl;
+            frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
         }
+    } else {
+        frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
     }
 
     SetTurretSpeed(speed);
+}
+
+void Shooter::SetLimelightLight (bool on) {
+    m_VisionTable->PutNumber("ledMode", on ? 3 : 1);
 }
