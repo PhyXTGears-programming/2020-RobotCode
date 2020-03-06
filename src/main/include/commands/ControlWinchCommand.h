@@ -19,5 +19,5 @@ class ControlWinchCommand : public frc2::CommandHelper<frc2::CommandBase, Contro
     private:
         Climb* m_Climb;
 
-        std::function<double(void)> m_RightStickCheck;
+        std::function<double(void)> m_SpeedCheck;
 };

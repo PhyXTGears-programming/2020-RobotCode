@@ -1,16 +1,16 @@
 #include "commands/ControlWinchCommand.h"
 
 
-ControlWinchCommand::ControlWinchCommand (Climb* Climb, std::function<double(void)> rsLambda) {
+ControlWinchCommand::ControlWinchCommand (Climb* Climb, std::function<double(void)> speedLambda) {
     AddRequirements(Climb);
     m_Climb = Climb;
-    m_RightStickCheck = rsLambda;
+    m_SpeedCheck = speedLambda;
 }
 
 void ControlWinchCommand::Initialize () {}
 
 void ControlWinchCommand::Execute () {
-    double rightStickY = m_RightStickCheck();
+    double rightStickY = m_SpeedCheck();
 
     if (!m_Climb->IsWinchLocked() && std::abs(rightStickY) > 0.25) {
         if (rightStickY > 0) {

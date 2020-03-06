@@ -21,6 +21,8 @@
 #include <frc2/command/StartEndCommand.h>
 #include <frc2/command/WaitUntilCommand.h>
 
+using JoystickHand = frc::GenericHID::JoystickHand;
+
 enum Pov {
     POV_RIGHT = 90,
     POV_LEFT = 270,
@@ -46,6 +48,7 @@ RobotContainer::RobotContainer () {
     m_ShootCommand          = new ShootCommand(m_Shooter, m_Intake);
     m_ReverseBrushesCommand = new ReverseBrushesCommand(m_Intake);
 
+    m_ControlWinchCommand   = new ControlWinchCommand(m_Climb, [=] { return m_ClimbJoystick.GetY(JoystickHand::kLeftHand); });
     m_RetractClimbCommand   = new RetractClimbCommand(m_Climb);
     m_ExtendClimbCommand    = new ExtendClimbCommand(m_Climb);
     m_RollClimbLeftCommand  = new RollClimbLeftCommand(m_Climb);
@@ -76,8 +79,6 @@ frc2::Command* RobotContainer::GetAutonomousCommand () {
 }
 
 void RobotContainer::PollInput () {
-    using JoystickHand = frc::GenericHID::JoystickHand;
-
     // ####################
     // #####  Driver  #####
     // ####################
