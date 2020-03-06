@@ -1,7 +1,7 @@
 .PHONY: build deploy toml
 
 build:
-	./gradlew --offline compile
+	./gradlew --offline compileFrcUserProgramReleaseExecutableFrcUserProgramCpp
 
 deploy:
 	./gradlew deploy

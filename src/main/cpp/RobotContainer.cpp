@@ -88,6 +88,13 @@ void RobotContainer::PollInput () {
         m_IntakeExtended = false;
     }
 
+    // Brake (RB)
+    if (m_DriverJoystick.GetBumperPressed(JoystickHand::kRightHand)) {
+        m_Drivetrain->SetBrake(true);
+    } else if (m_DriverJoystick.GetBumperReleased(JoystickHand::kRightHand)) {
+        m_Drivetrain->SetBrake(false);
+    }
+
     // ####################
     // #####   Both   #####
     // ####################
@@ -203,7 +210,7 @@ void RobotContainer::PollInput () {
     if (m_ClimbJoystick.GetYButtonPressed()) {
         m_UnlockWinchCommand->Schedule();
     }
-    
+
     // Climb Cylinder Extend (A)
     if (m_ClimbJoystick.GetAButtonPressed()) {
         m_ClimbCylinderExtendCommand->Schedule();
@@ -242,7 +249,7 @@ void RobotContainer::InitAutonomousChooser () {
             AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(3.5_s),
             SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s)
         );
-        
+
     auto driveThruTrench = frc2::SequentialCommandGroup{
         // Drive thru trench picking up power cells.
         frc2::ParallelCommandGroup{
@@ -306,4 +313,16 @@ void RobotContainer::InitAutonomousChooser () {
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
     m_DashboardAutoChooser.AddOption("6 cell auto", sixCellAutoCommand);
+}
+
+void RobotContainer::ReportSelectedAuto () {
+    std::string name;
+
+    if (m_DashboardAutoChooser.HasSelected()) {
+        name = m_DashboardAutoChooser.GetSelectedName();
+    } else {
+        name = m_DashboardAutoChooser.GetDefaultName();
+    }
+
+    frc::SmartDashboard::PutString("Robot sees autonomous", name);
 }

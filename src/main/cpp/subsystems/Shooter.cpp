@@ -67,6 +67,9 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
     frc::SmartDashboard::PutNumber("Shooter P", config.shooterVelocity.p);
     frc::SmartDashboard::PutNumber("Shooter D", config.shooterVelocity.d);
     frc::SmartDashboard::PutNumber("Shooter F", config.shooterVelocity.f);
+
+    // Light should start off
+    SetLimelightLight(false);
 }
 
 void Shooter::Periodic () {
@@ -105,6 +108,12 @@ void Shooter::SetTrackingMode (TrackingMode mode) {
 
     if (mode == TrackingMode::Off) {
         SetTurretSpeed(0_rpm);
+    }
+    
+    if (mode == TrackingMode::CameraTracking) {
+        SetLimelightLight(true);
+    } else {
+        SetLimelightLight(false);
     }
 }
 
@@ -182,4 +191,8 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
     }
 
     SetTurretSpeed(speed);
+}
+
+void Shooter::SetLimelightLight (bool on) {
+    m_VisionTable->PutNumber("ledMode", on ? 3 : 1);
 }
