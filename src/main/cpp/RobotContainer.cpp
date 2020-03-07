@@ -1,9 +1,5 @@
 #include "RobotContainer.h"
 
-#include "commands/AimCommand.h"
-#include "commands/AimShootCommand.h"
-#include "commands/SimpleDriveCommand.h"
-
 #include <iostream>
 #include <units/units.h>
 
@@ -20,6 +16,11 @@
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/StartEndCommand.h>
 #include <frc2/command/WaitUntilCommand.h>
+
+#include "commands/AimCommand.h"
+#include "commands/AimShootCommand.h"
+#include "commands/SimpleDriveCommand.h"
+#include "commands/autonomous/AutonomousRotateTurretCommand.h"
 
 using JoystickHand = frc::GenericHID::JoystickHand;
 
@@ -248,19 +249,18 @@ std::shared_ptr<cpptoml::table> RobotContainer::LoadConfig (std::string path) {
 }
 
 void RobotContainer::InitAutonomousChooser () {
-    frc2::SequentialCommandGroup* threeCellAutoCommand =
-        new frc2::SequentialCommandGroup(
-            frc2::StartEndCommand {
-                [=]() { m_Shooter->SetTurretSpeed(0.8); },
-                [=]() { m_Shooter->SetTurretSpeed(0.0); },
-                m_Shooter
-            }.WithTimeout(0.5_s),
-            AimCommand{m_Shooter}.WithTimeout(2.0_s),
-            AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(3.5_s),
-            SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s)
-        );
+    frc2::SequentialCommandGroup* threeCellAutoCommand = new frc2::SequentialCommandGroup(
+        frc2::StartEndCommand {
+            [=]() { m_Shooter->SetTurretSpeed(0.8); },
+            [=]() { m_Shooter->SetTurretSpeed(0.0); },
+            m_Shooter
+        }.WithTimeout(0.5_s),
+        AimCommand{m_Shooter}.WithTimeout(2.0_s),
+        AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(3.5_s),
+        SimpleDriveCommand{0.25, 0.0, m_Drivetrain}.WithTimeout(1.0_s)
+    );
 
-    auto driveThruTrench = frc2::SequentialCommandGroup{
+    frc2::SequentialCommandGroup driveThruTrench {
         // Drive thru trench picking up power cells.
         frc2::ParallelCommandGroup{
             frc2::SequentialCommandGroup{
@@ -286,42 +286,44 @@ void RobotContainer::InitAutonomousChooser () {
 
     static hal::fpga_clock::time_point startTime;
 
-    frc2::SequentialCommandGroup* sixCellAutoCommand =
-        new frc2::SequentialCommandGroup{
-            frc2::InstantCommand{[=]() { startTime = hal::fpga_clock::now(); }},
-            ExtendIntakeCommand{m_Intake},
-            PreheatShooterCommand{m_Shooter},
-            // Rotate target into view of turret.
-            frc2::FunctionalCommand {
-                // Init
-                [=]() {
-                    m_Shooter->SetLimelightLight(true);
-                    m_Shooter->SetTurretSpeed(16_rpm);
-                },
-                // Execute
-                [=]() {},
-                // End
-                [=](bool _) { m_Shooter->SetTurretSpeed(0.0); },
-                // IsFinished
-                [=]() { return 0 < m_Shooter->GetTargetCount(); },
-                m_Shooter
-            }.WithTimeout(0.5_s),
-            AimCommand{m_Shooter}.WithTimeout(1.0_s),
-            AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s),
-            std::move(driveThruTrench),
-            PreheatShooterCommand{m_Shooter},
-            AimCommand{m_Shooter}.WithTimeout(0.5_s),
-            AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s),
-            RetractIntakeCommand{m_Intake},
-            frc2::InstantCommand{[=]() {
+    frc2::SequentialCommandGroup* sixCellAutoCommand = new frc2::SequentialCommandGroup(
+        frc2::InstantCommand{[=]() { startTime = hal::fpga_clock::now(); }},
+        ExtendIntakeCommand{m_Intake},
+        PreheatShooterCommand{m_Shooter},
+        AutonomousRotateTurretCommand{m_Shooter}.WithTimeout(0.5_s),
+        AimCommand{m_Shooter}.WithTimeout(1.0_s),
+        AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s),
+        std::move(driveThruTrench),
+        PreheatShooterCommand{m_Shooter},
+        AimCommand{m_Shooter}.WithTimeout(0.5_s),
+        AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s),
+        RetractIntakeCommand{m_Intake},
+        frc2::InstantCommand{
+            [=] {
                 auto now = hal::fpga_clock::now();
                 auto delta = std::chrono::duration_cast<std::chrono::microseconds>(now - startTime).count() / 1.0E6;
                 std::cout << "Auto done in " << delta << " seconds" << std::endl;
-            }}
-        };
+            }
+        }
+    );
+
+    frc2::SequentialCommandGroup driveForward {
+        SimpleDriveCommand{-0.6, 0.0, m_Drivetrain}.WithTimeout(0.5_s),
+        SimpleDriveCommand{-0.4, 0.0, m_Drivetrain}.WithTimeout(0.3_s),
+        SimpleDriveCommand{-0.2, 0.0, m_Drivetrain}.WithTimeout(0.3_s)
+    };
+
+    frc2::SequentialCommandGroup* closeShotAutoCommand = new frc2::SequentialCommandGroup(
+        AutonomousRotateTurretCommand{m_Shooter}.WithTimeout(0.5_s),
+        AimCommand{m_Shooter}.WithTimeout(1.0_s),
+        PreheatShooterCommand{m_Shooter},
+        std::move(driveForward),
+        ShootCommand{m_Shooter, m_Intake}.WithTimeout(4.0_s)
+    );
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
     m_DashboardAutoChooser.AddOption("6 cell auto", sixCellAutoCommand);
+    m_DashboardAutoChooser.AddOption("close auto", closeShotAutoCommand);
 }
 
 void RobotContainer::ReportSelectedAuto () {
