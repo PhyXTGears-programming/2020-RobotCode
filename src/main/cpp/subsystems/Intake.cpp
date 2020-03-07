@@ -28,7 +28,7 @@ void Intake::IntakeStop () {
 }
 
 void Intake::IntakeReverse () {
-    SetIntakeSpeed(0.5);
+    SetIntakeSpeed(1);
 }
 
 void Intake::ConveyorStart () {

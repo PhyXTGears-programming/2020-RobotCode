@@ -48,7 +48,7 @@ RobotContainer::RobotContainer () {
     m_RetractIntakeCommand  = new RetractIntakeCommand(m_Intake);
     m_ExtendIntakeCommand   = new ExtendIntakeCommand(m_Intake);
     m_TeleopDriveCommand    = new TeleopDriveCommand(m_Drivetrain, &m_DriverJoystick);
-    m_TeleopShootCommand    = new ShootCommand(m_Shooter, m_Intake, 4500_rpm);
+    m_TeleopShootCommand    = new ShootCommand(m_Shooter, m_Intake, 4400_rpm);
     m_ReverseBrushesCommand = new ReverseBrushesCommand(m_Intake);
 
     m_ControlWinchCommand   = new ControlWinchCommand(m_Climb, [=] { return m_ClimbJoystick.GetY(JoystickHand::kLeftHand); });
