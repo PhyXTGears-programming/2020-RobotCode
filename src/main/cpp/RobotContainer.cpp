@@ -270,12 +270,12 @@ void RobotContainer::InitAutonomousChooser () {
                 SimpleDriveCommand{0.2, 0.0, m_Drivetrain}.WithTimeout(0.3_s)
             },
             // Run intake until 3 cells are collected, or timeout expires.
-            frc2::ParallelRaceGroup{
-                IntakeBallsCommand{m_Intake, m_PowerCellCounter}.WithTimeout(2.5_s),
-                frc2::WaitUntilCommand{
-                    [=]() { return 3 == m_PowerCellCounter->GetCount(); }
-                }
-            }
+            // frc2::ParallelRaceGroup{
+            IntakeBallsCommand{m_Intake, m_PowerCellCounter}.WithTimeout(2.5_s)
+            //     frc2::WaitUntilCommand{
+            //         [=]() { return 3 == m_PowerCellCounter->GetCount(); }
+            //     }
+            // }
         },
         // Reverse back to line.
         frc2::ParallelRaceGroup{
@@ -305,7 +305,7 @@ void RobotContainer::InitAutonomousChooser () {
         PreheatShooterCommand{m_Shooter},
         AimCommand{m_Shooter}.WithTimeout(0.5_s),
         AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s),
-        RetractIntakeCommand{m_Intake},
+        // RetractIntakeCommand{m_Intake},
         frc2::InstantCommand{
             [=] {
                 auto now = hal::fpga_clock::now();
