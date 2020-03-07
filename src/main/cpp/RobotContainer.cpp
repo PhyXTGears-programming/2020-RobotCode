@@ -21,6 +21,7 @@
 #include "commands/AimShootCommand.h"
 #include "commands/SimpleDriveCommand.h"
 #include "commands/autonomous/AutonomousRotateTurretCommand.h"
+#include "commands/DriveUntilWallCommand.h"
 
 using JoystickHand = frc::GenericHID::JoystickHand;
 
@@ -307,17 +308,17 @@ void RobotContainer::InitAutonomousChooser () {
         }
     );
 
-    frc2::SequentialCommandGroup driveForward {
-        SimpleDriveCommand{-0.6, 0.0, m_Drivetrain}.WithTimeout(0.5_s),
-        SimpleDriveCommand{-0.4, 0.0, m_Drivetrain}.WithTimeout(0.3_s),
-        SimpleDriveCommand{-0.2, 0.0, m_Drivetrain}.WithTimeout(0.3_s)
+    frc2::SequentialCommandGroup positionBot {
+        SimpleDriveCommand{-0.8, 0.0, m_Drivetrain}.WithTimeout(0.5_s),
+        DriveUntilWallCommand{m_Drivetrain},
+        SimpleDriveCommand{0.1, 0.0, m_Drivetrain}.WithTimeout(0.1_s)
     };
 
     frc2::SequentialCommandGroup* closeShotAutoCommand = new frc2::SequentialCommandGroup(
         AutonomousRotateTurretCommand{m_Shooter}.WithTimeout(0.5_s),
         AimCommand{m_Shooter}.WithTimeout(1.0_s),
         PreheatShooterCommand{m_Shooter},
-        std::move(driveForward),
+        std::move(positionBot),
         ShootCommand{m_Shooter, m_Intake, 2700_rpm}.WithTimeout(4.0_s)
     );
 
