@@ -198,6 +198,7 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
         SetTurretSpeed(speed);
     } else {
         frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
+        SetLimelightLight(false);
         return;
     }
 }
