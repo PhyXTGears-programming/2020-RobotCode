@@ -264,7 +264,7 @@ void RobotContainer::InitAutonomousChooser () {
         // Drive thru trench picking up power cells.
         frc2::ParallelCommandGroup{
             frc2::SequentialCommandGroup{
-                SimpleDriveCommand{0.6 * 2.0/3.0, 0.0, m_Drivetrain}.WithTimeout(1.6_s * 3.0 / 2.0),
+                SimpleDriveCommand{0.6 * (0.85/1.0), 0.0, m_Drivetrain}.WithTimeout(1.6_s * (1.0/0.85)),
                 // Decelerate.
                 SimpleDriveCommand{0.4, 0.0, m_Drivetrain}.WithTimeout(0.3_s),
                 SimpleDriveCommand{0.2, 0.0, m_Drivetrain}.WithTimeout(0.3_s)
