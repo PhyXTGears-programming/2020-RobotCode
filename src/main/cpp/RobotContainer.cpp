@@ -278,7 +278,10 @@ void RobotContainer::InitAutonomousChooser () {
             }
         },
         // Reverse back to line.
-        SimpleDriveCommand{-0.6, 0.0, m_Drivetrain}.WithTimeout(1.6_s),
+        frc2::ParallelRaceGroup{
+            SimpleDriveCommand{-0.6, 0.0, m_Drivetrain}.WithTimeout(1.6_s),
+            IntakeBallsCommand{m_Intake, m_PowerCellCounter}
+        },
         // Decelerate.
         SimpleDriveCommand{-0.4, 0.0, m_Drivetrain}.WithTimeout(0.3_s),
         SimpleDriveCommand{-0.2, 0.0, m_Drivetrain}.WithTimeout(0.4_s)
@@ -287,10 +290,15 @@ void RobotContainer::InitAutonomousChooser () {
     static hal::fpga_clock::time_point startTime;
 
     frc2::SequentialCommandGroup* sixCellAutoCommand = new frc2::SequentialCommandGroup(
-        frc2::InstantCommand{[=]() { startTime = hal::fpga_clock::now(); }},
+        frc2::InstantCommand{
+            [=]() {
+                startTime = hal::fpga_clock::now();
+                m_Shooter->SetLimelightLight(true);
+            }
+        },
         ExtendIntakeCommand{m_Intake},
         PreheatShooterCommand{m_Shooter},
-        AutonomousRotateTurretCommand{m_Shooter}.WithTimeout(0.5_s),
+        AutonomousRotateTurretCommand{m_Shooter}.WithTimeout(0.3_s),
         AimCommand{m_Shooter}.WithTimeout(1.0_s),
         AimShootCommand{m_Shooter, m_Intake, m_PowerCellCounter}.WithTimeout(4.0_s),
         std::move(driveThruTrench),

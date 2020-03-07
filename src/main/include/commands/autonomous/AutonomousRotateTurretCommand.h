@@ -10,7 +10,6 @@ class AutonomousRotateTurretCommand : public frc2::CommandHelper<frc2::CommandBa
         explicit AutonomousRotateTurretCommand (Shooter* shooter) { AddRequirements(shooter); m_Shooter = shooter; }
 
         void Initialize () {
-            m_Shooter->SetLimelightLight(true); // Turn on Limelight so that a target can be detected (to end the command)
             m_Shooter->SetTurretSpeed(16_rpm); // Rotate turret at 16 RPM
         }
         void End (bool interrupted) { m_Shooter->SetTurretSpeed(0_rpm); } // Stop turret on completion
