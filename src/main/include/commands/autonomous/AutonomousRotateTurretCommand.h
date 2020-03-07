@@ -5,9 +5,9 @@
 
 #include "subsystems/Shooter.h"
 
-class AutonomousRotateTurret : public frc2::CommandHelper<frc2::CommandBase, AutonomousRotateTurret> {
+class AutonomousRotateTurretCommand : public frc2::CommandHelper<frc2::CommandBase, AutonomousRotateTurretCommand> {
     public:
-        explicit AutonomousRotateTurret (Shooter* shooter) { AddRequirements(shooter); m_Shooter = shooter; }
+        explicit AutonomousRotateTurretCommand (Shooter* shooter) { AddRequirements(shooter); m_Shooter = shooter; }
 
         void Initialize () {
             m_Shooter->SetLimelightLight(true); // Turn on Limelight so that a target can be detected (to end the command)

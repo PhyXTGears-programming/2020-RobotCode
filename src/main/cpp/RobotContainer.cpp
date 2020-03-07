@@ -47,7 +47,7 @@ RobotContainer::RobotContainer () {
     m_RetractIntakeCommand  = new RetractIntakeCommand(m_Intake);
     m_ExtendIntakeCommand   = new ExtendIntakeCommand(m_Intake);
     m_TeleopDriveCommand    = new TeleopDriveCommand(m_Drivetrain, &m_DriverJoystick);
-    m_ShootCommand          = new ShootCommand(m_Shooter, m_Intake);
+    m_TeleopShootCommand    = new ShootCommand(m_Shooter, m_Intake, 4500_rpm);
     m_ReverseBrushesCommand = new ReverseBrushesCommand(m_Intake);
 
     m_ControlWinchCommand   = new ControlWinchCommand(m_Climb, [=] { return m_ClimbJoystick.GetY(JoystickHand::kLeftHand); });
@@ -104,9 +104,9 @@ void RobotContainer::PollInput () {
 
     // Shooting (driver: RB, operator: A)
     if (m_DriverJoystick.GetAButtonPressed() || m_OperatorJoystick.GetAButtonPressed()) {
-        m_ShootCommand->Schedule();
+        m_TeleopShootCommand->Schedule();
     } else if (m_DriverJoystick.GetAButtonReleased() || m_OperatorJoystick.GetAButtonReleased()) {
-        m_ShootCommand->Cancel();
+        m_TeleopShootCommand->Cancel();
     }
 
     // Intake (driver: LB, operator: RT)
@@ -318,7 +318,7 @@ void RobotContainer::InitAutonomousChooser () {
         AimCommand{m_Shooter}.WithTimeout(1.0_s),
         PreheatShooterCommand{m_Shooter},
         std::move(driveForward),
-        ShootCommand{m_Shooter, m_Intake}.WithTimeout(4.0_s)
+        ShootCommand{m_Shooter, m_Intake, 2700_rpm}.WithTimeout(4.0_s)
     );
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
