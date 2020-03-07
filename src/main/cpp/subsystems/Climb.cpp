@@ -1,6 +1,7 @@
 #include "subsystems/Climb.h"
 
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include <algorithm>
 
@@ -9,7 +10,9 @@
 
 Climb::Climb () {}
 
-void Climb::Periodic () {}
+void Climb::Periodic () {
+    frc::SmartDashboard::PutBoolean("Winch Locked", m_IsWinchLocked);
+}
 
 void Climb::PistonExtend () {
     m_ClimbExtendSolenoid.Set(true);

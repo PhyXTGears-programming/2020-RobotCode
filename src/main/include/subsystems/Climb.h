@@ -45,6 +45,7 @@ class Climb : public frc2::SubsystemBase {
 
         void SetWinchLockFlag();
         void ResetWinchLockFlag();
+        
         bool m_IsClimbing = false;
         bool m_IsPistonExtended = false;
         bool m_IsWinchCableOut = false;
