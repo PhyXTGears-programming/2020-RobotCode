@@ -12,18 +12,15 @@ ShootCommand::ShootCommand (Shooter* shooter, Intake* intake, units::angular_vel
     m_Intake = intake;
 
     m_Speed = speed;
-
-    frc::SmartDashboard::PutNumber("Shooter RPM", units::unit_cast<double>(m_Speed));
 }
 
 void ShootCommand::Initialize () {
     feederActivated = false;
+
+    m_Shooter->SetShooterMotorSpeed(m_Speed);
 }
 
 void ShootCommand::Execute () {
-    m_Speed = units::angular_velocity::revolutions_per_minute_t{frc::SmartDashboard::GetNumber("Shooter RPM", units::unit_cast<double>(m_Speed))};
-    m_Shooter->SetShooterMotorSpeed(m_Speed);
-
     if (!feederActivated && m_Shooter->GetShooterMotorSpeed() > m_Speed * 0.95) {
         m_Intake->SetConveyorSpeed(0.8);
         m_Intake->FeedShooterStart();
