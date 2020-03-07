@@ -198,13 +198,12 @@ void RobotContainer::PollInput () {
         if (m_ControlWinchCommand->IsScheduled()) m_ControlWinchCommand->Cancel();
     }
 
-    // Climb Roll (RS)
-    double climbRoll = m_ClimbJoystick.GetX(frc::GenericHID::JoystickHand::kRightHand);
-    if (climbRoll > 0.5) { // Right
+    // Climb Roll (Driver Dpad)
+    if (m_DriverJoystick.GetPOV() == POV_RIGHT) { // Right
         if (!m_RollClimbRightCommand->IsScheduled()) {
             m_RollClimbRightCommand->Schedule();
         }
-    } else if (climbRoll < -0.5) { // Left
+    } else if (m_DriverJoystick.GetPOV() == POV_LEFT) { // Left
         if (!m_RollClimbLeftCommand->IsScheduled()) {
             m_RollClimbLeftCommand->Schedule();
         }
