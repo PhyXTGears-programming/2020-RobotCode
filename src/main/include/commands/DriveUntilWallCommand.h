@@ -18,7 +18,7 @@ class DriveUntilWallCommand : public frc2::CommandHelper<frc2::CommandBase, Driv
         }
 
         bool IsFinished () {
-            return m_Drivetrain->GetMotorCurrent() > 7_A;
+            return m_Drivetrain->GetMotorCurrent() > 20_A;
         }
 
         void End (bool interrupted) {
