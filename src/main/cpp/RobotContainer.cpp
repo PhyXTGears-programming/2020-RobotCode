@@ -42,14 +42,15 @@ RobotContainer::RobotContainer () {
     m_ControlPanel = new ControlPanel(toml->get_table("controlPanel"));
     m_PowerCellCounter = new PowerCellCounter();
 
-    m_AutonomousCommand     = new AutonomousCommand(m_Drivetrain);
-    m_IntakeBallsCommand    = new IntakeBallsCommand(m_Intake, m_PowerCellCounter);
-    m_ExpelIntakeCommand    = new ExpelIntakeCommand(m_Intake);
-    m_RetractIntakeCommand  = new RetractIntakeCommand(m_Intake);
-    m_ExtendIntakeCommand   = new ExtendIntakeCommand(m_Intake);
-    m_TeleopDriveCommand    = new TeleopDriveCommand(m_Drivetrain, &m_DriverJoystick);
-    m_TeleopShootCommand    = new ShootCommand(m_Shooter, m_Intake, 4400_rpm);
-    m_ReverseBrushesCommand = new ReverseBrushesCommand(m_Intake);
+    m_AutonomousCommand         = new AutonomousCommand(m_Drivetrain);
+    m_IntakeBallsCommand        = new IntakeBallsCommand(m_Intake, m_PowerCellCounter);
+    m_ExpelIntakeCommand        = new ExpelIntakeCommand(m_Intake);
+    m_RetractIntakeCommand      = new RetractIntakeCommand(m_Intake);
+    m_ExtendIntakeCommand       = new ExtendIntakeCommand(m_Intake);
+    m_TeleopDriveCommand        = new TeleopDriveCommand(m_Drivetrain, &m_DriverJoystick);
+    m_TeleopShootCommand        = new ShootCommand(m_Shooter, m_Intake, 4400_rpm);
+    m_TeleopSlowShootCommand    = new ShootCommand(m_Shooter, m_Intake, 4250_rpm);
+    m_ReverseBrushesCommand     = new ReverseBrushesCommand(m_Intake);
 
     m_ControlWinchCommand   = new ControlWinchCommand(m_Climb, [=] { return m_ClimbJoystick.GetY(JoystickHand::kLeftHand); });
     m_RetractClimbCommand   = new RetractClimbCommand(m_Climb);
@@ -109,6 +110,13 @@ void RobotContainer::PollInput () {
     } else if (m_DriverJoystick.GetAButtonReleased() || m_OperatorJoystick.GetAButtonReleased()) {
         m_TeleopShootCommand->Cancel();
     }
+    
+    // Slow shooting (operator: B)
+    if (m_OperatorJoystick.GetBButtonPressed()) {
+        m_TeleopSlowShootCommand->Schedule();
+    } else if (m_OperatorJoystick.GetBButtonReleased()) {
+        m_TeleopSlowShootCommand->Cancel();
+    }
 
     // Intake (driver: LB, operator: RT)
     bool intakeAxis = m_OperatorJoystick.GetTriggerAxis(JoystickHand::kRightHand) > 0.1;
@@ -118,26 +126,15 @@ void RobotContainer::PollInput () {
         m_IntakeBallsCommand->Cancel();
     }
 
-    // Swap Camera (driver: A, operator: Y)
-
     // ####################
     // ##### Operator #####
     // ####################
 
     // Camera Aiming (X)
-    if (m_OperatorJoystick.GetXButtonPressed()) {
+    if (m_OperatorJoystick.GetXButtonPressed() || m_OperatorJoystick.GetYButtonPressed()) {
         m_Shooter->SetTrackingMode(TrackingMode::CameraTracking);
-    } else if (m_OperatorJoystick.GetXButtonReleased()) {
+    } else if (m_OperatorJoystick.GetXButtonReleased() || m_OperatorJoystick.GetYButtonReleased()) {
         m_Shooter->SetTrackingMode(TrackingMode::Off);
-    }
-
-    // Gyro Aiming (B)
-    if (!m_OperatorJoystick.GetXButton()) {
-        if (m_OperatorJoystick.GetBButtonPressed()) {
-            m_Shooter->SetTrackingMode(TrackingMode::GyroTracking);
-        } else if (m_OperatorJoystick.GetBButtonReleased()) {
-            m_Shooter->SetTrackingMode(TrackingMode::Off);
-        }
     }
 
     // Control Panel Deploy (LB)
@@ -222,12 +219,12 @@ void RobotContainer::PollInput () {
         m_UnlockWinchCommand->Schedule();
     }
 
-    // Climb Cylinder Extend (A)
+    // Climb Cylinder Retract (A)
     if (m_ClimbJoystick.GetAButtonPressed()) {
         m_ClimbCylinderExtendCommand->Schedule();
     }
 
-    // Climb Cylinder Retract (X)
+    // Climb Cylinder Extend (X)
     if (m_ClimbJoystick.GetXButtonPressed()) {
         m_ClimbCylinderRetractCommand->Schedule();
     }
