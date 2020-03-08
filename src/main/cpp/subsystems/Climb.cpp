@@ -12,6 +12,7 @@ Climb::Climb () {}
 
 void Climb::Periodic () {
     frc::SmartDashboard::PutBoolean("Winch Locked", m_IsWinchLocked);
+    frc::SmartDashboard::PutBoolean("Climb Piston Out", !m_IsPistonExtended);
 }
 
 void Climb::PistonExtend () {
