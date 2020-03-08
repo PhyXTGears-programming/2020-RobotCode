@@ -169,6 +169,8 @@ void Shooter::SetLimelightLight (bool on) {
 }
 
 void Shooter::TrackingPeriodic (TrackingMode mode) {
+    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable("Driving");
+
     if (mode == TrackingMode::CameraTracking) {
         double speed = 0;
 
@@ -176,7 +178,7 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
 
         if (m_TargetCount > 0) {
             std::cout << "Count: " << m_TargetCount << std::endl;
-            frc::SmartDashboard::PutBoolean("Limelight Has Target", true);
+            drivetable->PutBoolean("Limelight Has Target", true);
 
             m_TargetErrorX = -m_VisionTable->GetNumber("tx", 0);
             m_TargetErrorY = -m_VisionTable->GetNumber("ty", 0);
@@ -189,15 +191,15 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
             speed = m_TurretPID->Calculate(m_TargetErrorX);
         } else if (m_TargetCount == 0) {
             std::cout << "No objects detected" << std::endl;
-            frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
+            drivetable->PutBoolean("Limelight Has Target", false);
         } else {
             std::cout << "Variable tv does not exist in table limelight-gears" << std::endl;
-            frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
+            drivetable->PutBoolean("Limelight Has Target", false);
         }
 
         SetTurretSpeed(speed);
     } else {
-        frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
+        drivetable->PutBoolean("Limelight Has Target", false);
         SetLimelightLight(false);
         return;
     }
