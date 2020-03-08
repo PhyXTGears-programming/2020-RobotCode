@@ -12,7 +12,7 @@
 Climb::Climb () {}
 
 void Climb::Periodic () {
-    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable("Driving");
+    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable(NetTabs::DriveTeamTable);
     drivetable->PutBoolean("Winch Locked", m_IsWinchLocked);
     drivetable->PutBoolean("Climb Piston Extended", m_IsPistonExtended);
 }

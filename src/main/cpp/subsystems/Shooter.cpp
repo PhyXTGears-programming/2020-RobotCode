@@ -169,7 +169,7 @@ void Shooter::SetLimelightLight (bool on) {
 }
 
 void Shooter::TrackingPeriodic (TrackingMode mode) {
-    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable("Driving");
+    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable(NetTabs::DriveTeamTable);
 
     if (mode == TrackingMode::CameraTracking) {
         double speed = 0;

@@ -1,5 +1,9 @@
 #pragma once
 
+namespace NetTabs {
+    const std::string DriveTeamTable = "Driving";
+}
+
 namespace ConfigFiles {
     const std::string ConfigFile     = "config.toml";
     const std::string AutoConfigFile = "auto.toml";

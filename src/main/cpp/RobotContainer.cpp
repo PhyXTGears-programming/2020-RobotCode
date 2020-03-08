@@ -346,6 +346,6 @@ void RobotContainer::ReportSelectedAuto () {
         name = m_DashboardAutoChooser.GetDefaultName();
     }
 
-    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable("Driving");
+    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable(NetTabs::DriveTeamTable);
     drivetable->PutString("Robot Sees AutoMode:", name);
 }
