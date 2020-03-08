@@ -17,6 +17,8 @@
 #include <frc2/command/StartEndCommand.h>
 #include <frc2/command/WaitUntilCommand.h>
 
+#include <networktables/NetworkTableInstance.h>
+
 #include "commands/AimCommand.h"
 #include "commands/AimShootCommand.h"
 #include "commands/SimpleDriveCommand.h"
@@ -68,6 +70,7 @@ RobotContainer::RobotContainer () {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(m_PowerCellCounter);
 
     InitAutonomousChooser();
+    // Remember to put this in the driver table later?
     frc::SmartDashboard::PutData("Auto Modes", &m_DashboardAutoChooser);
 
     // Configure the button bindings
@@ -343,5 +346,6 @@ void RobotContainer::ReportSelectedAuto () {
         name = m_DashboardAutoChooser.GetDefaultName();
     }
 
-    frc::SmartDashboard::PutString("Robot sees autonomous", name);
+    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable("Driving");
+    drivetable->PutString("Robot Sees AutoMode:", name);
 }
