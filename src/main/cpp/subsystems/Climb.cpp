@@ -2,6 +2,7 @@
 
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <networktables/NetworkTableInstance.h>
 
 #include <algorithm>
 
@@ -11,7 +12,9 @@
 Climb::Climb () {}
 
 void Climb::Periodic () {
-    frc::SmartDashboard::PutBoolean("Winch Locked", m_IsWinchLocked);
+    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable("Driving");
+    drivetable->PutBoolean("Winch Locked", m_IsWinchLocked);
+    drivetable->PutBoolean("Climb Piston Extended", m_IsPistonExtended);
 }
 
 void Climb::PistonExtend () {
