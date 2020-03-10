@@ -120,6 +120,8 @@ void Shooter::SetTrackingMode (TrackingMode mode) {
 void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
     frc::SmartDashboard::PutNumber("Turret Speed Setpoint (RPM)", units::unit_cast<double>(speed));
     
+    std::cout << speed << " ";
+    
     if (units::math::fabs(speed) < 1_deg_per_s) {
         m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
         return;
@@ -127,6 +129,8 @@ void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t 
 
     double motorSpeed = kTurretGearRatio * units::unit_cast<double>(speed * kMotorRPMtoEncoderVelocity); // in encoder ticks per 100 ms
     
+    std::cout << motorSpeed << std::endl;
+
     m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
 
@@ -160,10 +164,14 @@ double Shooter::MeasureShooterMotorSpeed2 () {
     return m_ShooterMotor2Encoder.GetVelocity() / kShooterGearRatio;
 }
 
-void Shooter::TrackingPeriodic (TrackingMode mode) {
-    double speed = 0;
+void Shooter::SetLimelightLight (bool on) {
+    m_VisionTable->PutNumber("ledMode", on ? 3 : 1);
+}
 
+void Shooter::TrackingPeriodic (TrackingMode mode) {
     if (mode == TrackingMode::CameraTracking) {
+        double speed = 0;
+
         m_TargetCount = (int) m_VisionTable->GetNumber("tv", -1);
 
         if (m_TargetCount > 0) {
@@ -186,13 +194,11 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
             std::cout << "Variable tv does not exist in table limelight-gears" << std::endl;
             frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
         }
+
+        SetTurretSpeed(speed);
     } else {
         frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
+        SetLimelightLight(false);
+        return;
     }
-
-    SetTurretSpeed(speed);
-}
-
-void Shooter::SetLimelightLight (bool on) {
-    m_VisionTable->PutNumber("ledMode", on ? 3 : 1);
 }

@@ -23,11 +23,11 @@ void IntakeBallsCommand::Initialize () {
 
 void IntakeBallsCommand::Execute () {
     std::cout << "Balls: " << m_PowerCellCounter->GetCount() << std::endl;
-    if (m_PowerCellCounter->GetCount() >= 5) {
-        // If robot has 5 balls, stop intake & expel balls in intake
-        m_Intake->IntakeReverse();
-        m_Intake->ConveyorStop();
-    }
+    // if (m_PowerCellCounter->GetCount() >= 5) {
+    //     // If robot has 5 balls, stop intake & expel balls in intake
+    //     m_Intake->IntakeReverse();
+    //     m_Intake->ConveyorStop();
+    // }
     if (m_Intake->IsPowerCellInFeeder()) {
         m_Intake->FeedStop();
     }
@@ -40,5 +40,6 @@ void IntakeBallsCommand::End (bool interrupted) {
 }
 
 bool IntakeBallsCommand::IsFinished() {
-    return (m_PowerCellCounter->GetCount() >= 5);
+    // return (m_PowerCellCounter->GetCount() >= 5);
+    return false;
 }
