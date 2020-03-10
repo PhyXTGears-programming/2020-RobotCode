@@ -3,6 +3,7 @@
 #include <cmath>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
+#include <frc/DriverStation.h>
 
 void Robot::RobotInit () {}
 
@@ -47,7 +48,27 @@ void Robot::TeleopInit () {
     }
 }
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+    std::string gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+    std::string color = "none";
+    if (gameData.length() > 0) {
+        switch (gameData[0]) {
+            case 'B':
+                color = "blue";
+                break;
+            case 'G':
+                color = "green";
+                break;
+            case 'R':
+                color = "red";
+                break;
+            case 'Y':
+                color = "yellow";
+                break;
+        }
+    }
+    frc::SmartDashboard::PutString("Control Panel Color", color);
+}
 
 void Robot::TestPeriodic () {}
 
