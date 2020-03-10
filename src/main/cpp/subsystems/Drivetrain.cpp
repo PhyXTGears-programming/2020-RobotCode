@@ -44,8 +44,8 @@ Drivetrain::Drivetrain () {
     frc::Pose2d robotInitialPostion {1_ft, 1_ft, 1_rad}; // replace with robot inital coordinates and angle
     m_Odometry = new frc::DifferentialDriveOdometry(gyroAngle, robotInitialPostion);
 
-    // Brake defaults to off
-    SetBrake(false);
+    // Brake defaults to on
+    SetBrake(true);
 }
 
 void Drivetrain::Periodic () {

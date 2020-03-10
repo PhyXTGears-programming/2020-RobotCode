@@ -1,5 +1,7 @@
 #pragma once
 
+#include <units/units.h>
+
 #include <frc2/command/SubsystemBase.h>
 #include <rev/CANSparkMax.h>
 #include <frc/drive/DifferentialDrive.h>
@@ -19,6 +21,10 @@ class Drivetrain : public frc2::SubsystemBase {
         void RadiusDrive(double speed, double radius);
 
         void SetBrake(bool on);
+
+        units::current::ampere_t GetMotorCurrent () {
+            return units::current::ampere_t{(m_LeftMotor1.GetOutputCurrent() + m_RightMotor1.GetOutputCurrent()) / 2.0};
+        }
 
     private:
         rev::CANSparkMax m_LeftMotor1 {DriveMotorPins::Left1, rev::CANSparkMax::MotorType::kBrushless};

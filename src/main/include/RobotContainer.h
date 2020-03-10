@@ -72,7 +72,7 @@ class RobotContainer {
         RetractIntakeCommand* m_RetractIntakeCommand;
         ExtendIntakeCommand* m_ExtendIntakeCommand;
         TeleopDriveCommand* m_TeleopDriveCommand;
-        ShootCommand* m_ShootCommand;
+        ShootCommand* m_TeleopShootCommand;
         ReverseBrushesCommand* m_ReverseBrushesCommand;
 
         RetractClimbCommand* m_RetractClimbCommand;

@@ -1,6 +1,8 @@
 #include "subsystems/Climb.h"
 
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <networktables/NetworkTableInstance.h>
 
 #include <algorithm>
 
@@ -9,7 +11,11 @@
 
 Climb::Climb () {}
 
-void Climb::Periodic () {}
+void Climb::Periodic () {
+    auto drivetable = nt::NetworkTableInstance::GetDefault().GetTable(NetTabs::DriveTeamTable);
+    drivetable->PutBoolean("Winch Locked", m_IsWinchLocked);
+    drivetable->PutBoolean("Climb Piston Extended", m_IsPistonExtended);
+}
 
 void Climb::PistonExtend () {
     m_ClimbExtendSolenoid.Set(true);
