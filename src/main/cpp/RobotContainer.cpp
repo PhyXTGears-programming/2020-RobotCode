@@ -42,14 +42,21 @@ RobotContainer::RobotContainer () {
     m_ControlPanel = new ControlPanel(toml->get_table("controlPanel"));
     m_PowerCellCounter = new PowerCellCounter();
 
+    auto nearSpeed = units::angular_velocity::revolutions_per_minute_t{
+        toml->get_table("shooter")->get_qualified_as<double>("shootingSpeed.near").value_or(4400.0)
+    };
+    auto farSpeed = units::angular_velocity::revolutions_per_minute_t{
+        toml->get_table("shooter")->get_qualified_as<double>("shootingSpeed.far").value_or(4100.0)
+    };
+
     m_AutonomousCommand         = new AutonomousCommand(m_Drivetrain);
     m_IntakeBallsCommand        = new IntakeBallsCommand(m_Intake, m_PowerCellCounter);
     m_ExpelIntakeCommand        = new ExpelIntakeCommand(m_Intake);
     m_RetractIntakeCommand      = new RetractIntakeCommand(m_Intake);
     m_ExtendIntakeCommand       = new ExtendIntakeCommand(m_Intake);
     m_TeleopDriveCommand        = new TeleopDriveCommand(m_Drivetrain, &m_DriverJoystick);
-    m_TeleopShootCommand        = new ShootCommand(m_Shooter, m_Intake, 4400_rpm);
-    m_TeleopSlowShootCommand    = new ShootCommand(m_Shooter, m_Intake, 4250_rpm);
+    m_TeleopShootCommand        = new ShootCommand(m_Shooter, m_Intake, nearSpeed);
+    m_TeleopSlowShootCommand    = new ShootCommand(m_Shooter, m_Intake, farSpeed);
     m_ReverseBrushesCommand     = new ReverseBrushesCommand(m_Intake);
 
     m_ControlWinchCommand   = new ControlWinchCommand(m_Climb, [=] { return m_ClimbJoystick.GetY(JoystickHand::kLeftHand); });
