@@ -48,12 +48,7 @@ class Shooter : public frc2::SubsystemBase {
         double m_TargetErrorY = 0.0;
 
         rev::CANSparkMax m_ShooterMotor1 {kShooterMotor1, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANPIDController m_ShooterMotor1PID {m_ShooterMotor1};
-        rev::CANEncoder m_ShooterMotor1Encoder {m_ShooterMotor1};
-
         rev::CANSparkMax m_ShooterMotor2 {kShooterMotor2, rev::CANSparkMax::MotorType::kBrushless};
-        rev::CANPIDController m_ShooterMotor2PID {m_ShooterMotor2};
-        rev::CANEncoder m_ShooterMotor2Encoder {m_ShooterMotor2};
 
         ctre::phoenix::motorcontrol::can::TalonSRX m_TurretMotor {kTurretMotor};
 

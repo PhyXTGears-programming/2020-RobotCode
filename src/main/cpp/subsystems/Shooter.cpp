@@ -37,8 +37,8 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
     config.shootingSpeed.far  = units::angular_velocity::revolutions_per_minute_t{toml->get_qualified_as<double>("shootingSpeed.far").value_or(0.0)};
 
     // Setup shooter motors
-    SetPIDF(m_ShooterMotor1PID, config.shooterVelocity);
-    SetPIDF(m_ShooterMotor2PID, config.shooterVelocity);
+    SetPIDF(m_ShooterMotor1.GetPIDController(), config.shooterVelocity);
+    SetPIDF(m_ShooterMotor2.GetPIDController(), config.shooterVelocity);
 
     m_ShooterMotor1.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
     m_ShooterMotor2.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -74,16 +74,16 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
 
 void Shooter::Periodic () {
     double factor = 1 / kShooterGearRatio;
-    frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1Encoder.GetVelocity() * factor);
-    frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2Encoder.GetVelocity() * factor);
+    frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1.GetEncoder().GetVelocity() * factor);
+    frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2.GetEncoder().GetVelocity() * factor);
     
     frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
 
     config.shooterVelocity.p = frc::SmartDashboard::GetNumber("Shooter P", config.shooterVelocity.p);
     config.shooterVelocity.d = frc::SmartDashboard::GetNumber("Shooter D", config.shooterVelocity.d);
     config.shooterVelocity.f = frc::SmartDashboard::GetNumber("Shooter F", config.shooterVelocity.f);
-    SetPIDF(m_ShooterMotor1PID, config.shooterVelocity);
-    SetPIDF(m_ShooterMotor2PID, config.shooterVelocity);
+    SetPIDF(m_ShooterMotor1.GetPIDController(), config.shooterVelocity);
+    SetPIDF(m_ShooterMotor2.GetPIDController(), config.shooterVelocity);
 
     TrackingPeriodic(m_TrackingMode);
 }
@@ -91,8 +91,8 @@ void Shooter::Periodic () {
 void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
     if (units::math::fabs(speed) > 50_rpm) {
         double motorSpeed = kShooterGearRatio * units::unit_cast<double>(speed);
-        m_ShooterMotor1PID.SetReference(motorSpeed, rev::kVelocity);
-        m_ShooterMotor2PID.SetReference(motorSpeed, rev::kVelocity);
+        m_ShooterMotor1.GetPIDController().SetReference(motorSpeed, rev::kVelocity);
+        m_ShooterMotor2.GetPIDController().SetReference(motorSpeed, rev::kVelocity);
     } else {
         m_ShooterMotor1.Set(0);
         m_ShooterMotor2.Set(0);
@@ -100,7 +100,7 @@ void Shooter::SetShooterMotorSpeed (units::angular_velocity::revolutions_per_min
 }
 
 units::angular_velocity::revolutions_per_minute_t Shooter::GetShooterMotorSpeed () {
-    return units::angular_velocity::revolutions_per_minute_t(m_ShooterMotor1Encoder.GetVelocity() / kShooterGearRatio);
+    return units::angular_velocity::revolutions_per_minute_t(m_ShooterMotor1.GetEncoder().GetVelocity() / kShooterGearRatio);
 }
 
 void Shooter::SetTrackingMode (TrackingMode mode) {
@@ -157,11 +157,11 @@ bool Shooter::IsOnTarget () {
 }
 
 double Shooter::MeasureShooterMotorSpeed1 () {
-    return m_ShooterMotor1Encoder.GetVelocity() / kShooterGearRatio;
+    return m_ShooterMotor1.GetEncoder().GetVelocity() / kShooterGearRatio;
 }
 
 double Shooter::MeasureShooterMotorSpeed2 () {
-    return m_ShooterMotor2Encoder.GetVelocity() / kShooterGearRatio;
+    return m_ShooterMotor2.GetEncoder().GetVelocity() / kShooterGearRatio;
 }
 
 void Shooter::SetLimelightLight (bool on) {

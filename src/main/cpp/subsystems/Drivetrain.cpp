@@ -15,30 +15,30 @@ constexpr auto kWheelDiameter = 6_in;
 constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
 constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
 
-#define leftSideAngularPosition()  units::angle::radian_t(m_LeftEncoder.GetPosition())
-#define rightSideAngularPosition() units::angle::radian_t(m_RightEncoder.GetPosition())
+#define leftSideAngularPosition()  units::angle::radian_t(m_LeftMotor1.GetEncoder().GetPosition())
+#define rightSideAngularPosition() units::angle::radian_t(m_RightMotor1.GetEncoder().GetPosition())
 
 #define leftSidePosition()  leftSideAngularPosition() * kDistancePerWheelRadian
 #define rightSidePosition() rightSideAngularPosition() * kDistancePerWheelRadian
 
-#define leftSideAngularVelocity()  units::angular_velocity::radians_per_second_t(m_LeftEncoder.GetVelocity())
-#define rightSideAngularVelocity() units::angular_velocity::radians_per_second_t(m_RightEncoder.GetVelocity())
+#define leftSideAngularVelocity()  units::angular_velocity::radians_per_second_t(m_LeftMotor1.GetEncoder().GetVelocity())
+#define rightSideAngularVelocity() units::angular_velocity::radians_per_second_t(m_RightMotor1.GetEncoder().GetVelocity())
 
 #define leftSideVelocity()  leftSideAngularVelocity() * kDistancePerWheelRadian
 #define rightSideVelocity() rightSideAngularVelocity() * kDistancePerWheelRadian
 
 Drivetrain::Drivetrain () {
     // Position in wheel angular displacement (rad)
-    m_LeftEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
-    m_RightEncoder.SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
+    m_LeftMotor1.GetEncoder().SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
+    m_RightMotor1.GetEncoder().SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
 
     // Velocity in wheel angular velocity (rad/s)
-    m_LeftEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
-    m_RightEncoder.SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
+    m_LeftMotor1.GetEncoder().SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
+    m_RightMotor1.GetEncoder().SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
 
     // Initial Position is 0
-    m_LeftEncoder.SetPosition(0.0);
-    m_RightEncoder.SetPosition(0.0);
+    m_LeftMotor1.GetEncoder().SetPosition(0.0);
+    m_RightMotor1.GetEncoder().SetPosition(0.0);
 
     frc::Rotation2d gyroAngle {units::angle::degree_t(-1.0)}; // replace with gyro angle
     frc::Pose2d robotInitialPostion {1_ft, 1_ft, 1_rad}; // replace with robot inital coordinates and angle
@@ -82,7 +82,7 @@ void Drivetrain::RadiusDrive (double speed, double radius) {
     double leftWheelSpeed = 1;
     double rightWheelSpeed = 1;
 
-    /* 
+    /*
      * Scale the slower wheel (the inside wheel) to a proportion of the faster wheel speed (left at 1)
      * Because both circles need to be traveled by their corresponding wheel in the same amount of time, speed is calculated as:
      * (smaller circumference / larger circumference) * faster wheel speed
