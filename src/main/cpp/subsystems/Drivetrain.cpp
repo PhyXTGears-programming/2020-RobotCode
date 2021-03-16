@@ -2,55 +2,49 @@
 
 #include <iostream>
 #include <math.h>
+#include <algorithm>
+#include <frc/RobotController.h>
 
 #include "Robot.h"
 
 #define PI 3.14159265358979323846
 
-#define kTurnInputConstant 0.3 // lowering makes robot drive more straight, raising makes it turn more at any given input (other than -1, 0, or 1)
+// lowering makes robot drive more straight, raising makes it turn more at any given input (other than -1, 0, or 1)
+#define kTurnInputConstant 0.3
 
+// half of the distance between the wheels in meters
 #define kHalfWheelBase 0.953125
 
-constexpr auto kWheelDiameter = 6_in;
-constexpr double kWheelRadiansPerMotorRotation = (1 / 10.71) * (2 * PI); // Encoder ticks per radian
-constexpr auto kDistancePerWheelRadian = (kWheelDiameter/2) / (1_rad);
-
-#define leftSideAngularPosition()  units::angle::radian_t(m_LeftMotor1.GetEncoder().GetPosition())
-#define rightSideAngularPosition() units::angle::radian_t(m_RightMotor1.GetEncoder().GetPosition())
-
-#define leftSidePosition()  leftSideAngularPosition() * kDistancePerWheelRadian
-#define rightSidePosition() rightSideAngularPosition() * kDistancePerWheelRadian
-
-#define leftSideAngularVelocity()  units::angular_velocity::radians_per_second_t(m_LeftMotor1.GetEncoder().GetVelocity())
-#define rightSideAngularVelocity() units::angular_velocity::radians_per_second_t(m_RightMotor1.GetEncoder().GetVelocity())
-
-#define leftSideVelocity()  leftSideAngularVelocity() * kDistancePerWheelRadian
-#define rightSideVelocity() rightSideAngularVelocity() * kDistancePerWheelRadian
-
 Drivetrain::Drivetrain () {
-    // Position in wheel angular displacement (rad)
-    m_LeftMotor1.GetEncoder().SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
-    m_RightMotor1.GetEncoder().SetPositionConversionFactor(kWheelRadiansPerMotorRotation);
+    constexpr double metersPerMotorRotation = 0.04526269;
 
-    // Velocity in wheel angular velocity (rad/s)
-    m_LeftMotor1.GetEncoder().SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
-    m_RightMotor1.GetEncoder().SetVelocityConversionFactor(kWheelRadiansPerMotorRotation / 60.0);
+    for (auto m : {&leftLeader, &leftFollower1, &leftFollower2, &rightLeader, &rightFollower1, &rightFollower2}) {
+        // Position in wheel angular displacement (rad)
+        m->GetEncoder().SetPositionConversionFactor(metersPerMotorRotation);
 
-    // Initial Position is 0
-    m_LeftMotor1.GetEncoder().SetPosition(0.0);
-    m_RightMotor1.GetEncoder().SetPosition(0.0);
+        // Velocity in wheel angular velocity (rad/s)
+        m->GetEncoder().SetVelocityConversionFactor(metersPerMotorRotation / 60);
 
-    frc::Rotation2d gyroAngle {units::angle::degree_t(-1.0)}; // replace with gyro angle
-    frc::Pose2d robotInitialPostion {1_ft, 1_ft, 1_rad}; // replace with robot inital coordinates and angle
-    m_Odometry = new frc::DifferentialDriveOdometry(gyroAngle, robotInitialPostion);
+        // Initial Position is 0
+        m->GetEncoder().SetPosition(0);
+    }
+
+    rightLeader.SetInverted(true);
+    rightFollower1.SetInverted(true);
+    rightFollower2.SetInverted(true);
+
+    ResetPose();
 
     // Brake defaults to on
     SetBrake(true);
 }
 
 void Drivetrain::Periodic () {
-    frc::Rotation2d gyroAngle {units::angle::degree_t(-1.0)}; // replace with gyro angle
-    m_Odometry->Update(gyroAngle, leftSidePosition(), rightSidePosition());
+    UpdateOdometry();
+
+    if (frc::RobotController::IsSysActive() && !brakeOn && !oldDriving) {
+        UpdateVoltages();
+    }
 }
 
 // Calculate radius from x stick, and drive
@@ -71,6 +65,8 @@ void Drivetrain::Drive (double yInput, double xInput) {
 
 // Given a radius and speed, drive around the circle
 void Drivetrain::RadiusDrive (double speed, double radius) {
+    oldDriving = true;
+
     // Reverse turning direction when driving backwards.  Special request by Caleb S.
     radius *= std::copysign(1.0, speed);
 
@@ -103,18 +99,91 @@ void Drivetrain::RadiusDrive (double speed, double radius) {
 
     // Scale speed based on speed input
     leftWheelSpeed *= speed;
-    rightWheelSpeed *= -speed; // Negative because right wheels are mounted backwards (one side is always backwards)
+    rightWheelSpeed *= speed;
 
     // Write to motors
-    m_LeftMotors.Set(leftWheelSpeed);
-    m_RightMotors.Set(rightWheelSpeed);
+    leftGroup.Set(leftWheelSpeed);
+    rightGroup.Set(rightWheelSpeed);
 }
 
 void Drivetrain::SetBrake (bool on) {
-    m_LeftMotor1.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
-    m_LeftMotor2.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
-    m_LeftMotor3.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
-    m_RightMotor1.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
-    m_RightMotor2.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
-    m_RightMotor3.SetIdleMode(on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    brakeOn = on;
+
+    auto mode = on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast;
+
+    leftLeader.SetIdleMode(mode);
+    leftFollower1.SetIdleMode(mode);
+    leftFollower2.SetIdleMode(mode);
+    rightLeader.SetIdleMode(mode);
+    rightFollower1.SetIdleMode(mode);
+    rightFollower2.SetIdleMode(mode);
+
+    leftGroup.Set(0);
+    rightGroup.Set(0);
+}
+
+void Drivetrain::ResetPose (double angle) {
+    leftLeader.GetEncoder().SetPosition(0);
+    rightLeader.GetEncoder().SetPosition(0);
+    odometry.ResetPosition(
+        frc::Pose2d{frc::Translation2d{0_m, 0_m}, frc::Rotation2d{units::radian_t{angle}}},
+        frc::Rotation2d{units::degree_t{-gyro.GetAngle()}}
+    );
+}
+
+void Drivetrain::UpdateOdometry () {
+    odometry.Update(
+        frc::Rotation2d{units::degree_t{-gyro.GetAngle()}},
+        units::meter_t{leftLeader.GetEncoder().GetPosition()},
+        units::meter_t{rightLeader.GetEncoder().GetPosition()}
+    );
+
+    auto pose = odometry.GetPose();
+    // std::cout << ", " << pose.Translation().X().to<double>() << ", " << pose.Translation().Y().to<double>() << ", " << pose.Rotation().Degrees().to<double>();
+}
+
+void Drivetrain::UpdateVoltages () {
+    double linearVoltage = GetLinearVoltage();
+    double rotationalVoltage = GetRotationalVoltage();
+
+    voltageUsedWithoutAcceleration = std::fabs(linearVoltage) + std::fabs(rotationalVoltage) - Ka*acceleration;
+
+    // std::cout << ", " << linearVoltage << ", " << rotationalVoltage << ", " << leftLeader.GetBusVoltage();
+
+    leftGroup.Set((linearVoltage-rotationalVoltage) / leftLeader.GetBusVoltage());
+    rightGroup.Set((linearVoltage+rotationalVoltage) / rightLeader.GetBusVoltage());
+}
+
+double Drivetrain::GetLinearVoltage () {
+    double speed = GetSpeed();
+    double a = acceleration + GetAccelerationCorrection(speed);
+    double s = std::fabs(speed) > 0.02 ? std::copysign(Ks, speed) : (std::fabs(a) > 0.05 ? std::copysign(Ks, a) : 0);
+    double voltage = s + Kv*speed + Ka*a;
+
+    // std::cout << speed << ", " << a << ", ";
+
+    return voltage;
+}
+
+double Drivetrain::GetRotationalVoltage () {
+    double w = angularVelocity + GetRotationalCorrection();
+    double voltage = Kw*w;
+    // std::cout << ", " << w/90.0 << ", " << GetGyroAngle()/90.0;
+    return voltage;
+}
+
+#define kVCorrection 3.5
+#define vCorrectionMax 0.7
+#define kACorrection 3.0
+#define aCorrectionMax 0.7
+
+double Drivetrain::GetAccelerationCorrection (double speed) {
+    double correction = kVCorrection * (targetSpeed - speed);
+    return std::clamp(correction, -vCorrectionMax, vCorrectionMax);
+}
+
+double Drivetrain::GetRotationalCorrection () {
+    double angle = odometry.GetPose().Rotation().Radians().to<double>();
+    double correction = kACorrection * (targetAngle - angle);
+    return std::clamp(correction, -aCorrectionMax, aCorrectionMax);
 }
