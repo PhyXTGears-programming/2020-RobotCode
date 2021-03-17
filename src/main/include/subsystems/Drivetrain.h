@@ -1,11 +1,11 @@
 #pragma once
 
 #include <AHRS.h>
-
+#include <cpptoml.h>
 #include <frc2/command/SubsystemBase.h>
-#include <rev/CANSparkMax.h>
 #include <frc/SpeedControllerGroup.h>
 #include <frc/kinematics/DifferentialDriveOdometry.h>
+#include <rev/CANSparkMax.h>
 #include <units/length.h>
 #include <units/current.h>
 
@@ -13,7 +13,7 @@
 
 class Drivetrain : public frc2::SubsystemBase {
     public:
-        Drivetrain();
+        Drivetrain(std::shared_ptr<cpptoml::table> toml);
 
         void Periodic() override;
 
@@ -33,12 +33,12 @@ class Drivetrain : public frc2::SubsystemBase {
         double GetSpeed () { return (leftLeader.GetEncoder().GetVelocity() + rightLeader.GetEncoder().GetVelocity()) / 2.0; }
 
         double GetVoltage () { return (leftLeader.GetBusVoltage() + rightLeader.GetBusVoltage()) / 2.0; }
-        double GetMaxAvailableAcceleration () { return (GetVoltage() - voltageUsedWithoutAcceleration) / Ka; }
+        double GetMaxAvailableAcceleration () { return (GetVoltage() - voltageUsedWithoutAcceleration) / config.kinematics.ka; }
 
-        double GetKS () { return Ks; }
-        double GetKV () { return Kv; }
-        double GetKA () { return Ka; }
-        double GetKW () { return Kw; }
+        double GetKS () { return config.kinematics.ks; }
+        double GetKV () { return config.kinematics.kv; }
+        double GetKA () { return config.kinematics.ka; }
+        double GetKW () { return config.kinematics.kw; }
 
         units::current::ampere_t GetMotorCurrent () {
             return units::current::ampere_t{(leftLeader.GetOutputCurrent() + rightLeader.GetOutputCurrent()) / 2.0};
@@ -53,7 +53,11 @@ class Drivetrain : public frc2::SubsystemBase {
         double GetAccelerationCorrection(double speed);
         double GetRotationalCorrection();
         
-        double Ks, Kv, Ka, Kw;
+        struct {
+            struct {
+                double ks, kv, ka, kw;
+            } kinematics;
+        } config;
 
         bool brakeOn;
         bool oldDriving = true;
@@ -66,10 +70,6 @@ class Drivetrain : public frc2::SubsystemBase {
         double gyroZeroAngle;
 
         double voltageUsedWithoutAcceleration = 0;
-
-        static constexpr units::meter_t kTrackWidth = 0.381_m * 2;
-        static constexpr double kWheelRadius = 0.0508; // meters
-        static constexpr int kEncoderResolution = 4096;
 
         rev::CANSparkMax leftLeader {DriveMotorPins::Left1, rev::CANSparkMax::MotorType::kBrushless};
         rev::CANSparkMax leftFollower1 {DriveMotorPins::Left2, rev::CANSparkMax::MotorType::kBrushless};

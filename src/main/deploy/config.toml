@@ -23,3 +23,9 @@ speed.shoot = 0.75
 [controlPanel]
 extraDegrees = 90.0 # degrees to rotate past 3 rotations
 p = 0.1
+
+[drivetrain]
+kinematics.ks = 0.135
+kinematics.kv = 2.82
+kinematics.ka = 0.73
+kinematics.kw = 0.9167

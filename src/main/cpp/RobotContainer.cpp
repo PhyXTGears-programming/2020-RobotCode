@@ -35,7 +35,7 @@ enum Pov {
 RobotContainer::RobotContainer () {
     std::shared_ptr<cpptoml::table> toml = LoadConfig("/home/lvuser/deploy/" + ConfigFiles::ConfigFile);
 
-    m_Drivetrain = new Drivetrain();
+    m_Drivetrain = new Drivetrain(toml->get_table("drivetrain"));
     m_Intake = new Intake(toml->get_table("intake"));
     m_Climb = new Climb();
     m_Shooter = new Shooter(toml->get_table("shooter"));
@@ -82,6 +82,8 @@ RobotContainer::RobotContainer () {
 
     auto cameraServer = frc::CameraServer::GetInstance();
     cameraServer->StartAutomaticCapture();
+
+    m_Drivetrain->SetBrake(false);
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand () {

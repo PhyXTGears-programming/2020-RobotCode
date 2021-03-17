@@ -15,8 +15,13 @@
 // half of the distance between the wheels in meters
 #define kHalfWheelBase 0.953125
 
-Drivetrain::Drivetrain () {
-    constexpr double metersPerMotorRotation = 0.04526269;
+Drivetrain::Drivetrain (std::shared_ptr<cpptoml::table> toml) {
+    config.kinematics.ks = toml->get_qualified_as<double>("kinematics.ks").value_or(0.0);
+    config.kinematics.kv = toml->get_qualified_as<double>("kinematics.kv").value_or(0.0);
+    config.kinematics.ka = toml->get_qualified_as<double>("kinematics.ka").value_or(0.0);
+    config.kinematics.kw = toml->get_qualified_as<double>("kinematics.kw").value_or(0.0);
+
+    static constexpr double metersPerMotorRotation = 0.04526269;
 
     for (auto m : {&leftLeader, &leftFollower1, &leftFollower2, &rightLeader, &rightFollower1, &rightFollower2}) {
         // Position in wheel angular displacement (rad)
@@ -138,7 +143,7 @@ void Drivetrain::UpdateOdometry () {
         units::meter_t{rightLeader.GetEncoder().GetPosition()}
     );
 
-    auto pose = odometry.GetPose();
+    // auto pose = odometry.GetPose();
     // std::cout << ", " << pose.Translation().X().to<double>() << ", " << pose.Translation().Y().to<double>() << ", " << pose.Rotation().Degrees().to<double>();
 }
 
@@ -146,9 +151,7 @@ void Drivetrain::UpdateVoltages () {
     double linearVoltage = GetLinearVoltage();
     double rotationalVoltage = GetRotationalVoltage();
 
-    voltageUsedWithoutAcceleration = std::fabs(linearVoltage) + std::fabs(rotationalVoltage) - Ka*acceleration;
-
-    // std::cout << ", " << linearVoltage << ", " << rotationalVoltage << ", " << leftLeader.GetBusVoltage();
+    voltageUsedWithoutAcceleration = std::fabs(linearVoltage) + std::fabs(rotationalVoltage) - config.kinematics.ka*acceleration;
 
     leftGroup.Set((linearVoltage-rotationalVoltage) / leftLeader.GetBusVoltage());
     rightGroup.Set((linearVoltage+rotationalVoltage) / rightLeader.GetBusVoltage());
@@ -157,8 +160,8 @@ void Drivetrain::UpdateVoltages () {
 double Drivetrain::GetLinearVoltage () {
     double speed = GetSpeed();
     double a = acceleration + GetAccelerationCorrection(speed);
-    double s = std::fabs(speed) > 0.02 ? std::copysign(Ks, speed) : (std::fabs(a) > 0.05 ? std::copysign(Ks, a) : 0);
-    double voltage = s + Kv*speed + Ka*a;
+    double s = std::fabs(speed) > 0.02 ? std::copysign(config.kinematics.ks, speed) : (std::fabs(a) > 0.05 ? std::copysign(config.kinematics.ks, a) : 0);
+    double voltage = s + config.kinematics.kv*speed + config.kinematics.ka*a;
 
     // std::cout << speed << ", " << a << ", ";
 
@@ -167,7 +170,7 @@ double Drivetrain::GetLinearVoltage () {
 
 double Drivetrain::GetRotationalVoltage () {
     double w = angularVelocity + GetRotationalCorrection();
-    double voltage = Kw*w;
+    double voltage = config.kinematics.kw*w;
     // std::cout << ", " << w/90.0 << ", " << GetGyroAngle()/90.0;
     return voltage;
 }
