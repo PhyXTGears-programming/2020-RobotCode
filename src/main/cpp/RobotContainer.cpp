@@ -22,6 +22,7 @@
 #include "commands/SimpleDriveCommand.h"
 #include "commands/autonomous/AutonomousRotateTurretCommand.h"
 #include "commands/DriveUntilWallCommand.h"
+#include "commands/FollowPolybezier.h"
 
 using JoystickHand = frc::GenericHID::JoystickHand;
 
@@ -334,9 +335,12 @@ void RobotContainer::InitAutonomousChooser () {
         ShootCommand{m_Shooter, m_Intake, 2700_rpm}.WithTimeout(4.0_s)
     );
 
+    FollowPolybezier *follower = new FollowPolybezier(m_Drivetrain, "/home/lvuser/deploy/paths/path3.json", 4.0);
+
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
     m_DashboardAutoChooser.AddOption("6 cell auto", sixCellAutoCommand);
     m_DashboardAutoChooser.AddOption("close auto", closeShotAutoCommand);
+    m_DashboardAutoChooser.AddOption("follow path", follower);
 }
 
 void RobotContainer::ReportSelectedAuto () {
