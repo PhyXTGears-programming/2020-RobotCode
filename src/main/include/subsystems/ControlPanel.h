@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cpptoml.h>
-#include <units/units.h>
+#include <units/angle.h>
 
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>

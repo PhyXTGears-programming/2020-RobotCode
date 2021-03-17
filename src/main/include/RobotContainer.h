@@ -15,7 +15,6 @@
 #include "subsystems/ControlPanel.h"
 #include "subsystems/PowerCellCounter.h"
 
-#include "commands/AutonomousCommand.h"
 #include "commands/ExpelIntakeCommand.h"
 #include "commands/ExtendIntakeCommand.h"
 #include "commands/IntakeBallsCommand.h"
@@ -66,7 +65,6 @@ class RobotContainer {
         ControlPanel* m_ControlPanel;
         PowerCellCounter* m_PowerCellCounter;
 
-        AutonomousCommand* m_AutonomousCommand;
         IntakeBallsCommand* m_IntakeBallsCommand;
         ExpelIntakeCommand* m_ExpelIntakeCommand;
         RetractIntakeCommand* m_RetractIntakeCommand;

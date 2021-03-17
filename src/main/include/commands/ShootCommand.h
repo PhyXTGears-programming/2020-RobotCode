@@ -1,6 +1,6 @@
 #pragma once
 
-#include <units/units.h>
+#include <units/angular_velocity.h>
 
 #include <frc2/command/CommandBase.h>
 #include <frc2/command/CommandHelper.h>

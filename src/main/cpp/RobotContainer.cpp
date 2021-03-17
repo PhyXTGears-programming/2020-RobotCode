@@ -1,7 +1,7 @@
 #include "RobotContainer.h"
 
 #include <iostream>
-#include <units/units.h>
+#include <units/angular_velocity.h>
 
 #include <cameraserver/CameraServer.h>
 
@@ -49,7 +49,6 @@ RobotContainer::RobotContainer () {
         toml->get_table("shooter")->get_qualified_as<double>("shootingSpeed.far").value_or(4100.0)
     };
 
-    m_AutonomousCommand         = new AutonomousCommand(m_Drivetrain);
     m_IntakeBallsCommand        = new IntakeBallsCommand(m_Intake, m_PowerCellCounter);
     m_ExpelIntakeCommand        = new ExpelIntakeCommand(m_Intake);
     m_RetractIntakeCommand      = new RetractIntakeCommand(m_Intake);

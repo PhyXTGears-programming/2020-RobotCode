@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cpptoml.h>
-#include <units/units.h>
+#include <units/angular_velocity.h>
 
 #include <frc/SpeedControllerGroup.h>
 #include <frc2/command/SubsystemBase.h>

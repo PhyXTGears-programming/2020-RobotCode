@@ -1,5 +1,9 @@
 #include "subsystems/ControlPanel.h"
 
+#include <units/length.h>
+
+using namespace units::literals;
+
 #define kMotorTurnsPerWheelTurn 10.0
 #define kWheelDiameter 3_in
 
