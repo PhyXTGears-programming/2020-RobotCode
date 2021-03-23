@@ -7,7 +7,7 @@
 #define minSpeed     0.3 // Minimum slow speed
 
 // Deadzone math in Desmos (https://www.desmos.com/calculator/htvtwcp39g)
-#define kJoystickDeadzone 0.15
+#define kJoystickDeadzone 0.1
 #define makeValueFullRange(deadzonedInput) (1/(1 - kJoystickDeadzone) * (deadzonedInput - std::copysign(kJoystickDeadzone, deadzonedInput)))
 #define deadzone(input) ((fabs(input) < kJoystickDeadzone) ? 0.0 : makeValueFullRange(input))
 

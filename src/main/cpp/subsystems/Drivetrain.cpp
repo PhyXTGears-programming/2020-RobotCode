@@ -10,7 +10,7 @@
 #define PI 3.14159265358979323846
 
 // lowering makes robot drive more straight, raising makes it turn more at any given input (other than -1, 0, or 1)
-#define kTurnInputConstant 0.3
+#define kTurnInputConstant 0.37
 
 // half of the distance between the wheels in meters
 #define kHalfWheelBase 0.953125
@@ -55,7 +55,6 @@ void Drivetrain::Periodic () {
 // Calculate radius from x stick, and drive
 void Drivetrain::Drive (double yInput, double xInput) {
     // Radius math in Desmos (https://www.desmos.com/calculator/htvtwcp39g)
-    xInput = pow(xInput, 3);
     double r = 1/(kTurnInputConstant * xInput) - xInput/kTurnInputConstant;
 
     // When the radius is 0, RadiusDrive turns the robot clockwise by default
