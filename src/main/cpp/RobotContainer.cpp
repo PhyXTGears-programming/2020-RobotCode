@@ -335,12 +335,28 @@ void RobotContainer::InitAutonomousChooser () {
         ShootCommand{m_Shooter, m_Intake, 2700_rpm}.WithTimeout(4.0_s)
     );
 
-    FollowPolybezier *follower = new FollowPolybezier(m_Drivetrain, "/home/lvuser/deploy/paths/path3.json", 4.0);
+    FollowPolybezier::Configuration followerConfig {
+        4.0,    // maximumRadialAcceleration
+        2.0,    // maximumJerk
+        8.0     // maximumReverseAcceleration
+    };
+
+    FollowPolybezier follower {m_Drivetrain, "/home/lvuser/deploy/paths/autonav3.json", followerConfig};
+    Point::Point startPoint = follower.GetStartPoint();
+
+    frc2::SequentialCommandGroup* followPath = new frc2::SequentialCommandGroup(
+        frc2::InstantCommand{
+            [=]() {  
+                m_Drivetrain->SetPose(startPoint.x, startPoint.y, 0);
+            }
+        },
+        std::move(follower)
+    );
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
     m_DashboardAutoChooser.AddOption("6 cell auto", sixCellAutoCommand);
     m_DashboardAutoChooser.AddOption("close auto", closeShotAutoCommand);
-    m_DashboardAutoChooser.AddOption("follow path", follower);
+    m_DashboardAutoChooser.AddOption("follow path", followPath);
 }
 
 void RobotContainer::ReportSelectedAuto () {

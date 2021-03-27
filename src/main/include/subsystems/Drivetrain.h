@@ -22,14 +22,15 @@ class Drivetrain : public frc2::SubsystemBase {
 
         void SetBrake(bool on);
 
-        void SetAcceleration (double a) { oldDriving = false; acceleration = a; }
-        void SetAcceleration (double a, double target) { oldDriving = false; acceleration = a; targetSpeed = target; }
-        void SetAngularVelocity (double w) { oldDriving = false; angularVelocity = w; }
-        void SetAngularVelocity (double w, double target) { oldDriving = false; angularVelocity = w; targetAngle = target; }
-
-        void ResetPose(double angle = 0);
+        void SetAcceleration (double a) { SetDrivingMode(false); acceleration = a; }
+        void SetAcceleration (double a, double target) { SetDrivingMode(false); acceleration = a; targetSpeed = target; }
+        void SetAngularVelocity (double w) { SetDrivingMode(false); angularVelocity = w; }
+        void SetAngularVelocity (double w, double target) { SetDrivingMode(false); angularVelocity = w; targetAngle = target; }
 
         frc::Pose2d GetPose () { return odometry.GetPose(); }
+        void SetPose(double x, double y, double angle = 0);
+        void ResetPose (double angle = 0) { SetPose(0, 0, angle); }
+
         double GetSpeed () { return (leftLeader.GetEncoder().GetVelocity() + rightLeader.GetEncoder().GetVelocity()) / 2.0; }
 
         double GetVoltage () { return (leftLeader.GetBusVoltage() + rightLeader.GetBusVoltage()) / 2.0; }
@@ -52,6 +53,8 @@ class Drivetrain : public frc2::SubsystemBase {
         double GetRotationalVoltage();
         double GetAccelerationCorrection(double speed);
         double GetRotationalCorrection();
+
+        void SetDrivingMode (bool old) { SetBrake(false); oldDriving = old; }
         
         struct {
             struct {

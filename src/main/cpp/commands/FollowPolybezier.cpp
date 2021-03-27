@@ -5,9 +5,8 @@
 
 constexpr double PI = 3.1415926535897932;
 
-FollowPolybezier::FollowPolybezier (Drivetrain* drivetrain, const wpi::Twine &filename, double maxRadialAcceleration) :
-    drivetrain(drivetrain),
-    maxA(maxRadialAcceleration)
+FollowPolybezier::FollowPolybezier (Drivetrain* drivetrain, const wpi::Twine &filename, Configuration configuration) :
+    drivetrain(drivetrain), config(configuration)
 {
     AddRequirements(drivetrain);
 
@@ -50,6 +49,11 @@ void FollowPolybezier::Execute () {
     auto pose = drivetrain->GetPose();
     distanceTraveled += pose.Translation().Distance(lastPose.Translation()).to<double>();
 
+    // std::cout << pose.Translation().X().to<double>()
+    //     << ", " << pose.Translation().Y().to<double>()
+    //     << ", " << pose.Rotation().Degrees().to<double>()
+    //     << std::endl;
+
     auto *currentStep = &polybezier[currentBezier];
 
     while (distanceTraveled >= currentStep->second[prevVertex+1].d) {
@@ -85,56 +89,22 @@ void FollowPolybezier::Execute () {
     angle += std::floor((pose.Rotation().Radians().to<double>() + PI) / (2*PI)) * 2*PI;
 
     auto accel = CalculateAcceleration();
-    // std::cout << "acceleration = " << accel.first << ", velocity = " << accel.second << std::endl;
+
+    // std::cout << "acceleration = " << accel.first << ", velocity = " << accel.second << ", angular velocity = " << w << std::endl;
+
+    auto pathPose = Bezier::evaluate(currentStep->first, t);
+    std::cout
+        << pathPose.x << "," << pathPose.y << "," << angle
+        << "," << pose.Translation().X().to<double>() << "," << pose.Translation().Y().to<double>()
+        << "," << pose.Rotation().Degrees().to<double>() << std::endl;
+
     drivetrain->SetAcceleration(accel.first, accel.second);
     drivetrain->SetAngularVelocity(w, angle);
 
     lastPose = pose;
 }
 
-std::pair<Bezier::CubicBezier, std::vector<FollowPolybezier::DistanceSample>> FollowPolybezier::LoadCurve (wpi::json::value_type controlPoints) {
-    Bezier::CubicBezier bezier = {
-        {controlPoints[0][0], controlPoints[0][1]},
-        {controlPoints[1][0], controlPoints[1][1]},
-        {controlPoints[2][0], controlPoints[2][1]},
-        {controlPoints[3][0], controlPoints[3][1]}
-    };
-
-    auto samples = Bezier::polylineApproximation(bezier);
-
-    auto *approximation = new std::vector<DistanceSample>();
-    approximation->reserve(samples.size());
-
-    Point::Point previous = samples[0].p;
-    double distance = 0;
-    for (auto point : samples) {
-        distance += Point::distance(previous, point.p);
-        double maxV = std::sqrt(maxA * std::fabs(Bezier::getRadiusOfCurvature(bezier, point.t)));
-
-        std::cout << maxV << std::endl;
-
-        approximation->push_back({point.p, point.t, distance, maxV});
-
-        previous = point.p;
-    }
-
-    return {bezier, *approximation};
-}
-
-void FollowPolybezier::ResetCurveProgress () {
-    // reset the variables that track progress along the curve
-    prevVertex = 0;
-    distanceTraveled = 0;
-
-    // start tracking distance along the new Bezier curve from the current position
-    lastPose = drivetrain->GetPose();
-}
-
-#define maxJerk 3.0
-
 std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
-    double maxReverseA = 8; // drivetrain->GetVoltage() / drivetrain->GetKA()
-
     double cVelocity = drivetrain->GetSpeed();
     double cAcceleration = acceleration;
     unsigned int cBezier = currentBezier;
@@ -142,11 +112,7 @@ std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
 
     double leastMargin = cVelocity+1;
 
-    unsigned int c = 0;
-
     while (cVelocity > 0) {
-        c++;
-
         cVertex++;
         if (cVertex >= polybezier[cBezier].second.size()) {
             cVertex = 0;
@@ -172,11 +138,11 @@ std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
         double vSquared = cVelocity*cVelocity + 2*cAcceleration*distTraveled;
         double newVelocity = vSquared > 0 ? std::sqrt(vSquared) : 0;
         double dt = (newVelocity - cVelocity) / cAcceleration;
-        cAcceleration -= maxJerk * dt;
-        cAcceleration = cAcceleration < -maxReverseA ? -maxReverseA : cAcceleration;
+        cAcceleration -= config.maximumJerk * dt;
+        cAcceleration = cAcceleration < -config.maximumReverseAcceleration ? -config.maximumReverseAcceleration : cAcceleration;
         cVelocity = newVelocity;
 
-        std::cout << polybezier[cBezier].second[cVertex].maxV << ", " << cVelocity << ", " << cAcceleration << std::endl; 
+        // std::cout << polybezier[cBezier].second[cVertex].maxV << ", " << cVelocity << ", " << cAcceleration << std::endl; 
 
         double margin = polybezier[cBezier].second[cVertex].maxV - cVelocity;
         if (margin < leastMargin) leastMargin = margin;
@@ -189,19 +155,69 @@ std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
     velocity += acceleration * dt;
 
     if (leastMargin < 0.05) {
-        acceleration -= maxJerk*dt;
+        acceleration -= config.maximumJerk*dt;
     } else if (leastMargin < 0.1) {
         // do nothing
     } else {
-        acceleration += maxJerk*dt;
+        acceleration += config.maximumJerk*dt;
     }
 
-    acceleration = std::clamp(acceleration, -maxReverseA, drivetrain->GetMaxAvailableAcceleration());
+    acceleration = std::clamp(acceleration, -config.maximumReverseAcceleration, drivetrain->GetMaxAvailableAcceleration());
 
     double targetVelocity = velocity + 0.5*acceleration*dt;
 
-    std::cout << currentTime << ", " << dt << ", " << acceleration << ", " << velocity << ", " << leastMargin << std::endl;
+    // std::cout << currentTime << ", " << dt << ", " << acceleration << ", " << velocity << ", " << leastMargin << std::endl;
 
-    // return {0, 1};
     return {acceleration, targetVelocity};
+}
+
+std::pair<Bezier::CubicBezier, std::vector<FollowPolybezier::DistanceSample>> FollowPolybezier::LoadCurve (wpi::json::value_type controlPoints) {
+    std::pair<Bezier::CubicBezier, std::vector<FollowPolybezier::DistanceSample>> result {{
+        {controlPoints[0][0], controlPoints[0][1]},
+        {controlPoints[1][0], controlPoints[1][1]},
+        {controlPoints[2][0], controlPoints[2][1]},
+        {controlPoints[3][0], controlPoints[3][1]}
+    }, {}};
+
+    AddApproximation(&result);
+
+    return result;
+}
+
+void FollowPolybezier::AddApproximation (std::pair<Bezier::CubicBezier, std::vector<DistanceSample>> *bezier) {
+    auto samples = Bezier::polylineApproximation(bezier->first);
+
+    bezier->second.clear();
+    bezier->second.reserve(samples.size());
+
+
+    // std::cout << "curve:" << std::endl;
+
+    Point::Point previous = samples[0].p;
+    double distance = 0;
+    for (auto point : samples) {
+        distance += Point::distance(previous, point.p);
+
+        double r = Bezier::getRadiusOfCurvature(bezier->first, point.t);
+        double maxV = std::sqrt(config.maximumRadialAcceleration * std::fabs(r));
+
+        // std::cout << point.p.x << "," << point.p.y << "," << r << "," << std::fabs(r) << "," << maxV << std::endl;
+
+        bezier->second.push_back({point.p, point.t, distance, maxV});
+
+        previous = point.p;
+    }
+}
+
+void FollowPolybezier::ResetCurveProgress () {
+    // reset the variables that track progress along the curve
+    prevVertex = 0;
+    distanceTraveled = 0;
+
+    // start tracking distance along the new Bezier curve from the current position
+    lastPose = drivetrain->GetPose();
+
+    // correct for the real current position
+    polybezier[currentBezier].first.p0 = {lastPose.X().to<double>(), lastPose.Y().to<double>()};
+    AddApproximation(&(polybezier[currentBezier]));
 }

@@ -10,7 +10,13 @@
 
 class FollowPolybezier : public frc2::CommandHelper<frc2::CommandBase, FollowPolybezier> {
     public:
-        FollowPolybezier(Drivetrain *drivetrain, const wpi::Twine &filename, double maxRadialAcceleration);
+        struct Configuration {
+            double maximumRadialAcceleration;
+            double maximumJerk;
+            double maximumReverseAcceleration;
+        };
+
+        FollowPolybezier(Drivetrain *drivetrain, const wpi::Twine &filename, Configuration configuration);
 
         void Initialize();
         void Execute();
@@ -23,6 +29,9 @@ class FollowPolybezier : public frc2::CommandHelper<frc2::CommandBase, FollowPol
 
         bool IsFinished () { return finished; };
 
+        Point::Point GetStartPoint () { return polybezier[0].second[0].p; }
+        Point::Point GetEndPoint () { return polybezier.back().second.back().p; }
+
     private:
         struct DistanceSample {
             Point::Point p;
@@ -31,17 +40,19 @@ class FollowPolybezier : public frc2::CommandHelper<frc2::CommandBase, FollowPol
             double maxV;
         };
 
-        std::pair<Bezier::CubicBezier, std::vector<DistanceSample>> LoadCurve(wpi::json::value_type controlPoints);
-        void ResetCurveProgress();
-
         std::pair<double, double> CalculateAcceleration();
 
+        std::pair<Bezier::CubicBezier, std::vector<DistanceSample>> LoadCurve(wpi::json::value_type controlPoints);
+        void AddApproximation(std::pair<Bezier::CubicBezier, std::vector<DistanceSample>> *bezier);
+
+        void ResetCurveProgress();
+
         Drivetrain *drivetrain;
-        double maxA;
+        Configuration config;
 
         bool finished;
 
-        std::vector<std::pair<Bezier::CubicBezier, std::vector<DistanceSample>>> polybezier;
+        std::vector<std::pair<Bezier::CubicBezier, std::vector<DistanceSample>>> polybezier {};
         unsigned int currentBezier;
         unsigned int prevVertex;
 

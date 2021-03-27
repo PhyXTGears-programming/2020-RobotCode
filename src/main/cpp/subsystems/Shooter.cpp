@@ -73,17 +73,19 @@ Shooter::Shooter (std::shared_ptr<cpptoml::table> toml) {
 }
 
 void Shooter::Periodic () {
-    double factor = 1 / kShooterGearRatio;
-    frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1.GetEncoder().GetVelocity() * factor);
-    frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2.GetEncoder().GetVelocity() * factor);
-    
-    frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
+    // double factor = 1 / kShooterGearRatio;
 
-    config.shooterVelocity.p = frc::SmartDashboard::GetNumber("Shooter P", config.shooterVelocity.p);
-    config.shooterVelocity.d = frc::SmartDashboard::GetNumber("Shooter D", config.shooterVelocity.d);
-    config.shooterVelocity.f = frc::SmartDashboard::GetNumber("Shooter F", config.shooterVelocity.f);
-    SetPIDF(m_ShooterMotor1.GetPIDController(), config.shooterVelocity);
-    SetPIDF(m_ShooterMotor2.GetPIDController(), config.shooterVelocity);
+    // frc::SmartDashboard::PutNumber("Shooter Motor 1", m_ShooterMotor1.GetEncoder().GetVelocity() * factor);
+    // frc::SmartDashboard::PutNumber("Shooter Motor 2", m_ShooterMotor2.GetEncoder().GetVelocity() * factor);
+    
+    // frc::SmartDashboard::PutNumber("Turret Speed Read (RPM)", units::unit_cast<double>(m_TurretMotor.GetSelectedSensorVelocity() / kTurretGearRatio / kMotorRPMtoEncoderVelocity));
+
+    // config.shooterVelocity.p = frc::SmartDashboard::GetNumber("Shooter P", config.shooterVelocity.p);
+    // config.shooterVelocity.d = frc::SmartDashboard::GetNumber("Shooter D", config.shooterVelocity.d);
+    // config.shooterVelocity.f = frc::SmartDashboard::GetNumber("Shooter F", config.shooterVelocity.f);
+
+    // SetPIDF(m_ShooterMotor1.GetPIDController(), config.shooterVelocity);
+    // SetPIDF(m_ShooterMotor2.GetPIDController(), config.shooterVelocity);
 
     TrackingPeriodic(m_TrackingMode);
 }
@@ -120,7 +122,7 @@ void Shooter::SetTrackingMode (TrackingMode mode) {
 void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t speed) {
     frc::SmartDashboard::PutNumber("Turret Speed Setpoint (RPM)", units::unit_cast<double>(speed));
     
-    std::cout << speed << " ";
+    // std::cout << speed << " ";
     
     if (units::math::fabs(speed) < 1_deg_per_s) {
         m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
@@ -129,7 +131,7 @@ void Shooter::SetTurretSpeed (units::angular_velocity::revolutions_per_minute_t 
 
     double motorSpeed = kTurretGearRatio * units::unit_cast<double>(speed * kMotorRPMtoEncoderVelocity); // in encoder ticks per 100 ms
     
-    std::cout << motorSpeed << std::endl;
+    // std::cout << motorSpeed << std::endl;
 
     m_TurretMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, motorSpeed);
 }
@@ -175,23 +177,23 @@ void Shooter::TrackingPeriodic (TrackingMode mode) {
         m_TargetCount = (int) m_VisionTable->GetNumber("tv", -1);
 
         if (m_TargetCount > 0) {
-            std::cout << "Count: " << m_TargetCount << std::endl;
+            // std::cout << "Count: " << m_TargetCount << std::endl;
             frc::SmartDashboard::PutBoolean("Limelight Has Target", true);
 
             m_TargetErrorX = -m_VisionTable->GetNumber("tx", 0);
             m_TargetErrorY = -m_VisionTable->GetNumber("ty", 0);
-            std::cout << "m_TargetErrorX: " << m_TargetErrorX << std::endl;
-            std::cout << "m_TargetErrorY: " << m_TargetErrorY << std::endl;
+            // std::cout << "m_TargetErrorX: " << m_TargetErrorX << std::endl;
+            // std::cout << "m_TargetErrorY: " << m_TargetErrorY << std::endl;
 
             frc::SmartDashboard::PutNumber("Turret Error X", m_TargetErrorX);
             frc::SmartDashboard::PutNumber("Turret Error Y", m_TargetErrorY);
 
             speed = m_TurretPID->Calculate(m_TargetErrorX);
         } else if (m_TargetCount == 0) {
-            std::cout << "No objects detected" << std::endl;
+            // std::cout << "No objects detected" << std::endl;
             frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
         } else {
-            std::cout << "Variable tv does not exist in table limelight-gears" << std::endl;
+            // std::cout << "Variable tv does not exist in table limelight-gears" << std::endl;
             frc::SmartDashboard::PutBoolean("Limelight Has Target", false);
         }
 

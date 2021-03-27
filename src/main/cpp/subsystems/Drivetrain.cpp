@@ -69,7 +69,7 @@ void Drivetrain::Drive (double yInput, double xInput) {
 
 // Given a radius and speed, drive around the circle
 void Drivetrain::RadiusDrive (double speed, double radius) {
-    oldDriving = true;
+    SetDrivingMode(true);
 
     // Reverse turning direction when driving backwards.  Special request by Caleb S.
     radius *= std::copysign(1.0, speed);
@@ -111,6 +111,8 @@ void Drivetrain::RadiusDrive (double speed, double radius) {
 }
 
 void Drivetrain::SetBrake (bool on) {
+    if (on == brakeOn) return;
+
     brakeOn = on;
 
     auto mode = on ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast;
@@ -126,11 +128,11 @@ void Drivetrain::SetBrake (bool on) {
     rightGroup.Set(0);
 }
 
-void Drivetrain::ResetPose (double angle) {
+void Drivetrain::SetPose (double x, double y, double angle) {
     leftLeader.GetEncoder().SetPosition(0);
     rightLeader.GetEncoder().SetPosition(0);
     odometry.ResetPosition(
-        frc::Pose2d{frc::Translation2d{0_m, 0_m}, frc::Rotation2d{units::radian_t{angle}}},
+        frc::Pose2d{frc::Translation2d{units::length::meter_t{x}, units::length::meter_t{y}}, frc::Rotation2d{units::radian_t{angle}}},
         frc::Rotation2d{units::degree_t{-gyro.GetAngle()}}
     );
 }
