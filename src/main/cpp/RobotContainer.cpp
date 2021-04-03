@@ -336,17 +336,17 @@ void RobotContainer::InitAutonomousChooser () {
     );
 
     FollowPolybezier::Configuration followerConfig {
-        4.0,    // maximumRadialAcceleration
-        2.0,    // maximumJerk
+        5.0,    // maximumRadialAcceleration
+        3.0,    // maximumJerk
         8.0     // maximumReverseAcceleration
     };
 
-    FollowPolybezier follower {m_Drivetrain, "/home/lvuser/deploy/paths/autonav3.json", followerConfig};
+    FollowPolybezier follower {m_Drivetrain, "/home/lvuser/deploy/paths/autonav4.json", followerConfig};
     Point::Point startPoint = follower.GetStartPoint();
 
     frc2::SequentialCommandGroup* followPath = new frc2::SequentialCommandGroup(
         frc2::InstantCommand{
-            [=]() {  
+            [=]() {
                 m_Drivetrain->SetPose(startPoint.x, startPoint.y, 0);
             }
         },

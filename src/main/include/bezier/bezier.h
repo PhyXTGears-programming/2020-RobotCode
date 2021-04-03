@@ -42,7 +42,7 @@ Derivatives evaluateDerivatives(const QuadraticBezier &b, double t);
 CubicBezier split(CubicBezier* b, double t);
 QuadraticBezier split(QuadraticBezier* b, double t);
 
-std::vector<Sample> polylineApproximation(CubicBezier b, double curvature = 1.001, double startTime = 0, double endTime = 1);
+std::vector<Sample> polylineApproximation(CubicBezier b, double curvature = 1.001, double maxLength = 1.0e10, double startTime = 0, double endTime = 1);
 std::vector<Sample> polylineApproximation(QuadraticBezier b, double curvature = 1.005, double startTime = 0, double endTime = 1);
 
 double getRadiusOfCurvature(Derivatives d);

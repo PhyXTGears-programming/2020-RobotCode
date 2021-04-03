@@ -75,14 +75,14 @@ double curvature (const QuadraticBezier &b) {
 }
 
 // TODO optimize
-std::vector<Sample> polylineApproximation (CubicBezier b, double maxCurvature, double startTime, double dTime) {
-    if (curvature(b) <= maxCurvature) {
+std::vector<Sample> polylineApproximation (CubicBezier b, double maxCurvature, double maxLength, double startTime, double dTime) {
+    if (curvature(b) <= maxCurvature && Point::distance(b.p0, b.p1) <= maxLength) {
         return {{b.p0, startTime}, {b.p3, startTime + dTime}};
     }
 
     dTime *= 0.5;
-    std::vector<Sample> ret2 = polylineApproximation(split(&b, 0.5), maxCurvature, startTime + dTime, dTime);
-    std::vector<Sample> ret1 = polylineApproximation(b, maxCurvature, startTime, dTime);
+    std::vector<Sample> ret2 = polylineApproximation(split(&b, 0.5), maxCurvature, maxLength, startTime + dTime, dTime);
+    std::vector<Sample> ret1 = polylineApproximation(b, maxCurvature, maxLength, startTime, dTime);
 
     ret1.reserve(ret1.size() + ret2.size() - 1);
     ret1.insert(ret1.end(), ret2.begin() + 1, ret2.end());

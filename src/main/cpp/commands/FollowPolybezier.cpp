@@ -1,14 +1,20 @@
 #include "commands/FollowPolybezier.h"
 
+#include <fstream>
+
 #include <wpi/raw_istream.h>
 #include <frc/RobotController.h>
 
 constexpr double PI = 3.1415926535897932;
 
+std::ofstream *logFile;
+
 FollowPolybezier::FollowPolybezier (Drivetrain* drivetrain, const wpi::Twine &filename, Configuration configuration) :
     drivetrain(drivetrain), config(configuration)
 {
     AddRequirements(drivetrain);
+
+    logFile = new std::ofstream("/home/lvuser/log10.txt");
 
     std::error_code code;
     wpi::raw_fd_istream pathFile {filename, code};
@@ -85,18 +91,17 @@ void FollowPolybezier::Execute () {
     // get the current target angle using the tangent at the current point
     double angle = std::atan2(derivs.firstDeriv.y, derivs.firstDeriv.x);
 
-    // shift the angle (-pi to pi) by multiples of 2pi to get the correct angle relative to the robot angle (-infinity to infinity)
-    angle += std::floor((pose.Rotation().Radians().to<double>() + PI) / (2*PI)) * 2*PI;
+    // shift by 360 degrees if one of the values rolls over but the other doesn't
+    double robotAngle = pose.Rotation().Radians().to<double>();
+    if (robotAngle - angle > 4.5) {
+        angle += 2*PI;
+    } else if (angle - robotAngle > 4.5) {
+        angle -= 2*PI;
+    }
+
+    std::cout << frc::RobotController::GetFPGATime() << "," << angle << "," << robotAngle << std::endl;
 
     auto accel = CalculateAcceleration();
-
-    // std::cout << "acceleration = " << accel.first << ", velocity = " << accel.second << ", angular velocity = " << w << std::endl;
-
-    auto pathPose = Bezier::evaluate(currentStep->first, t);
-    std::cout
-        << pathPose.x << "," << pathPose.y << "," << angle
-        << "," << pose.Translation().X().to<double>() << "," << pose.Translation().Y().to<double>()
-        << "," << pose.Rotation().Degrees().to<double>() << std::endl;
 
     drivetrain->SetAcceleration(accel.first, accel.second);
     drivetrain->SetAngularVelocity(w, angle);
@@ -142,16 +147,18 @@ std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
         cAcceleration = cAcceleration < -config.maximumReverseAcceleration ? -config.maximumReverseAcceleration : cAcceleration;
         cVelocity = newVelocity;
 
-        // std::cout << polybezier[cBezier].second[cVertex].maxV << ", " << cVelocity << ", " << cAcceleration << std::endl; 
+        *logFile << "@ " << cBezier << "," << cVertex << "," << polybezier[cBezier].second[cVertex].maxV << ", " << cVelocity << ", " << cAcceleration << std::endl;
 
         double margin = polybezier[cBezier].second[cVertex].maxV - cVelocity;
         if (margin < leastMargin) leastMargin = margin;
     }
 
+    // get time since last execution
     uint64_t currentTime = frc::RobotController::GetFPGATime();
     double dt = (currentTime - lastTime) / 1'000'000.0;
     lastTime = currentTime;
 
+    // compute velocity change since last execution
     velocity += acceleration * dt;
 
     if (leastMargin < 0.05) {
@@ -166,7 +173,7 @@ std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
 
     double targetVelocity = velocity + 0.5*acceleration*dt;
 
-    // std::cout << currentTime << ", " << dt << ", " << acceleration << ", " << velocity << ", " << leastMargin << std::endl;
+    *logFile << currentTime << ", " << dt << ", " << acceleration << ", " << velocity << ", " << leastMargin << std::endl;
 
     return {acceleration, targetVelocity};
 }
