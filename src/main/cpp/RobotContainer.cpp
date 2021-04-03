@@ -341,22 +341,32 @@ void RobotContainer::InitAutonomousChooser () {
         8.0     // maximumReverseAcceleration
     };
 
-    FollowPolybezier follower {m_Drivetrain, "/home/lvuser/deploy/paths/autonav4.json", followerConfig};
-    Point::Point startPoint = follower.GetStartPoint();
-
-    frc2::SequentialCommandGroup* followPath = new frc2::SequentialCommandGroup(
-        frc2::InstantCommand{
+    auto getResetPose = [=](Point::Point p) {
+        return frc2::InstantCommand {
             [=]() {
-                m_Drivetrain->SetPose(startPoint.x, startPoint.y, 0);
+                m_Drivetrain->SetPose(p.x, p.y, 0);
             }
-        },
-        std::move(follower)
+        };
+    };
+
+    FollowPolybezier barrel_racing_follower {m_Drivetrain, "/home/lvuser/deploy/paths/autonav5.json", followerConfig};
+    FollowPolybezier slalom_follower {m_Drivetrain, "/home/lvuser/deploy/paths/autonav-slalom-2.json", followerConfig};
+
+    frc2::SequentialCommandGroup* followPathBR = new frc2::SequentialCommandGroup(
+        getResetPose(barrel_racing_follower.GetStartPoint()),
+        std::move(barrel_racing_follower)
+    );
+
+    frc2::SequentialCommandGroup* followPathS = new frc2::SequentialCommandGroup(
+        getResetPose(slalom_follower.GetStartPoint()),
+        std::move(slalom_follower)
     );
 
     m_DashboardAutoChooser.SetDefaultOption("3 cell auto", threeCellAutoCommand);
     m_DashboardAutoChooser.AddOption("6 cell auto", sixCellAutoCommand);
     m_DashboardAutoChooser.AddOption("close auto", closeShotAutoCommand);
-    m_DashboardAutoChooser.AddOption("follow path", followPath);
+    m_DashboardAutoChooser.AddOption("follow path - barrel racing", followPathBR);
+    m_DashboardAutoChooser.AddOption("follow path - slalom", followPathS);
 }
 
 void RobotContainer::ReportSelectedAuto () {
