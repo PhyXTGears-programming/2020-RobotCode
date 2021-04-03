@@ -1,20 +1,17 @@
 #include "commands/FollowPolybezier.h"
 
 #include <fstream>
+#include <tuple>
 
 #include <wpi/raw_istream.h>
 #include <frc/RobotController.h>
 
 constexpr double PI = 3.1415926535897932;
 
-std::ofstream *logFile;
-
 FollowPolybezier::FollowPolybezier (Drivetrain* drivetrain, const wpi::Twine &filename, Configuration configuration) :
     drivetrain(drivetrain), config(configuration)
 {
     AddRequirements(drivetrain);
-
-    logFile = new std::ofstream("/home/lvuser/log10.txt");
 
     std::error_code code;
     wpi::raw_fd_istream pathFile {filename, code};
@@ -29,11 +26,13 @@ FollowPolybezier::FollowPolybezier (Drivetrain* drivetrain, const wpi::Twine &fi
     pathFile >> pathJSON;
 
     for (auto val : pathJSON) {
-        polybezier.push_back(LoadCurve(val));
+        LoadCurve(val);
     }
 }
 
 void FollowPolybezier::Initialize () {
+    logFile = new std::ofstream("/home/lvuser/logNew1.txt");
+
     finished = false;
 
     if (polybezier.size() < 1) { // there must be at least one curve
@@ -110,12 +109,22 @@ void FollowPolybezier::Execute () {
 }
 
 std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
-    double cVelocity = drivetrain->GetSpeed();
+    // get time since last execution
+    uint64_t currentTime = frc::RobotController::GetFPGATime();
+    double dt = (currentTime - lastTime) / 1'000'000.0;
+    lastTime = currentTime;
+
+    // compute velocity change since last execution
+    velocity += acceleration * dt;
+
+    double cVelocity = velocity;
     double cAcceleration = acceleration;
     unsigned int cBezier = currentBezier;
     unsigned int cVertex = prevVertex;
 
-    double leastMargin = cVelocity+1;
+    std::pair<double, std::pair<unsigned int, unsigned int>> leastMargin = {cVelocity+1, {0, 0}};
+
+    std::vector<std::tuple<std::pair<unsigned int, unsigned int>, double, double, double>> points;
 
     while (cVelocity > 0) {
         cVertex++;
@@ -123,7 +132,7 @@ std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
             cVertex = 0;
             cBezier++;
             if (cBezier >= polybezier.size()) {
-                if (-cVelocity < leastMargin) leastMargin = -cVelocity;
+                if (-cVelocity < leastMargin.first) leastMargin = {-cVelocity, {cBezier-1, polybezier[cBezier].second.size()-1}};
                 break;
             }
         }
@@ -147,38 +156,91 @@ std::pair<double, double> FollowPolybezier::CalculateAcceleration () {
         cAcceleration = cAcceleration < -config.maximumReverseAcceleration ? -config.maximumReverseAcceleration : cAcceleration;
         cVelocity = newVelocity;
 
+        points.push_back({{cBezier, cVertex}, distTraveled, cVelocity, cAcceleration});
+
         *logFile << "@ " << cBezier << "," << cVertex << "," << polybezier[cBezier].second[cVertex].maxV << ", " << cVelocity << ", " << cAcceleration << std::endl;
 
         double margin = polybezier[cBezier].second[cVertex].maxV - cVelocity;
-        if (margin < leastMargin) leastMargin = margin;
+        if (margin < leastMargin.first) leastMargin = {margin, {cBezier, cVertex}};
     }
 
-    // get time since last execution
-    uint64_t currentTime = frc::RobotController::GetFPGATime();
-    double dt = (currentTime - lastTime) / 1'000'000.0;
-    lastTime = currentTime;
+    // limit based on point past min
+    if (leastMargin.second.first > nextMin.first || (leastMargin.second.first == nextMin.first && leastMargin.second.second > nextMin.second)) {
+        // act like normal
+    } else {
+        // calculate margin for min:
+        // get min distance
+        auto minPoint = polybezier[nextMin.first].second[nextMin.second];
+        double mDistance = minPoint.d; // add distance from beginning of bezier with nextMin to nextMin
+        mDistance -= polybezier[cBezier].second[cVertex].d; // remove distance from beginning of current bezier to current point
 
-    // compute velocity change since last execution
-    velocity += acceleration * dt;
+        if (cBezier < nextMin.first) { // if nextMin is in a later bezier curve
+            int nB = cBezier-1;
+            while (++nB < nextMin.first) {
+                mDistance += polybezier[nB].second.end()->d;
+            }
+        }
 
-    if (leastMargin < 0.05) {
+        // find d
+        double v = velocity;
+        double q1 = (1.0/3.0)/(config.maximumJerk*config.maximumJerk) * acceleration*acceleration;
+        double q2 = (1.0/config.maximumJerk)*v;
+        double d = (q1-q2) * acceleration;
+
+        // check if we need to start reducing acceleration
+        if (mDistance < d + 0.05 && acceleration < 0) {
+            // bring acceleration to 0
+            leastMargin.first = 0.2; // override margin
+        } else {
+            // calculate margin and adjust leastMargin appropriately
+            double tD = 0;
+            int index = -2;
+            for (int i = 0; i < points.size(); i++) {
+                tD += std::get<1>(points[i]);
+                double v = std::get<2>(points[i]);
+                double a = std::get<3>(points[i]);
+
+                double q1 = (1.0/3.0)/(config.maximumJerk*config.maximumJerk) * a*a;
+                double q2 = (1.0/config.maximumJerk)*v;
+                double d = (q1-q2) * a;
+
+                if (mDistance - tD < d) {
+                    index = i-1;
+                    break;
+                }
+            }
+            if (index > -2) { 
+                if (index == -1) index = 0;
+                double v = std::get<2>(points[index]);
+                double a = std::get<3>(points[index]);
+                double t = -a/config.maximumJerk;
+                double dv = (a + t*config.maximumJerk/2)*t;
+                v += dv;
+                double margin = minPoint.maxV - v;
+                if (margin < leastMargin.first) leastMargin.first = margin;
+            }
+        }
+    }
+
+    // set acceleration
+    if (leastMargin.first < 0.05) {
         acceleration -= config.maximumJerk*dt;
-    } else if (leastMargin < 0.1) {
+    } else if (leastMargin.first < 0.1) {
         // do nothing
     } else {
         acceleration += config.maximumJerk*dt;
     }
 
-    acceleration = std::clamp(acceleration, -config.maximumReverseAcceleration, drivetrain->GetMaxAvailableAcceleration());
+    acceleration = std::clamp(acceleration, -config.maximumReverseAcceleration, std::min(drivetrain->GetMaxAvailableAcceleration(), 1.0));
 
     double targetVelocity = velocity + 0.5*acceleration*dt;
 
-    *logFile << currentTime << ", " << dt << ", " << acceleration << ", " << velocity << ", " << leastMargin << std::endl;
+    *logFile << currentTime << ", " << dt << ", " << acceleration << ", " << velocity << ", " << leastMargin.first << std::endl;
 
     return {acceleration, targetVelocity};
 }
 
-std::pair<Bezier::CubicBezier, std::vector<FollowPolybezier::DistanceSample>> FollowPolybezier::LoadCurve (wpi::json::value_type controlPoints) {
+void FollowPolybezier::LoadCurve (wpi::json::value_type controlPoints) {
     std::pair<Bezier::CubicBezier, std::vector<FollowPolybezier::DistanceSample>> result {{
         {controlPoints[0][0], controlPoints[0][1]},
         {controlPoints[1][0], controlPoints[1][1]},
@@ -186,33 +248,70 @@ std::pair<Bezier::CubicBezier, std::vector<FollowPolybezier::DistanceSample>> Fo
         {controlPoints[3][0], controlPoints[3][1]}
     }, {}};
 
-    AddApproximation(&result);
+    double l = 0;
+    if (polybezier.size() > 0) {
+        l = polybezier[polybezier.size()-1].second.end()->maxV;
+    }
 
-    return result;
+    AddApproximation(&result, l);
+
+    polybezier.push_back(result);
 }
 
-void FollowPolybezier::AddApproximation (std::pair<Bezier::CubicBezier, std::vector<DistanceSample>> *bezier) {
-    auto samples = Bezier::polylineApproximation(bezier->first);
+void FollowPolybezier::AddApproximation (std::pair<Bezier::CubicBezier, std::vector<DistanceSample>> *bezier, double previousCurveFinalSpeed) {
+    auto samples = Bezier::polylineApproximation(bezier->first, 1.001, 0.05);
+    int nSamples = samples.size();
 
     bezier->second.clear();
-    bezier->second.reserve(samples.size());
-
+    bezier->second.reserve(nSamples);
 
     // std::cout << "curve:" << std::endl;
 
-    Point::Point previous = samples[0].p;
-    double distance = 0;
-    for (auto point : samples) {
-        distance += Point::distance(previous, point.p);
+    bezier->second.push_back({samples[0].p, samples[0].t, 0, 100, false});
 
-        double r = Bezier::getRadiusOfCurvature(bezier->first, point.t);
+    double distance = 0;
+    for (int i = 1; i < nSamples; i++) {
+        distance += Point::distance(samples[i-1].p, samples[i].p);
+
+        double r = Bezier::getRadiusOfCurvature(bezier->first, samples[i].t);
         double maxV = std::sqrt(config.maximumRadialAcceleration * std::fabs(r));
 
-        // std::cout << point.p.x << "," << point.p.y << "," << r << "," << std::fabs(r) << "," << maxV << std::endl;
+        if (i == nSamples-1) maxV = 100;
 
-        bezier->second.push_back({point.p, point.t, distance, maxV});
+        bool lessPrev = bezier->second[i-1].maxV < (i>1 ? bezier->second[i-2].maxV : previousCurveFinalSpeed);
+        bool lessThis = bezier->second[i-1].maxV < maxV;
+        if (lessPrev && lessThis) {
+            bezier->second[i-1].minimum = true;
+            // std::cout << "minimum: " << i-1 << "," << bezier->second[i-1].t << "," << bezier->second[i-1].maxV << std::endl;
+        }
 
-        previous = point.p;
+        // std::cout << i-1 << "," << samples[i-1].p.x << "," << samples[i-1].p.y << "," << maxV << "," << (bezier->second[i-1].minimum ? 1 : 0) << std::endl;
+
+        bezier->second.push_back({samples[i].p, samples[i].t, distance, maxV, false});
+    }
+
+    // std::cout << nSamples-1 << "," << samples[nSamples-1].p.x << "," << samples[nSamples-1].p.y << "," << (*bezier->second.end()).maxV << ",";
+    // std::cout << ((*bezier->second.end()).minimum ? 1 : 0) << std::endl;
+}
+
+void FollowPolybezier::SetNextMin () {
+    unsigned int cBezier = currentBezier;
+    unsigned int cVertex = prevVertex;
+
+    while (true) {
+        if (cVertex >= polybezier[cBezier].second.size()) {
+            cVertex = 0;
+            cBezier++;
+            if (cBezier >= polybezier.size()) {
+                nextMin = {cBezier,cVertex};
+                break;
+            }
+        }
+        if (polybezier[cBezier].second[cVertex].minimum) {
+            nextMin = {cBezier,cVertex};
+            break;
+        }
+        cVertex++;
     }
 }
 
@@ -227,4 +326,6 @@ void FollowPolybezier::ResetCurveProgress () {
     // correct for the real current position
     polybezier[currentBezier].first.p0 = {lastPose.X().to<double>(), lastPose.Y().to<double>()};
     AddApproximation(&(polybezier[currentBezier]));
+
+    SetNextMin();
 }
